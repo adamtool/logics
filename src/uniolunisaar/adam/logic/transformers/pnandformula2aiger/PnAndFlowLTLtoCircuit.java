@@ -95,10 +95,11 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
         RunFormula f = FlowLTLTransformer.addFairness(net, formula);
 
         // Get the formula for the maximality (null if MAX_NONE)
+        boolean skipMax = false;
         ILTLFormula max = TransformerTools.getMaximality(getMaximality(), getSemantics(), net);
         if (max != null) {
             f = new RunFormula(max, RunOperators.Implication.IMP, f);
-            setMaximality(Maximality.MAX_NONE); // already done the maximality here
+            skipMax = true; // already done the maximality here
         }
 //        IRunFormula f = formula;
 
@@ -162,7 +163,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
             stats.setMc_formula(formulaMC);
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END COLLECT STATISTICS
-        return createCircuit(gameMC, formulaMC, output, verbose, stats);
+        return createCircuit(gameMC, formulaMC, output, verbose, stats, skipMax);
     }
 
     public Approach getApproach() {

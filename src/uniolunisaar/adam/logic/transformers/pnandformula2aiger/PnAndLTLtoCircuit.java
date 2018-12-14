@@ -86,6 +86,25 @@ public class PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public AigerRenderer createCircuit(PetriGame net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+        return createCircuit(net, formula, path, verbose, stats, false);
+    }
+
+    /**
+     * 
+     * @param net
+     * @param formula
+     * @param path
+     * @param verbose
+     * @param stats
+     * @param skipMax - used if this method is called from the FlowLTL-Part and the maximality is allready handled there.
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws ParseException
+     * @throws ProcessNotStartedException
+     * @throws ExternalToolException 
+     */
+    AigerRenderer createCircuit(PetriGame net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats, boolean skipMax) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
         Logger.getInstance().addMessage("Creating the net '" + net.getName() + "' for the formula '" + formula.toSymbolString() + "'.\n"
                 + " With maximality term: " + maximality
                 + " semantics: " + semantics
@@ -95,9 +114,11 @@ public class PnAndLTLtoCircuit {
         formula = FlowLTLTransformer.addFairness(net, formula);
 
         // Add Maximality
-        ILTLFormula max = TransformerTools.getMaximality(maximality, semantics, net);
-        if (max != null) {
-            formula = new LTLFormula(max, LTLOperators.Binary.IMP, formula);
+        if (!skipMax) {
+            ILTLFormula max = TransformerTools.getMaximality(maximality, semantics, net);
+            if (max != null) {
+                formula = new LTLFormula(max, LTLOperators.Binary.IMP, formula);
+            }
         }
 
         // Choose renderer and add the corresponding stuttering
