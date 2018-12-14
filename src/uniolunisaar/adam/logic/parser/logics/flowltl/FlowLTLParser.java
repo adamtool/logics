@@ -6,9 +6,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatLexer;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser;
 import uniolunisaar.adam.logic.parser.logics.FlowLogicsParser;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatLexer;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser;
 
 /**
  *

@@ -12,11 +12,11 @@ import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatBaseListener;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser.FlowFormulaContext;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser.LtlContext;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser.RunFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatBaseListener;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.FlowFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.LtlContext;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.RunFormulaContext;
 
 /**
  *

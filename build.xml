@@ -44,7 +44,7 @@
 					<arg value="-o"/>
 					<arg path="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowltl/antlr"/>
 					<arg value="-package"/>
-					<arg value="uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr"/>
+					<arg value="uniolunisaar.adam.logic.parser.logics.flowltl.antlr"/>
 					<arg line="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowltl/@{name}"/>
 				</java>
 			</sequential>
