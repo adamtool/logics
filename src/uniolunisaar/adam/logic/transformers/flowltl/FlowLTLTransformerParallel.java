@@ -150,6 +150,7 @@ public class FlowLTLTransformerParallel extends FlowLTLTransformer {
      * @param net
      * @param formula
      * @return
+     * @throws uniolunisaar.adam.exception.logics.NotConvertableException
      */
     public static ILTLFormula createFormula4ModelChecking4CircuitParallel(PetriGame orig, PetriNet net, IRunFormula formula) throws NotConvertableException {
         // replace the next operator in the run-part

@@ -47,8 +47,10 @@ public class McHyper {
                 error = " Error parsing formula: " + formula;
             } else if (procMCHyper.getErrors().contains("mchyper: " + inputFile + ": openFile: does not exist (No such file or directory)")) {
                 error = " File '" + inputFile + "' does not exist (No such file or directory).";
+            } else if(procMCHyper.getErrors().contains("mchyper: Map.!: given key is not an element in the map")) {
+                error = " A used atom in the formula does not exists in the system.";
             }
-            throw new ExternalToolException("MCHyper didn't finshed correctly." + error+procMCHyper.getErrors());
+            throw new ExternalToolException("MCHyper didn't finshed correctly." + error);
         }
         Logger.getInstance().addMessage("... finished calling MCHyper", false);
         Logger.getInstance().addMessage("", false);
