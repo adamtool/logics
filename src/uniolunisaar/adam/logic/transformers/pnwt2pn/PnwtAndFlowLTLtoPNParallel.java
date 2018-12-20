@@ -5,7 +5,7 @@ import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.petrigame.TokenFlow;
+import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
 import static uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPN.createOriginalPartOfTheNet;
@@ -152,7 +152,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
                 out.createFlow(t, p);
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : place.getPostset()) {
-                    TokenFlow tfl = net.getTokenFlow(tr, place);
+                    Transit tfl = net.getTokenFlow(tr, place);
                     if (tfl != null && !tfl.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()), t);
                     }
@@ -161,7 +161,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
         }
         // via transitions
         for (Transition t : net.getTransitions()) {
-            TokenFlow tfl = net.getInitialTokenFlows(t);
+            Transit tfl = net.getInitialTokenFlows(t);
             if (tfl == null) {
                 continue;
             }
@@ -187,7 +187,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
                 }
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : post.getPostset()) {
-                    TokenFlow tfl_out = net.getTokenFlow(tr, post);
+                    Transit tfl_out = net.getTokenFlow(tr, post);
                     if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()), tout);
                     }
@@ -199,7 +199,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
             Place pl = todo.remove(todo.size() - 1); // do it for the next one
             Place pOrig = net.getPlace(out.getOrigID(pl));
             for (Transition t : pOrig.getPostset()) { // for all transitions of the place add for all token flows a new transition
-                TokenFlow tfl = net.getTokenFlow(t, pOrig);
+                Transit tfl = net.getTokenFlow(t, pOrig);
                 if (tfl == null) {
                     continue;
                 }
@@ -241,14 +241,14 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
 
                     // reactivate the transitions of the former step
                     for (Transition tr : pOrig.getPostset()) {
-                        TokenFlow tfl_out = net.getTokenFlow(tr, pOrig);
+                        Transit tfl_out = net.getTokenFlow(tr, pOrig);
                         if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                             out.createFlow(tout, out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()));
                         }
                     }
                     // deactivate the succeeding the flow transitions of the original net
                     for (Transition tr : post.getPostset()) {
-                        TokenFlow tfl_out = net.getTokenFlow(tr, post);
+                        Transit tfl_out = net.getTokenFlow(tr, post);
                         if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                             out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()), tout);
                         }

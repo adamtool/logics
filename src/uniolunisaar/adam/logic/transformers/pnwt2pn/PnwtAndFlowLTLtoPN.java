@@ -5,7 +5,7 @@ import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.petrigame.TokenFlow;
+import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 
 /**
  *
@@ -93,7 +93,7 @@ public class PnwtAndFlowLTLtoPN {
 
         //%% via transitions
         for (Transition t : orig.getTransitions()) {
-            TokenFlow tfl = orig.getInitialTokenFlows(t);
+            Transit tfl = orig.getInitialTokenFlows(t);
             if (tfl == null) { // not initial token flows -> skip
                 continue;
             }
@@ -137,7 +137,7 @@ public class PnwtAndFlowLTLtoPN {
             // for all post transitions of the place add for all token flows a new transition
             // and possibly the corresponding places which follow the flow
             for (Transition t : pPreOrig.getPostset()) {
-                TokenFlow tfl = orig.getTokenFlow(t, pPreOrig);
+                Transit tfl = orig.getTokenFlow(t, pPreOrig);
                 if (tfl == null) {
                     continue;
                 }

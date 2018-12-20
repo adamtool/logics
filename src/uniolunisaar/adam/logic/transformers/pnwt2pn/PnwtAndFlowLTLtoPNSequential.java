@@ -5,7 +5,7 @@ import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.petrigame.TokenFlow;
+import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
@@ -372,7 +372,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             }
             //%% via transitions
             for (Transition t : net.getTransitions()) {
-                TokenFlow tfl = net.getInitialTokenFlows(t);
+                Transit tfl = net.getInitialTokenFlows(t);
                 if (tfl == null) { // not initial token flows -> skip
                     continue;
                 }
@@ -423,7 +423,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
                 // for all post transitions of the place add for all token flows a new transition
                 // and possibly the corresponding places which follow the flow
                 for (Transition t : pPreOrig.getPostset()) {
-                    TokenFlow tfl = net.getTokenFlow(t, pPreOrig);
+                    Transit tfl = net.getTokenFlow(t, pPreOrig);
                     if (tfl == null) {
                         continue;
                     }
@@ -658,7 +658,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             }
             //%% via transitions
             for (Transition t : net.getTransitions()) {
-                TokenFlow tfl = net.getInitialTokenFlows(t);
+                Transit tfl = net.getInitialTokenFlows(t);
                 if (tfl == null) { // not initial token flows -> skip
                     continue;
                 }
@@ -708,7 +708,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
                 // for all post transitions of the place add for all token flows a new transition
                 // and possibly the corresponding places which follow the flow
                 for (Transition t : pPreOrig.getPostset()) {
-                    TokenFlow tfl = net.getTokenFlow(t, pPreOrig);
+                    Transit tfl = net.getTokenFlow(t, pPreOrig);
                     if (tfl == null) {
                         continue;
                     }
