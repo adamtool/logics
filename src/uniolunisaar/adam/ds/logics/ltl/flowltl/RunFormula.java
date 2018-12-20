@@ -2,7 +2,7 @@ package uniolunisaar.adam.ds.logics.ltl.flowltl;
 
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.logics.IFormula;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exception.logics.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;

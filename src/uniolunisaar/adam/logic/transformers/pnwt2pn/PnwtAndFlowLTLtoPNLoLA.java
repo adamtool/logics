@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 
 /**
@@ -20,15 +20,15 @@ public class PnwtAndFlowLTLtoPNLoLA {
      * original transitions to subnets with fairness annotations to the
      * transitions.
      *
-     * @param game
+     * @param net
      * @return
      */
-    public static PetriGame createNet4ModelChecking4LoLA(PetriGame game) {
-        PetriGame out = new PetriGame(game);
-        out.setName(game.getName() + "_mc");
+    public static PetriNetWithTransits createNet4ModelChecking4LoLA(PetriNetWithTransits net) {
+        PetriNetWithTransits out = new PetriNetWithTransits(net);
+        out.setName(net.getName() + "_mc");
         // Add to each original transition a place such that we can disable these transitions
         // as soon as we started to check a token chain
-        for (Transition t : game.getTransitions()) {
+        for (Transition t : net.getTransitions()) {
             Place act = out.createPlace("act_" + t.getId());
             act.setInitialToken(1);
             out.createFlow(act, t);
@@ -40,8 +40,8 @@ public class PnwtAndFlowLTLtoPNLoLA {
         init.setInitialToken(1);
         // Add places which create a new token flow
         // via initial places
-        for (Place place : game.getPlaces()) {
-            if (place.getInitialToken().getValue() > 0 && game.isInitialTransit(place)) {
+        for (Place place : net.getPlaces()) {
+            if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                 Place p = out.createPlace(place.getId() + "_tf");
                 todo.add(p);
                 out.setOrigID(p, place.getId());
@@ -50,7 +50,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                 out.createFlow(t, p);
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : place.getPostset()) {
-                    Transit tfl = game.getTransit(tr, place);
+                    Transit tfl = net.getTransit(tr, place);
                     if (tfl != null && !tfl.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace("act_" + tr.getId()), t);
                     }
@@ -58,8 +58,8 @@ public class PnwtAndFlowLTLtoPNLoLA {
             }
         }
         // via transitions
-        for (Transition t : game.getTransitions()) {
-            Transit tfl = game.getInitialTransit(t);
+        for (Transition t : net.getTransitions()) {
+            Transit tfl = net.getInitialTransit(t);
             if (tfl == null) {
                 continue;
             }
@@ -85,7 +85,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                 }
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : post.getPostset()) {
-                    Transit tfl_out = game.getTransit(tr, post);
+                    Transit tfl_out = net.getTransit(tr, post);
                     if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace("act_" + tr.getId()), tout);
                     }
@@ -95,16 +95,16 @@ public class PnwtAndFlowLTLtoPNLoLA {
 
         while (!todo.isEmpty()) {
             Place pl = todo.remove(todo.size() - 1); // do it for the next one
-            Place pOrig = game.getPlace(out.getOrigID(pl));
+            Place pOrig = net.getPlace(out.getOrigID(pl));
             for (Transition t : pOrig.getPostset()) { // for all transitions of the place add for all token flows a new transition
-                Transit tfl = game.getTransit(t, pOrig);
+                Transit tfl = net.getTransit(t, pOrig);
                 if (tfl == null) {
                     continue;
                 }
                 String actID = "act_" + t.getId();
                 Place buffer = null;
                 // %%%%%%%%%%%%%%%%% FAIR
-                if (tfl.getPostset().size() > 1 && game.isStrongFair(t)) { // if the transition is fair and we have more then one token flow successor,
+                if (tfl.getPostset().size() > 1 && net.isStrongFair(t)) { // if the transition is fair and we have more then one token flow successor,
                     //add buffer transition such that the fairness is not concerning the choosing of the tokenflow
                     Transition tout = out.createTransition(); // create the new transition
                     tout.setLabel(t.getId() + "_fair");
@@ -118,10 +118,10 @@ public class PnwtAndFlowLTLtoPNLoLA {
                         }
                     }
                     // deactivate all transitions which are not already deactivated of the original net
-                    for (Transition tact : game.getTransitions()) {
+                    for (Transition tact : net.getTransitions()) {
                         // only deactivated those which are not already deactivated, i.e., those which do not belong
                         // to a transition which succeeds a flow from pl
-                        Transit tokenflow = game.getTransit(tact, pOrig);
+                        Transit tokenflow = net.getTransit(tact, pOrig);
                         if (tokenflow == null || tokenflow.isEmpty()) {
                             out.createFlow(out.getPlace("act_" + tact.getId()), tout);
                         }
@@ -139,7 +139,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                     }
                     Transition tout = out.createTransition(); // create the new transition
                     tout.setLabel(t.getId());
-                    if (game.isStrongFair(t) && tfl.getPostset().size() <= 1) { // a fair transition which has only one token flow successor, thus is not handeled above, set it here to be fair
+                    if (net.isStrongFair(t) && tfl.getPostset().size() <= 1) { // a fair transition which has only one token flow successor, thus is not handeled above, set it here to be fair
                         out.setStrongFair(tout);
                         tout.setLabel(tout.getLabel() + "_fair");
                     }
@@ -149,7 +149,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                         out.createFlow(buffer, tout);
                     }
                     out.createFlow(tout, pout);
-                    if (!game.isStrongFair(t) || tfl.getPostset().size() <= 1) {
+                    if (!net.isStrongFair(t) || tfl.getPostset().size() <= 1) {
                         for (Place place : t.getPreset()) { // move the tokens in the original net
                             if (!place.getId().equals(actID)) {// don't add it to the added activation transition
                                 out.createFlow(place, tout);
@@ -161,9 +161,9 @@ public class PnwtAndFlowLTLtoPNLoLA {
                             out.createFlow(tout, place);
                         }
                     }
-                    if (tfl.getPostset().size() > 1 && game.isStrongFair(t)) { // reactivate all but those transition which can succeed the flow in the next step
-                        for (Transition tr : game.getTransitions()) {
-                            Transit tfl_out = game.getTransit(tr, post);
+                    if (tfl.getPostset().size() > 1 && net.isStrongFair(t)) { // reactivate all but those transition which can succeed the flow in the next step
+                        for (Transition tr : net.getTransitions()) {
+                            Transit tfl_out = net.getTransit(tr, post);
                             if (tfl_out == null || tfl_out.getPostset().isEmpty()) {
                                 out.createFlow(tout, out.getPlace("act_" + tr.getId()));
                             }
@@ -171,14 +171,14 @@ public class PnwtAndFlowLTLtoPNLoLA {
                     } else {
                         // reactivate the transitions of the former step
                         for (Transition tr : pOrig.getPostset()) {
-                            Transit tfl_out = game.getTransit(tr, pOrig);
+                            Transit tfl_out = net.getTransit(tr, pOrig);
                             if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                                 out.createFlow(tout, out.getPlace("act_" + tr.getId()));
                             }
                         }
                         // deactivate the succeeding the flow transitions of the original net
                         for (Transition tr : post.getPostset()) {
-                            Transit tfl_out = game.getTransit(tr, post);
+                            Transit tfl_out = net.getTransit(tr, post);
                             if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                                 out.createFlow(out.getPlace("act_" + tr.getId()), tout);
                             }
@@ -194,7 +194,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                 }
             }
         }
-        for (Transition t : game.getTransitions()) { // delete the fairness assumption of all original transitions
+        for (Transition t : net.getTransitions()) { // delete the fairness assumption of all original transitions
             out.removeStrongFair(out.getTransition(t.getId()));
         }
         return out;

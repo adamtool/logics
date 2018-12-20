@@ -1,7 +1,7 @@
 package uniolunisaar.adam.ds.logics.ltl;
 
 import uniolunisaar.adam.ds.logics.IFormula;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exception.logics.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 

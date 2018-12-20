@@ -110,7 +110,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
                 case PARALLEL:
                     netMC = PnwtAndFlowLTLtoPNParallel.createNet4ModelCheckingParallelOneFlowFormula(net);
                     if (verbose) {
-                        PNWTTools.savePG2PDF(output, netMC, true);
+                        PNWTTools.savePnwt2PDF(output, netMC, true);
                     }
                     formulaMC = FlowLTLTransformerParallel.createFormula4ModelChecking4CircuitParallel(net, netMC, f);
 //            Logger.getInstance().addMessage("Checking the net '" + gameMC.getName() + "' for the formula '" + formulaMC.toSymbolString() + "'.", false);
@@ -141,7 +141,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
                         // color all original places
                         for (Place p : netMC.getPlaces()) {
                             if (!netMC.hasPartition(p)) {
-                                netMC.setEnvironment(p);
+                                netMC.setPartition(p, 0);
                             }
                         }
                         PNWTTools.savePnwt2PDF(output, netMC, true, TransformerTools.getFlowFormulas(formula).size());

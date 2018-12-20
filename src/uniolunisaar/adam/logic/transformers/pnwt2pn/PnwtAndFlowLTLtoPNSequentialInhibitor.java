@@ -4,9 +4,9 @@ import java.util.List;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import static uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPNSequential.NEXT_ID;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
@@ -30,8 +30,8 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
      * @param initFirstStep
      * @return
      */
-    public static PetriGame createNet4ModelCheckingSequential(PetriGame orig, IRunFormula formula, boolean initFirstStep) {
-        PetriGame out = createOriginalPartOfTheNet(orig, initFirstStep);
+    public static PetriNetWithTransits createNet4ModelCheckingSequential(PetriNetWithTransits orig, IRunFormula formula, boolean initFirstStep) {
+        PetriNetWithTransits out = createOriginalPartOfTheNet(orig, initFirstStep);
 
         // create one activation place for all original transitions
         Place actO = out.createPlace(ACTIVATION_PREFIX_ID + "orig");
@@ -96,10 +96,7 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
                                         || (!initFirstStep && !p.getId().equals(INIT_TOKENFLOW_ID + "-" + nb_ff))) { // also not for place for newly created chains in the !initFirstCase
                                     if (!tout.getPreset().contains(p)) { // if the flow is not already created before
                                         Flow f = out.createFlow(p, tout);
-                                        //todo: change this, when the time was there to create a net with tokenflows and extensions and so on
-                                        // out.setInhibitor(f)
-                                        PetriGame buf = new PetriGame("buf");
-                                        buf.setInhibitor(f);
+                                        out.setInhibitor(f);
                                     }
                                 }
                             }

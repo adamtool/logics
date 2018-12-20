@@ -1,6 +1,6 @@
 package uniolunisaar.adam.ds.logics;
 
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exception.logics.NotSubstitutableException;
 
 /**
  * @author Manuel Gieseking

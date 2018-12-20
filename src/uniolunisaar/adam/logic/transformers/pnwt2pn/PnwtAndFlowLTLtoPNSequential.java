@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
 
@@ -32,8 +32,8 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
      * @param initFirstStep
      * @return
      */
-    public static PetriGame createNet4ModelCheckingSequential(PetriGame orig, IRunFormula formula, boolean initFirstStep) {
-        PetriGame out = createOriginalPartOfTheNet(orig, initFirstStep);
+    public static PetriNetWithTransits createNet4ModelCheckingSequential(PetriNetWithTransits orig, IRunFormula formula, boolean initFirstStep) {
+        PetriNetWithTransits out = createOriginalPartOfTheNet(orig, initFirstStep);
 
         // create one activation place for all original transitions
         Place actO = out.createPlace(ACTIVATION_PREFIX_ID + "orig");
@@ -328,9 +328,9 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
      * @return
      */
     @Deprecated
-    public static PetriGame createNet4ModelCheckingSequential(PetriGame net, IRunFormula formula) {
+    public static PetriNetWithTransits createNet4ModelCheckingSequential(PetriNetWithTransits net, IRunFormula formula) {
         // Copy the original net 
-        PetriGame out = new PetriGame(net);
+        PetriNetWithTransits out = new PetriNetWithTransits(net);
         out.setName(net.getName() + "_mc");
         // Add to each original transition a place such that we can disable these transitions
         // to give the token to the checking of the subflowformulas
@@ -585,10 +585,9 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
      * @deprecated
      */
     @Deprecated
-    public static PetriGame createNet4ModelCheckingSequentialInitFirst(PetriGame net, IRunFormula formula
-    ) {
+    public static PetriNetWithTransits createNet4ModelCheckingSequentialInitFirst(PetriNetWithTransits net, IRunFormula formula) {
         // Copy the original net
-        PetriGame out = new PetriGame(net);
+        PetriNetWithTransits out = new PetriNetWithTransits(net);
         out.setName(net.getName() + "_mc");
         // remember the initial marking
         List<Place> initialMarking = new ArrayList<>();

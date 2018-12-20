@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 
 /**
@@ -19,9 +19,9 @@ public class PnwtAndFlowLTLtoPN {
 //    public static final String NO_CHAIN_ID = "<no_tfl>"; // is subsumed by the new_tokenflow_id place
     public static final String TOKENFLOW_SUFFIX_ID = "_<tfl>";
 
-    static PetriGame createOriginalPartOfTheNet(PetriGame orig, boolean initFirstStep) {
+    static PetriNetWithTransits createOriginalPartOfTheNet(PetriNetWithTransits orig, boolean initFirstStep) {
         // Copy the original net
-        PetriGame out = new PetriGame(orig);
+        PetriNetWithTransits out = new PetriNetWithTransits(orig);
         out.setName(orig.getName() + "_mc");
 
         // delete the fairness assumption of all original transitions
@@ -40,11 +40,11 @@ public class PnwtAndFlowLTLtoPN {
      * @param initFirstStep
      * @return
      */
-    static PetriGame addSubFlowFormulaNet(PetriGame orig, PetriGame out, int nb_ff, boolean initFirstStep) {
+    static PetriNetWithTransits addSubFlowFormulaNet(PetriNetWithTransits orig, PetriNetWithTransits out, int nb_ff, boolean initFirstStep) {
         // create an initial place representing the chosen flow chain
         Place init = out.createPlace(INIT_TOKENFLOW_ID + "-" + nb_ff);
         init.setInitialToken(1);
-        out.setPartition(init, nb_ff+1);
+        out.setPartition(init, nb_ff + 1);
 
         // collect the places which are newly created to only copy the necessary part of the net
         List<Place> todo = new ArrayList<>();
@@ -78,7 +78,7 @@ public class PnwtAndFlowLTLtoPN {
             Transition newTfl = out.createTransition(INIT_TOKENFLOW_ID + "-" + NEW_TOKENFLOW_ID + "-" + nb_ff);
             newTfl.putExtension("subformula", nb_ff);
             Place newTflPlace = out.createPlace(NEW_TOKENFLOW_ID + "-" + nb_ff);
-            out.setPartition(newTflPlace, nb_ff+1);
+            out.setPartition(newTflPlace, nb_ff + 1);
             out.createFlow(init, newTfl);
             out.createFlow(newTfl, newTflPlace);
 //            }
@@ -107,7 +107,7 @@ public class PnwtAndFlowLTLtoPN {
                 if (!out.containsPlace(id)) { // create or get the place in which the chain is created
                     // create the place itself
                     p = out.createPlace(id);
-                    out.setPartition(p, nb_ff+1);
+                    out.setPartition(p, nb_ff + 1);
                     out.setOrigID(p, post.getId());
                     todo.add(p);
                 } else {
@@ -152,7 +152,7 @@ public class PnwtAndFlowLTLtoPN {
                     if (!out.containsPlace(id)) { // create or get the place in which the chain is moved
                         // create the place itself
                         pPost = out.createPlace(id);
-                        out.setPartition(pPost, nb_ff+1);
+                        out.setPartition(pPost, nb_ff + 1);
                         out.setOrigID(pPost, post.getId());
                         todo.add(pPost);
                     } else {

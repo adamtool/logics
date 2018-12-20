@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import static uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPN.createOriginalPartOfTheNet;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
@@ -28,9 +28,9 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
      * @param initFirstStep
      * @return
      */
-    public static PetriGame createNet4ModelCheckingParallel(PetriGame orig, IRunFormula formula, boolean initFirstStep) {
-        PetriGame out = createOriginalPartOfTheNet(orig, initFirstStep);
-        
+    public static PetriNetWithTransits createNet4ModelCheckingParallel(PetriNetWithTransits orig, IRunFormula formula, boolean initFirstStep) {
+        PetriNetWithTransits out = createOriginalPartOfTheNet(orig, initFirstStep);
+
         if (initFirstStep) { // delete the initial marking if init
             for (Place p : out.getPlaces()) {
                 if (p.getInitialToken().getValue() > 0) {
@@ -125,8 +125,8 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
      * @param net
      * @return
      */
-    public static PetriGame createNet4ModelCheckingParallelOneFlowFormula(PetriGame net) {
-        PetriGame out = new PetriGame(net);
+    public static PetriNetWithTransits createNet4ModelCheckingParallelOneFlowFormula(PetriNetWithTransits net) {
+        PetriNetWithTransits out = new PetriNetWithTransits(net);
         out.setName(net.getName() + "_mc");
         // Add to each original transition a place such that we can disable these transitions
         // as soon as we started to check a token chain
