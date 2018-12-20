@@ -44,7 +44,7 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
             if (initFirstStep) {
                 // create an activation place for the initialization
                 Place act = out.createPlace(ACTIVATION_PREFIX_ID + INIT_TOKENFLOW_ID + "-" + nb_ff);
-                out.setPartition(act, nb_ff);
+                out.setPartition(act, nb_ff + 1);
                 if (nb_ff == 0) {
                     act.setInitialToken(1);
                 }
@@ -68,7 +68,7 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
                     // create the activation place                    
                     String id = ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + nb_ff;
                     Place act = out.createPlace(id);
-                    out.setPartition(act, nb_ff);
+                    out.setPartition(act, nb_ff + 1);
 
                     // %%% begin nxt transition
                     // Add a transition which moves (takes, move is done later)
@@ -161,9 +161,9 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
 //            // Move the active token through the subnets of the flow formulas
 //            // deactivate all orginal transitions whenever an original transition fires
 //            for (Transition t : orig.getTransitions()) {
-//                if (!orig.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows                        
+//                if (!orig.getTransits(t).isEmpty()) { // only for those which have tokenflows                        
 //                    for (Transition t2 : orig.getTransitions()) {
-//                        if (!orig.getTokenFlows(t2).isEmpty()) { // only for those which have tokenflows                        
+//                        if (!orig.getTransits(t2).isEmpty()) { // only for those which have tokenflows                        
 //                            out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + t2.getId()), t);
 //                        }
 //                    }
@@ -174,7 +174,7 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
             for (Transition t : orig.getTransitions()) {
                 // take the active token
                 out.createFlow(actO, t);
-                if (!orig.getTokenFlows(t).isEmpty()) { // if this transition has a token flow
+                if (!orig.getTransits(t).isEmpty()) { // if this transition has a token flow
                     // and move the active token to the first subnet
                     out.createFlow(t, out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + 0));
                 } else {
@@ -185,7 +185,7 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
             // move the active token through the subnets
             for (int i = 1; i < flowFormulas.size(); i++) {
                 for (Transition t : orig.getTransitions()) {
-                    if (!orig.getTokenFlows(t).isEmpty()) { // if this transition has a token flow
+                    if (!orig.getTransits(t).isEmpty()) { // if this transition has a token flow
                         Place acti = out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + (i - 1));
                         Place actii = out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + i);
                         for (Transition tr : acti.getPostset()) {

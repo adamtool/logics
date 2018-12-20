@@ -5,9 +5,9 @@ import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
 import java.io.IOException;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformer;
 import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformerHyperLTL;
@@ -67,7 +67,7 @@ public class PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.tools.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
-    public AigerRenderer createCircuit(PetriGame net, ILTLFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+    public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
         return createCircuit(net, formula, path, verbose, null);
     }
 
@@ -85,7 +85,7 @@ public class PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.tools.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
-    public AigerRenderer createCircuit(PetriGame net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+    public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
         return createCircuit(net, formula, path, verbose, stats, false);
     }
 
@@ -104,7 +104,7 @@ public class PnAndLTLtoCircuit {
      * @throws ProcessNotStartedException
      * @throws ExternalToolException 
      */
-    AigerRenderer createCircuit(PetriGame net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats, boolean skipMax) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+    AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats, boolean skipMax) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
         Logger.getInstance().addMessage("Creating the net '" + net.getName() + "' for the formula '" + formula.toSymbolString() + "'.\n"
                 + " With maximality term: " + maximality
                 + " semantics: " + semantics

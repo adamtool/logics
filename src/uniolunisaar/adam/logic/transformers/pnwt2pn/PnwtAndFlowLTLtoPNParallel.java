@@ -41,7 +41,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
 
         // Add to each original transition a place such that we can disable the transitions
         for (Transition t : orig.getTransitions()) {
-            if (!orig.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows
+            if (!orig.getTransits(t).isEmpty()) { // only for those which have tokenflows
                 Place act = out.createPlace(ACTIVATION_PREFIX_ID + t.getId());
                 act.setInitialToken(1);
             }
@@ -143,7 +143,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
         // Add places which create a new token flow
         // via initial places
         for (Place place : net.getPlaces()) {
-            if (place.getInitialToken().getValue() > 0 && net.isInitialTokenflow(place)) {
+            if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                 Place p = out.createPlace(place.getId() + TOKENFLOW_SUFFIX_ID);
                 todo.add(p);
                 out.setOrigID(p, place.getId());
@@ -152,7 +152,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
                 out.createFlow(t, p);
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : place.getPostset()) {
-                    Transit tfl = net.getTokenFlow(tr, place);
+                    Transit tfl = net.getTransit(tr, place);
                     if (tfl != null && !tfl.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()), t);
                     }
@@ -161,7 +161,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
         }
         // via transitions
         for (Transition t : net.getTransitions()) {
-            Transit tfl = net.getInitialTokenFlows(t);
+            Transit tfl = net.getInitialTransit(t);
             if (tfl == null) {
                 continue;
             }
@@ -187,7 +187,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
                 }
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : post.getPostset()) {
-                    Transit tfl_out = net.getTokenFlow(tr, post);
+                    Transit tfl_out = net.getTransit(tr, post);
                     if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()), tout);
                     }
@@ -199,7 +199,7 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
             Place pl = todo.remove(todo.size() - 1); // do it for the next one
             Place pOrig = net.getPlace(out.getOrigID(pl));
             for (Transition t : pOrig.getPostset()) { // for all transitions of the place add for all token flows a new transition
-                Transit tfl = net.getTokenFlow(t, pOrig);
+                Transit tfl = net.getTransit(t, pOrig);
                 if (tfl == null) {
                     continue;
                 }
@@ -241,14 +241,14 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
 
                     // reactivate the transitions of the former step
                     for (Transition tr : pOrig.getPostset()) {
-                        Transit tfl_out = net.getTokenFlow(tr, pOrig);
+                        Transit tfl_out = net.getTransit(tr, pOrig);
                         if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                             out.createFlow(tout, out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()));
                         }
                     }
                     // deactivate the succeeding the flow transitions of the original net
                     for (Transition tr : post.getPostset()) {
-                        Transit tfl_out = net.getTokenFlow(tr, post);
+                        Transit tfl_out = net.getTransit(tr, post);
                         if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                             out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + tr.getId()), tout);
                         }
@@ -270,15 +270,15 @@ public class PnwtAndFlowLTLtoPNParallel extends PnwtAndFlowLTLtoPN {
         // delete all token flows
         for (Transition t : net.getTransitions()) {
             for (Place p : t.getPreset()) {
-                out.removeTokenFlow(p, t);
+                out.removeTransit(p, t);
             }
             for (Place p : t.getPostset()) {
-                out.removeTokenFlow(t, p);
+                out.removeTransit(t, p);
             }
         }
         // and the initial token flow markers
         for (Place place : net.getPlaces()) {
-            if (place.getInitialToken().getValue() > 0 && net.isInitialTokenflow(place)) {
+            if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                 out.removeInitialTokenflow(out.getPlace(place.getId()));
             }
         }

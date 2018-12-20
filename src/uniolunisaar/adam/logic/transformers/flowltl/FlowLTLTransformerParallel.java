@@ -6,7 +6,6 @@ import java.util.List;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
@@ -22,6 +21,7 @@ import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.util.logics.FormulaCreator;
 import uniolunisaar.adam.exception.logics.NotConvertableException;
 import uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPN;
@@ -36,12 +36,12 @@ import uniolunisaar.adam.tools.Logger;
  */
 public class FlowLTLTransformerParallel extends FlowLTLTransformer {
 
-    private static FlowFormula replaceNextInFlowFormulaParallel(PetriGame orig, PetriNet net, FlowFormula flowFormula) {
+    private static FlowFormula replaceNextInFlowFormulaParallel(PetriNetWithTransits orig, PetriNet net, FlowFormula flowFormula) {
         ILTLFormula phi = flowFormula.getPhi();
         return new FlowFormula(replaceNextWithinFlowFormulaParallel(orig, net, phi));
     }
 
-    private static ILTLFormula replaceNextWithinFlowFormulaParallel(PetriGame orig, PetriNet net, ILTLFormula phi) {
+    private static ILTLFormula replaceNextWithinFlowFormulaParallel(PetriNetWithTransits orig, PetriNet net, ILTLFormula phi) {
         if (phi instanceof AtomicProposition) {
             return phi;
         } else if (phi instanceof LTLFormula) {
@@ -54,7 +54,7 @@ public class FlowLTLTransformerParallel extends FlowLTLTransformer {
                 if (substCast.getOp() == LTLOperators.Unary.X) {
                     List<Transition> newTransitions = new ArrayList<>();
                     for (Place place : orig.getPlaces()) {
-                        if (place.getInitialToken().getValue() > 0 && orig.isInitialTokenflow(place)) {
+                        if (place.getInitialToken().getValue() > 0 && orig.isInitialTransit(place)) {
                             String id = INIT_TOKENFLOW_ID + "-" + place.getId();
                             newTransitions.add(net.getTransition(id));
                         }
@@ -92,7 +92,7 @@ public class FlowLTLTransformerParallel extends FlowLTLTransformer {
         throw new RuntimeException("The given formula '" + phi + "' is not an LTLFormula or FormulaUnary or FormulaBinary. This should not be possible.");
     }
 
-    private static IFormula replaceNextWithinRunFormulaParallel(PetriGame orig, PetriNet net, IFormula phi) {
+    private static IFormula replaceNextWithinRunFormulaParallel(PetriNet orig, PetriNet net, IFormula phi) {
         if (phi instanceof AtomicProposition) {
             return phi;
         } else if (phi instanceof IFlowFormula) {
@@ -152,7 +152,7 @@ public class FlowLTLTransformerParallel extends FlowLTLTransformer {
      * @return
      * @throws uniolunisaar.adam.exception.logics.NotConvertableException
      */
-    public static ILTLFormula createFormula4ModelChecking4CircuitParallel(PetriGame orig, PetriNet net, IRunFormula formula) throws NotConvertableException {
+    public static ILTLFormula createFormula4ModelChecking4CircuitParallel(PetriNetWithTransits orig, PetriNet net, IRunFormula formula) throws NotConvertableException {
         // replace the next operator in the run-part
         IFormula f = replaceNextWithinRunFormulaParallel(orig, net, formula);
 
@@ -193,7 +193,7 @@ public class FlowLTLTransformerParallel extends FlowLTLTransformer {
 
                 // Replace the next operator within the flow formula
                 flowF = replaceNextInFlowFormulaParallel(orig, net, flowF);
-                
+
                 f = f.substitute(flowFormulas.get(0), new RunFormula(new LTLFormula(
                         new LTLFormula(LTLOperators.Unary.G, new LTLAtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.INIT_TOKENFLOW_ID))),
                         LTLOperators.Binary.OR,

@@ -6,7 +6,6 @@ import java.util.List;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.Constants;
@@ -38,12 +37,12 @@ import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
  */
 public class FlowLTLTransformerSequential extends FlowLTLTransformer {
 
-    private static FlowFormula replaceNextInFlowFormulaSequential(PetriGame orig, PetriNet net, FlowFormula flowFormula, int nb_ff) {
+    private static FlowFormula replaceNextInFlowFormulaSequential(PetriNet orig, PetriNet net, FlowFormula flowFormula, int nb_ff) {
         ILTLFormula phi = flowFormula.getPhi();
         return new FlowFormula(replaceNextWithinFlowFormulaSequential(orig, net, phi, nb_ff, false));
     }
 
-    private static ILTLFormula replaceNextWithinFlowFormulaSequential(PetriGame orig, PetriNet net, ILTLFormula phi, int nb_ff, boolean scopeEventually) {
+    private static ILTLFormula replaceNextWithinFlowFormulaSequential(PetriNet orig, PetriNet net, ILTLFormula phi, int nb_ff, boolean scopeEventually) {
         if (phi instanceof IAtomicProposition) {
             return phi;
         } else if (phi instanceof LTLFormula) {
@@ -110,12 +109,12 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
         throw new RuntimeException("The given formula '" + phi + "' is not an LTLFormula or FormulaUnary or FormulaBinary. This should not be possible.");
     }
 
-    private static FlowFormula replaceTransitionsInFlowFormulaSequential(PetriGame orig, PetriNet net, FlowFormula flowFormula, int nb_ff, boolean initFirst) {
+    private static FlowFormula replaceTransitionsInFlowFormulaSequential(PetriNet orig, PetriNet net, FlowFormula flowFormula, int nb_ff, boolean initFirst) {
         ILTLFormula phi = flowFormula.getPhi();
         return new FlowFormula(replaceTransitionsWithinFlowFormulaSequential(orig, net, phi, nb_ff, false, initFirst));
     }
 
-    private static ILTLFormula replaceTransitionsWithinFlowFormulaSequential(PetriGame orig, PetriNet net, ILTLFormula phi, int nb_ff, boolean scopeEventually, boolean initFirst) {
+    private static ILTLFormula replaceTransitionsWithinFlowFormulaSequential(PetriNet orig, PetriNet net, ILTLFormula phi, int nb_ff, boolean scopeEventually, boolean initFirst) {
         if (phi instanceof Constants) {
             return phi;
         } else if (phi instanceof AtomicProposition) {
@@ -175,7 +174,7 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
                 "The given formula '" + phi + "' is not an LTLFormula or FormulaUnary or FormulaBinary. This should not be possible.");
     }
 
-    private static IFormula replaceNextWithinRunFormulaSequential(PetriGame orig, PetriNet net, IFormula phi, boolean scopeEventually) {
+    private static IFormula replaceNextWithinRunFormulaSequential(PetriNet orig, PetriNet net, IFormula phi, boolean scopeEventually) {
         if (phi instanceof IAtomicProposition) {
             return phi;
         } else if (phi instanceof IFlowFormula) {
@@ -272,11 +271,11 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
                 "The given formula '" + phi + "' is not an LTLFormula or FormulaUnary or FormulaBinary. This should not be possible.");
     }
 
-    private static RunFormula replaceNextWithinRunFormulaSequential(PetriGame orig, PetriNet net, RunFormula phi) {
+    private static RunFormula replaceNextWithinRunFormulaSequential(PetriNet orig, PetriNet net, RunFormula phi) {
         return new RunFormula(replaceNextWithinRunFormulaSequential(orig, net, phi.getPhi(), false));
     }
 
-    private static IFormula replaceTransitionsWithinRunFormulaSequential(PetriGame orig, PetriNet net, IFormula phi, boolean scopeEventually) {
+    private static IFormula replaceTransitionsWithinRunFormulaSequential(PetriNet orig, PetriNet net, IFormula phi, boolean scopeEventually) {
         if (phi instanceof Constants) {
             return phi;
         } else if (phi instanceof LTLAtomicProposition) {
@@ -335,7 +334,7 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
                 "The given formula '" + phi + "' is not an LTLFormula or FormulaUnary or FormulaBinary. This should not be possible.");
     }
 
-    private static RunFormula replaceTransitionsWithinRunFormulaSequential(PetriGame orig, PetriNet net, RunFormula phi) {
+    private static RunFormula replaceTransitionsWithinRunFormulaSequential(PetriNet orig, PetriNet net, RunFormula phi) {
         return new RunFormula(replaceTransitionsWithinRunFormulaSequential(orig, net, phi.getPhi(), false));
     }
 
@@ -349,7 +348,7 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
      * @return
      * @throws uniolunisaar.adam.exception.logics.NotConvertableException
      */
-    public static ILTLFormula createFormula4ModelChecking4CircuitSequential(PetriGame orig, PetriNet net, RunFormula formula, boolean initFirst) throws NotConvertableException {
+    public static ILTLFormula createFormula4ModelChecking4CircuitSequential(PetriNet orig, PetriNet net, RunFormula formula, boolean initFirst) throws NotConvertableException {
         // %%%%%%%%%%%%%%%%%  RUN REPLACE TRANSITIONS
         RunFormula runF = replaceTransitionsWithinRunFormulaSequential(orig, net, formula);
         // %%%%%%%%%%%%%%%%%  RUN REPLACE NEXT 

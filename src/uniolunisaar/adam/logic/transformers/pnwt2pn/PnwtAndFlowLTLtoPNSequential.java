@@ -46,7 +46,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             if (initFirstStep) {
                 // create an activation place for the initialization
                 Place act = out.createPlace(ACTIVATION_PREFIX_ID + INIT_TOKENFLOW_ID + "-" + nb_ff);
-                out.setPartition(act, nb_ff);
+                out.setPartition(act, nb_ff + 1);
                 if (nb_ff == 0) {
                     act.setInitialToken(1);
                 }
@@ -64,7 +64,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
                     Place pNot = out.createPlace("!" + id);
                     pNot.setInitialToken(1);
                     out.setOrigID(pNot, place.getId());
-                    out.setPartition(pNot, nb_ff);
+                    out.setPartition(pNot, nb_ff + 1);
                     for (Transition t : place.getPreset()) {
                         if (!place.getPostset().contains(t)) {
                             out.createFlow(pNot, t);
@@ -151,7 +151,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
                     // create the activation place                    
                     String id = ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + nb_ff;
                     Place act = out.createPlace(id);
-                    out.setPartition(act, nb_ff);
+                    out.setPartition(act, nb_ff + 1);
 
                     // Add a transition which moves (takes, move is done later)
                     // the activation token to the next token flow subnet, when no
@@ -237,9 +237,9 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             // deactivate all orginal transitions whenever an original transition fires
             // this is the version when every original transition has its own token
 //            for (Transition t : orig.getTransitions()) {
-//                if (!orig.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows                        
+//                if (!orig.getTransits(t).isEmpty()) { // only for those which have tokenflows                        
 //                    for (Transition t2 : orig.getTransitions()) {
-//                        if (!orig.getTokenFlows(t2).isEmpty()) { // only for those which have tokenflows                        
+//                        if (!orig.getTransits(t2).isEmpty()) { // only for those which have tokenflows                        
 //                            out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + t2.getId()), t);
 //                        }
 //                    }
@@ -250,7 +250,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             for (Transition t : orig.getTransitions()) {
                 // take the active token
                 out.createFlow(actO, t);
-                if (!orig.getTokenFlows(t).isEmpty()) { // if this transition has a token flow
+                if (!orig.getTransits(t).isEmpty()) { // if this transition has a token flow
                     // and move the active token to the first subnet
                     out.createFlow(t, out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + 0));
                 } else {
@@ -335,7 +335,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
         // Add to each original transition a place such that we can disable these transitions
         // to give the token to the checking of the subflowformulas
         for (Transition t : net.getTransitions()) {
-            if (!net.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows
+            if (!net.getTransits(t).isEmpty()) { // only for those which have tokenflows
                 Place act = out.createPlace(ACTIVATION_PREFIX_ID + t.getId());
                 act.setInitialToken(1);
             }
@@ -354,7 +354,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             // %%%%% add places and transitions for the new creation of token flows
             // %% via initial places
             for (Place place : net.getPlaces()) {
-                if (place.getInitialToken().getValue() > 0 && net.isInitialTokenflow(place)) {
+                if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                     // create the place which is states that the chain is currently in this place
                     Place p = out.createPlace(place.getId() + TOKENFLOW_SUFFIX_ID + "-" + nb_ff);
                     out.setOrigID(p, place.getId());
@@ -372,7 +372,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             }
             //%% via transitions
             for (Transition t : net.getTransitions()) {
-                Transit tfl = net.getInitialTokenFlows(t);
+                Transit tfl = net.getInitialTransit(t);
                 if (tfl == null) { // not initial token flows -> skip
                     continue;
                 }
@@ -423,7 +423,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
                 // for all post transitions of the place add for all token flows a new transition
                 // and possibly the corresponding places which follow the flow
                 for (Transition t : pPreOrig.getPostset()) {
-                    Transit tfl = net.getTokenFlow(t, pPreOrig);
+                    Transit tfl = net.getTransit(t, pPreOrig);
                     if (tfl == null) {
                         continue;
                     }
@@ -510,9 +510,9 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             // Move the active token through the subnets of the flow formulas
             // deactivate all orginal transitions whenever an original transition fires
             for (Transition t : net.getTransitions()) {
-                if (!net.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows                        
+                if (!net.getTransits(t).isEmpty()) { // only for those which have tokenflows                        
                     for (Transition t2 : net.getTransitions()) {
-                        if (!net.getTokenFlows(t2).isEmpty()) { // only for those which have tokenflows                        
+                        if (!net.getTransits(t2).isEmpty()) { // only for those which have tokenflows                        
                             out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + t2.getId()), t);
                         }
                     }
@@ -559,15 +559,15 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
         // delete all token flows
         for (Transition t : net.getTransitions()) {
             for (Place p : t.getPreset()) {
-                out.removeTokenFlow(p, t);
+                out.removeTransit(p, t);
             }
             for (Place p : t.getPostset()) {
-                out.removeTokenFlow(t, p);
+                out.removeTransit(t, p);
             }
         }
         // and the initial token flow markers
         for (Place place : net.getPlaces()) {
-            if (place.getInitialToken().getValue() > 0 && net.isInitialTokenflow(place)) {
+            if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                 out.removeInitialTokenflow(out.getPlace(place.getId()));
             }
         }
@@ -603,7 +603,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
         // Add to each original transition a place such that we can disable these transitions
         // to give the token to the checking of the subflowformulas
         for (Transition t : net.getTransitions()) {
-            if (!net.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows
+            if (!net.getTransits(t).isEmpty()) { // only for those which have tokenflows
                 Place act = out.createPlace(ACTIVATION_PREFIX_ID + t.getId());
                 act.setInitialToken(1);
             }
@@ -627,7 +627,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             // %%%%% add places and transitions for the new creation of token flows
             // %% via initial places
             for (Place place : net.getPlaces()) {
-                if (place.getInitialToken().getValue() > 0 && net.isInitialTokenflow(place)) {
+                if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                     // create the place which is states that the chain is currently in this place
                     Place p = out.createPlace(place.getId() + TOKENFLOW_SUFFIX_ID + "-" + nb_ff);
                     out.setOrigID(p, place.getId());
@@ -658,7 +658,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             }
             //%% via transitions
             for (Transition t : net.getTransitions()) {
-                Transit tfl = net.getInitialTokenFlows(t);
+                Transit tfl = net.getInitialTransit(t);
                 if (tfl == null) { // not initial token flows -> skip
                     continue;
                 }
@@ -708,7 +708,7 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
                 // for all post transitions of the place add for all token flows a new transition
                 // and possibly the corresponding places which follow the flow
                 for (Transition t : pPreOrig.getPostset()) {
-                    Transit tfl = net.getTokenFlow(t, pPreOrig);
+                    Transit tfl = net.getTransit(t, pPreOrig);
                     if (tfl == null) {
                         continue;
                     }
@@ -795,9 +795,9 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             // Move the active token through the subnets of the flow formulas
             // deactivate all orginal transitions whenever an original transition fires
             for (Transition t : net.getTransitions()) {
-                if (!net.getTokenFlows(t).isEmpty()) { // only for those which have tokenflows                        
+                if (!net.getTransits(t).isEmpty()) { // only for those which have tokenflows                        
                     for (Transition t2 : net.getTransitions()) {
-                        if (!net.getTokenFlows(t2).isEmpty()) { // only for those which have tokenflows                        
+                        if (!net.getTransits(t2).isEmpty()) { // only for those which have tokenflows                        
                             out.createFlow(out.getPlace(ACTIVATION_PREFIX_ID + t2.getId()), t);
                         }
                     }
@@ -844,15 +844,15 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
         // delete all token flows
         for (Transition t : net.getTransitions()) {
             for (Place p : t.getPreset()) {
-                out.removeTokenFlow(p, t);
+                out.removeTransit(p, t);
             }
             for (Place p : t.getPostset()) {
-                out.removeTokenFlow(t, p);
+                out.removeTransit(t, p);
             }
         }
         // and the initial token flow markers
         for (Place place : net.getPlaces()) {
-            if (place.getInitialToken().getValue() > 0 && net.isInitialTokenflow(place)) {
+            if (place.getInitialToken().getValue() > 0 && net.isInitialTransit(place)) {
                 out.removeInitialTokenflow(out.getPlace(place.getId()));
             }
         }

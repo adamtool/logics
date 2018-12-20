@@ -41,7 +41,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
         // Add places which create a new token flow
         // via initial places
         for (Place place : game.getPlaces()) {
-            if (place.getInitialToken().getValue() > 0 && game.isInitialTokenflow(place)) {
+            if (place.getInitialToken().getValue() > 0 && game.isInitialTransit(place)) {
                 Place p = out.createPlace(place.getId() + "_tf");
                 todo.add(p);
                 out.setOrigID(p, place.getId());
@@ -50,7 +50,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                 out.createFlow(t, p);
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : place.getPostset()) {
-                    Transit tfl = game.getTokenFlow(tr, place);
+                    Transit tfl = game.getTransit(tr, place);
                     if (tfl != null && !tfl.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace("act_" + tr.getId()), t);
                     }
@@ -59,7 +59,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
         }
         // via transitions
         for (Transition t : game.getTransitions()) {
-            Transit tfl = game.getInitialTokenFlows(t);
+            Transit tfl = game.getInitialTransit(t);
             if (tfl == null) {
                 continue;
             }
@@ -85,7 +85,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                 }
                 // Deactivate all original postset transitions which continue the flow
                 for (Transition tr : post.getPostset()) {
-                    Transit tfl_out = game.getTokenFlow(tr, post);
+                    Transit tfl_out = game.getTransit(tr, post);
                     if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                         out.createFlow(out.getPlace("act_" + tr.getId()), tout);
                     }
@@ -97,7 +97,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
             Place pl = todo.remove(todo.size() - 1); // do it for the next one
             Place pOrig = game.getPlace(out.getOrigID(pl));
             for (Transition t : pOrig.getPostset()) { // for all transitions of the place add for all token flows a new transition
-                Transit tfl = game.getTokenFlow(t, pOrig);
+                Transit tfl = game.getTransit(t, pOrig);
                 if (tfl == null) {
                     continue;
                 }
@@ -121,7 +121,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                     for (Transition tact : game.getTransitions()) {
                         // only deactivated those which are not already deactivated, i.e., those which do not belong
                         // to a transition which succeeds a flow from pl
-                        Transit tokenflow = game.getTokenFlow(tact, pOrig);
+                        Transit tokenflow = game.getTransit(tact, pOrig);
                         if (tokenflow == null || tokenflow.isEmpty()) {
                             out.createFlow(out.getPlace("act_" + tact.getId()), tout);
                         }
@@ -163,7 +163,7 @@ public class PnwtAndFlowLTLtoPNLoLA {
                     }
                     if (tfl.getPostset().size() > 1 && game.isStrongFair(t)) { // reactivate all but those transition which can succeed the flow in the next step
                         for (Transition tr : game.getTransitions()) {
-                            Transit tfl_out = game.getTokenFlow(tr, post);
+                            Transit tfl_out = game.getTransit(tr, post);
                             if (tfl_out == null || tfl_out.getPostset().isEmpty()) {
                                 out.createFlow(tout, out.getPlace("act_" + tr.getId()));
                             }
@@ -171,14 +171,14 @@ public class PnwtAndFlowLTLtoPNLoLA {
                     } else {
                         // reactivate the transitions of the former step
                         for (Transition tr : pOrig.getPostset()) {
-                            Transit tfl_out = game.getTokenFlow(tr, pOrig);
+                            Transit tfl_out = game.getTransit(tr, pOrig);
                             if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                                 out.createFlow(tout, out.getPlace("act_" + tr.getId()));
                             }
                         }
                         // deactivate the succeeding the flow transitions of the original net
                         for (Transition tr : post.getPostset()) {
-                            Transit tfl_out = game.getTokenFlow(tr, post);
+                            Transit tfl_out = game.getTransit(tr, post);
                             if (tfl_out != null && !tfl_out.getPostset().isEmpty()) {
                                 out.createFlow(out.getPlace("act_" + tr.getId()), tout);
                             }

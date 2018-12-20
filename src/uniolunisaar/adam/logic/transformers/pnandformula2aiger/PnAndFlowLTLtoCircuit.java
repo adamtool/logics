@@ -4,10 +4,10 @@ import java.io.IOException;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
-import uniolunisaar.adam.logic.util.AdamTools;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.util.PNWTTools;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.exception.logics.NotConvertableException;
 import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformer;
@@ -60,7 +60,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.tools.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
-    public AigerRenderer createCircuit(PetriGame net, RunFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, NotConvertableException, ProcessNotStartedException, ExternalToolException {
+    public AigerRenderer createCircuit(PetriNetWithTransits net, RunFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, NotConvertableException, ProcessNotStartedException, ExternalToolException {
         return createCircuit(net, formula, path, verbose, null);
     }
 
@@ -79,7 +79,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.tools.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
-    public AigerRenderer createCircuit(PetriGame net, RunFormula formula, String output, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, NotConvertableException, ProcessNotStartedException, ExternalToolException {
+    public AigerRenderer createCircuit(PetriNetWithTransits net, RunFormula formula, String output, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, NotConvertableException, ProcessNotStartedException, ExternalToolException {
         Logger.getInstance().addMessage("We create the net '" + net.getName() + "' for the formula '" + formula.toSymbolString() + "'.\n"
                 + " With maximality term: " + getMaximality()
                 + " approach: " + approach + " semantics: " + getSemantics() + " stuttering: " + getStuttering()
@@ -103,50 +103,50 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
         }
 //        IRunFormula f = formula;
 
-        PetriGame gameMC = null;
+        PetriNetWithTransits netMC = null;
         ILTLFormula formulaMC = null;
         if (null != approach) {
             switch (approach) {
                 case PARALLEL:
-                    gameMC = PnwtAndFlowLTLtoPNParallel.createNet4ModelCheckingParallelOneFlowFormula(net);
+                    netMC = PnwtAndFlowLTLtoPNParallel.createNet4ModelCheckingParallelOneFlowFormula(net);
                     if (verbose) {
-                        AdamTools.savePG2PDF(output, gameMC, true);
+                        PNWTTools.savePG2PDF(output, netMC, true);
                     }
-                    formulaMC = FlowLTLTransformerParallel.createFormula4ModelChecking4CircuitParallel(net, gameMC, f);
+                    formulaMC = FlowLTLTransformerParallel.createFormula4ModelChecking4CircuitParallel(net, netMC, f);
 //            Logger.getInstance().addMessage("Checking the net '" + gameMC.getName() + "' for the formula '" + formulaMC.toSymbolString() + "'.", false);
                     break;
                 case SEQUENTIAL:
-                    gameMC = PnwtAndFlowLTLtoPNSequential.createNet4ModelCheckingSequential(net, f, initFirst);
+                    netMC = PnwtAndFlowLTLtoPNSequential.createNet4ModelCheckingSequential(net, f, initFirst);
                     if (verbose) {
                         // color all original places
-                        for (Place p : gameMC.getPlaces()) {
-                            if (!gameMC.hasPartition(p)) {
-                                gameMC.setEnvironment(p);
+                        for (Place p : netMC.getPlaces()) {
+                            if (!netMC.hasPartition(p)) {
+                                netMC.setPartition(p, 0);
                             }
                         }
-                        AdamTools.savePG2PDF(output, gameMC, true, TransformerTools.getFlowFormulas(formula).size());
+                        PNWTTools.savePnwt2PDF(output, netMC, true, TransformerTools.getFlowFormulas(formula).size());
 //                try {
-//                    AdamTools.saveAPT(path + "_mc", gameMC, false);
+//                    PNWTTools.saveAPT(path + "_mc", gameMC, false);
 //                } catch (RenderException ex) {
 //                    java.util.logging.Logger.getLogger(PnAndFlowLTLtoCircuit.class.getName()).log(Level.SEVERE, null, ex);
 //                } catch (FileNotFoundException ex) {
 //                    java.util.logging.Logger.getLogger(PnAndFlowLTLtoCircuit.class.getName()).log(Level.SEVERE, null, ex);
 //                }
                     }
-                    formulaMC = FlowLTLTransformerSequential.createFormula4ModelChecking4CircuitSequential(net, gameMC, f, initFirst);
+                    formulaMC = FlowLTLTransformerSequential.createFormula4ModelChecking4CircuitSequential(net, netMC, f, initFirst);
                     break;
                 case SEQUENTIAL_INHIBITOR:
-                    gameMC = PnwtAndFlowLTLtoPNSequentialInhibitor.createNet4ModelCheckingSequential(net, f, initFirst);
+                    netMC = PnwtAndFlowLTLtoPNSequentialInhibitor.createNet4ModelCheckingSequential(net, f, initFirst);
                     if (verbose) {
                         // color all original places
-                        for (Place p : gameMC.getPlaces()) {
-                            if (!gameMC.hasPartition(p)) {
-                                gameMC.setEnvironment(p);
+                        for (Place p : netMC.getPlaces()) {
+                            if (!netMC.hasPartition(p)) {
+                                netMC.setEnvironment(p);
                             }
                         }
-                        AdamTools.savePG2PDF(output, gameMC, true, TransformerTools.getFlowFormulas(formula).size());
+                        PNWTTools.savePnwt2PDF(output, netMC, true, TransformerTools.getFlowFormulas(formula).size());
                     }
-                    formulaMC = FlowLTLTransformerSequential.createFormula4ModelChecking4CircuitSequential(net, gameMC, f, initFirst);
+                    formulaMC = FlowLTLTransformerSequential.createFormula4ModelChecking4CircuitSequential(net, netMC, f, initFirst);
                     break;
                 default:
                     throw new RuntimeException("Didn't provided a solution for all approaches yet. Approach '" + approach + "' is missing; sry.");
@@ -159,11 +159,11 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
             stats.setIn_nb_transitions(net.getTransitions().size());
             stats.setIn_size_formula(f.getSize());
             // input model checking net
-            stats.setMc_net(gameMC);
+            stats.setMc_net(netMC);
             stats.setMc_formula(formulaMC);
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END COLLECT STATISTICS
-        return createCircuit(gameMC, formulaMC, output, verbose, stats, skipMax);
+        return createCircuit(netMC, formulaMC, output, verbose, stats, skipMax);
     }
 
     public Approach getApproach() {
