@@ -8,13 +8,13 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.winningconditions.WinningCondition;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 /**
  *
@@ -100,15 +100,15 @@ public class FormulaCreator {
         return new LTLFormula(infEvnEnabled, LTLOperators.Binary.IMP, infFired);
     }
 
-    public static FlowFormula createLTLFormulaOfWinCon(PetriGame game, WinningCondition.Objective winCon) {
+    public static FlowFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
         List<Place> specialPlaces = new ArrayList<>();
-        for (Place p : game.getPlaces()) {
-            if (game.isSpecial(p)) {
+        for (Place p : net.getPlaces()) {
+            if (net.isSpecial(p)) {
                 specialPlaces.add(p);
             }
         }
         ILTLFormula f;
-        switch (winCon) {
+        switch (condition) {
             case A_SAFETY: {
                 Collection<ILTLFormula> elems = new ArrayList<>();
                 for (Place specialPlace : specialPlaces) {

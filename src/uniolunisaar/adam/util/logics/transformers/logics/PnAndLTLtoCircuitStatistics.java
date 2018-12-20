@@ -2,7 +2,7 @@ package uniolunisaar.adam.util.logics.transformers.logics;
 
 import java.io.FileNotFoundException;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -16,7 +16,7 @@ public class PnAndLTLtoCircuitStatistics {
     private long in_nb_transitions;
     private long in_size_formula;
     // input transformed
-    private PetriGame transformedNet;
+    private PetriNetWithTransits transformedNet;
     private ILTLFormula transformedFormula;
 //    private long mc_nb_places;
 //    private long mc_nb_transitions;
@@ -89,11 +89,11 @@ public class PnAndLTLtoCircuitStatistics {
 //    public void setMc_size_formula(long mc_size_formula) {
 //        this.mc_size_formula = mc_size_formula;
 //    }
-    public PetriGame getMc_net() {
+    public PetriNetWithTransits getMc_net() {
         return transformedNet;
     }
 
-    public void setMc_net(PetriGame mc_net) {
+    public void setMc_net(PetriNetWithTransits mc_net) {
         this.transformedNet = mc_net;
     }
 
