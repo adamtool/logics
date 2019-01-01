@@ -27,7 +27,7 @@ public class LTLFormula extends Formula<ILTLFormula> implements ILTLFormula {
     @Override
     public LTLFormula createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
         IFormula phisubs = getPhi().substitute(subformula, with);
-        if (phisubs instanceof ILTLFormula) {
+        if (phisubs instanceof ILTLFormula) {           
             return new LTLFormula((ILTLFormula) phisubs);
         } else {
             throw new NotSubstitutableException("Error creating LTL formula. Substituting '" + subformula.toString() + "' with '" + with.toString() + "' "

@@ -92,7 +92,7 @@ public class RunFormula extends Formula<IFormula> implements IRunFormula {
         if (getPhi() instanceof ILTLFormula) {
             return (ILTLFormula) getPhi();
         }
-        throw new RuntimeException("'" + this.toString() + "' is not a LTL formula");
+        throw new RuntimeException("'" + this.toString() + "' is not an LTL formula");
     }
 
     public IFlowFormula toFlowFormula() {
