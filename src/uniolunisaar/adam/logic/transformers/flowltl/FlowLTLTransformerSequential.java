@@ -486,23 +486,29 @@ public class FlowLTLTransformerSequential extends FlowLTLTransformer {
 
         // %%%%%%%%%%%%%%%%%%%%%%%  ACTIVATION PART
         // since we don't want to stop within the subnets, omit these runs
-        // this means we demand for every activation place of the subnets
-        // that have to be left
-        List<LTLFormula> elements = new ArrayList<>();
-        for (Place p : net.getPlaces()) {
-            String id = p.getId();
-            if (id.startsWith(ACTIVATION_PREFIX_ID)) {
-                // this is the version when every original transition has its own activation token
-                // if it's not a orignal one (meaning the rest of the string is not a transition of the original net
-//                if (!orig.containsTransition(id.substring(ACTIVATION_PREFIX_ID.length()))) {
-                if (!id.equals(ACTIVATION_PREFIX_ID + "orig")) { // not the activation place of the original transitions
-                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p))));
-                    elements.add(inf);
-                }
-            }
-        }
-        ret = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, true), LTLOperators.Binary.IMP, ret);
-
+        // %%%%% OLD VERSION: 
+//        // this means we demand for every activation place of the subnets
+//        // that it has to be left
+//        List<LTLFormula> elements = new ArrayList<>();
+//        for (Place p : net.getPlaces()) {
+//            String id = p.getId();
+//            if (id.startsWith(ACTIVATION_PREFIX_ID)) {
+//                // this is the version when every original transition has its own activation token
+//                // if it's not a orignal one (meaning the rest of the string is not a transition of the original net
+////                if (!orig.containsTransition(id.substring(ACTIVATION_PREFIX_ID.length()))) {
+//                if (!id.equals(ACTIVATION_PREFIX_ID + "orig")) { // not the activation place of the original transitions
+//                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p))));
+//                    elements.add(inf);
+//                }
+//            }
+//        }
+//        ret = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, true), LTLOperators.Binary.IMP, ret);
+        // %%%%% NEW VERSION:
+        // smaller is to just asked that again and again the activation token of the original net has to be occupied
+        // Also in the final setting this work since then it is an globally
+        ret = new LTLFormula(
+                new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace(ACTIVATION_PREFIX_ID + "orig")))),
+                 LTLOperators.Binary.IMP, ret);
         return ret;
     }
 
