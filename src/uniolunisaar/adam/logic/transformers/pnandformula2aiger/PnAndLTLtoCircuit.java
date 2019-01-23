@@ -42,7 +42,7 @@ public class PnAndLTLtoCircuit {
     }
 
     private TransitionSemantics semantics = TransitionSemantics.OUTGOING;
-    private Maximality maximality = Maximality.MAX_INTERLEAVING;
+    private Maximality maximality = Maximality.MAX_NONE;
     private Stuttering stuttering = Stuttering.PREFIX_REGISTER;
 
     public PnAndLTLtoCircuit() {
