@@ -96,7 +96,7 @@ public class PnAndLTLtoCircuit {
      * @param path
      * @param verbose
      * @param stats
-     * @param skipMax - used if this method is called from the FlowLTL-Part and the maximality is allready handled there.
+     * @param skipMax - used if this method is called from the FlowLTL-Part and the maximality is already handled there.
      * @return
      * @throws InterruptedException
      * @throws IOException

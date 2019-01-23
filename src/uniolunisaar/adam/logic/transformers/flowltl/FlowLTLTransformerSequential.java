@@ -69,7 +69,7 @@ public class FlowLTLTransformerSequential extends FlowLTLTransformer {
                 for (Transition t : net.getTransitions()) { // all transitions
                     if (!(t.hasExtension("subformula") && t.getExtension("subformula").equals(nb_ff))
                             || // not of the subformula
-t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its one of the nxt transitions
+                            t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its one of the nxt transitions
                             ) {
                         elements.add(new LTLAtomicProposition(t));
                     }
@@ -129,7 +129,7 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
                 for (Transition t : net.getTransitions()) { // all transitions
                     if (!(t.hasExtension("subformula") && t.getExtension("subformula").equals(nb_ff))
                             || // not of the subformula
-t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its one of the nxt transitions
+                            t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its one of the nxt transitions
                             ) {
                         elements.add(new LTLAtomicProposition(t));
                     }
@@ -383,18 +383,19 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
             // %%%%%%%%%%%%%% REPLACEMENT OF FLOW FORMULA
             // %%%%%%%% NEWLY CREATED CHAINS CASE
             try {
+                LTLAtomicProposition init = new LTLAtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.INIT_TOKENFLOW_ID + "-" + i));
+                LTLAtomicProposition newChains = new LTLAtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i));
                 // this is replaced by the stuff below since the no_chain case is subsumed by the new_tokenflow
-//                LTLFormula flowLTL = new LTLFormula(
-//                        new LTLFormula(LTLOperators.Unary.G, new AtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.NO_CHAIN_ID + "-" + i))), // it's OK when there is no chain
-//                        LTLOperators.Binary.OR,
-//                        flowFormula.getPhi());
-//                if (net.containsPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i)) {
-//                    // it's also OK if when I chosed to have a new chain but this run doesn't get to it
-//                    flowLTL = new LTLFormula(flowLTL,
-//                            LTLOperators.Binary.OR,
-//                            new LTLFormula(LTLOperators.Unary.G, new AtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i))));
-//                }
-
+                //                LTLFormula flowLTL = new LTLFormula(
+                //                        new LTLFormula(LTLOperators.Unary.G, new AtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.NO_CHAIN_ID + "-" + i))), // it's OK when there is no chain
+                //                        LTLOperators.Binary.OR,
+                //                        flowFormula.getPhi());
+                //                if (net.containsPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i)) {
+                //                    // it's also OK if when I chosed to have a new chain but this run doesn't get to it
+                //                    flowLTL = new LTLFormula(flowLTL,
+                //                            LTLOperators.Binary.OR,
+                //                            new LTLFormula(LTLOperators.Unary.G, new AtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i))));
+                //                }
                 // is the first operator an eventually? Then do nothing.
                 boolean eventually = false;
                 if (flowFormulas.get(i).getPhi() instanceof LTLFormula) {
@@ -404,55 +405,51 @@ t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + nb_ff) // or its
                     }
                 }
                 ILTLFormula newlyCreatedChains = null;
-                if (!eventually) { // the whole flowformula is not in the scope of an eventually
+                if (!eventually) { // the whole flowformula is not in the scope of an eventually, we have to skip as long as the new chain is created
                     // all transition starting a flow
-                    Place newChains = net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i);
-                    List<ILTLFormula> elements = new ArrayList<>();
-                    for (Transition t : newChains.getPostset()) {
-                        elements.add(new LTLAtomicProposition(t));
-                    }
-                    if (!elements.isEmpty()) { // only when new chains are created during the game
-                        List<ILTLFormula> others = new ArrayList<>();
-                        // All other transitions then those belonging to i, apart from the next transitions
-                        for (Transition t : net.getTransitions()) { // all transitions
-                            if (!(t.hasExtension("subformula") && t.getExtension("subformula").equals(i))
-                                    || // not of the subformula
-t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + i) // or its one of the nxt transitions
-                                    ) {
-                                others.add(new LTLAtomicProposition(t));
-                            }
-                        }
-                        newlyCreatedChains = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(others, false), LTLOperators.Binary.U,
-                                new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, false), LTLOperators.Binary.AND,
-                                        new LTLFormula(LTLOperators.Unary.X, flowFormula.getPhi())));
+                    if (!net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i).getPostset().isEmpty()) { // only if new chains are created during the game
+                        // %%%%%%%%%%%%%%% OLD AND MORE EXPENSIVE VERSION: we skip all other transition than those which newly starts a chain, only in the next state the formula must hold
+//                        List<ILTLFormula> elements = new ArrayList<>();
+//                        for (Transition t : newChains.getPostset()) {
+//                            elements.add(new LTLAtomicProposition(t));
+//                        }
+//                        List<ILTLFormula> others = new ArrayList<>();
+//                        // All other transitions then those belonging to i, apart from the next transitions
+//                        for (Transition t : net.getTransitions()) { // all transitions
+//                            if (!(t.hasExtension("subformula") && t.getExtension("subformula").equals(i))
+//                                    || // not of the subformula
+//t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + i) // or its one of the nxt transitions
+//                                    ) {
+//                                others.add(new LTLAtomicProposition(t));
+//                            }
+//                        }
+//                        newlyCreatedChains = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(others, false), LTLOperators.Binary.U,
+//                                new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, false), LTLOperators.Binary.AND,
+//                                        new LTLFormula(LTLOperators.Unary.X, flowFormula.getPhi())));
+                        // %%% %%%%%%%%%%% NEW VERSION: We skip as long as no transition creating a new chain has been token by this subnet
+                        newlyCreatedChains = new LTLFormula(
+                                new LTLFormula(newChains, LTLOperators.Binary.OR, init),
+                                LTLOperators.Binary.U, flowFormula.getPhi());
                     }
                 }
 
                 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NO CHAIN, OR WRONGLY DECIDED FOR NEW CHAIN
-                LTLFormula skipping = null;
+                LTLFormula skipping;
                 if (initFirst) {
                     // it's OK when there is no chain or the subformula decided to consider a newly created chain but this doesn't exists in this run.
                     skipping = new LTLFormula(LTLOperators.Unary.G,
-                            new LTLFormula(new LTLAtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i)),
-                                    LTLOperators.Binary.OR,
-                                    new LTLAtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.INIT_TOKENFLOW_ID + "-" + i))
-                            )
-                    );
+                            new LTLFormula(newChains, LTLOperators.Binary.OR, init));
                 } else {
                     // it's OK to consider no chain
-                    skipping = new LTLFormula(LTLOperators.Unary.G,
-                            new LTLAtomicProposition(net.getPlace(PnwtAndFlowLTLtoPN.INIT_TOKENFLOW_ID + "-" + i))
-                    );
+                    skipping = new LTLFormula(LTLOperators.Unary.G, init);
                 }
 
                 // %%%%% PUT TOGETHER FLOW FORMULA
+                ILTLFormula chainFormula = (newlyCreatedChains == null) ? flowFormula.getPhi() : newlyCreatedChains;
                 LTLFormula flowLTL = new LTLFormula(
                         skipping,
                         LTLOperators.Binary.OR,
-                        flowFormula.getPhi());
-                if (newlyCreatedChains != null) {
-                    flowLTL = new LTLFormula(newlyCreatedChains, LTLOperators.Binary.OR, flowLTL);
-                }
+                        chainFormula);
 
                 // %%%%% REPLACE THE FLOW FORMULA
                 f = f.substitute(flowFormulas.get(i), new RunFormula(flowLTL));
