@@ -175,6 +175,10 @@ public class PnAndLTLtoCircuitStatistics {
         }
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public String getInputSizes() {
         StringBuilder sb = new StringBuilder();
         sb.append("#P, #T, #F, #Pmc, #Tmc, #Fmc, #L, #G, #Lt, #Gt, |=\n");
