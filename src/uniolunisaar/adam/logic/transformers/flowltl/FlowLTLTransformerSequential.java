@@ -339,7 +339,6 @@ public class FlowLTLTransformerSequential extends FlowLTLTransformer {
     }
 
     /**
-     * This is only done for ONE flow formula
      *
      * @param orig
      * @param net
@@ -506,15 +505,17 @@ public class FlowLTLTransformerSequential extends FlowLTLTransformer {
                 // if it's not a orignal one (meaning the rest of the string is not a transition of the original net
 //                if (!orig.containsTransition(id.substring(ACTIVATION_PREFIX_ID.length()))) {
                 if (!id.equals(ACTIVATION_PREFIX_ID + "orig")) { // not the activation place of the original transitions
-                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p))));
+//                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p))));
+                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p));
                     elements.add(inf);
                 }
             }
         }
-        ret = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, true), LTLOperators.Binary.IMP, ret);
+//        ret = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, true), LTLOperators.Binary.IMP, ret);
+        ret = new LTLFormula(new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, FormulaCreator.bigWedgeOrVeeObject(elements, true))), LTLOperators.Binary.IMP, ret);
 // %%%%% NEW VERSION:
-        // smaller is to just asked that again and again the activation token of the original net has to be occupied
-        // Also in the final setting this work since then it is an globally
+//        // smaller is to just asked that again and again the activation token of the original net has to be occupied
+//        // Also in the final setting this work since then it is an globally
 //        ret = new LTLFormula(
 //                new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace(ACTIVATION_PREFIX_ID + "orig")))),
 //                LTLOperators.Binary.IMP, ret);
