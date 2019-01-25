@@ -37,6 +37,10 @@ import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
  */
 public class FlowLTLTransformerSequential extends FlowLTLTransformer {
 
+    public static final boolean newChainsBySkippingTransitions = true;
+    public static final boolean notStuckingInSubnetByActOPlace = false;
+    public static final boolean notStuckingByActSubPlaceSeveralGFs = false;
+
     private static FlowFormula replaceNextInFlowFormulaSequential(PetriNet orig, PetriNet net, FlowFormula flowFormula, int nb_ff) {
         ILTLFormula phi = flowFormula.getPhi();
         return new FlowFormula(replaceNextWithinFlowFormulaSequential(orig, net, phi, nb_ff, false));
@@ -407,29 +411,32 @@ public class FlowLTLTransformerSequential extends FlowLTLTransformer {
                 if (!eventually) { // the whole flowformula is not in the scope of an eventually, we have to skip as long as the new chain is created
                     // all transition starting a flow
                     if (!net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i).getPostset().isEmpty()) { // only if new chains are created during the game
-// %%%%%%%%%%%%%%% OLD AND MORE EXPENSIVE VERSION: we skip all other transition than those which newly starts a chain, only in the next state the formula must hold
-//                        List<ILTLFormula> elements = new ArrayList<>();
-//                        Place p = net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i);
-//                        for (Transition t : p.getPostset()) {
-//                            elements.add(new LTLAtomicProposition(t));
-//                        }
-//                        List<ILTLFormula> others = new ArrayList<>();
-//                        // All other transitions then those belonging to i, apart from the next transitions
-//                        for (Transition t : net.getTransitions()) { // all transitions
-//                            if (!(t.hasExtension("subformula") && t.getExtension("subformula").equals(i))
-//                                    || // not of the subformula
-//                                    t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + i) // or its one of the nxt transitions
-//                                    ) {
-//                                others.add(new LTLAtomicProposition(t));
-//                            }
-//                        }
-//                        newlyCreatedChains = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(others, false), LTLOperators.Binary.U,
-//                                new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, false), LTLOperators.Binary.AND,
-//                                        new LTLFormula(LTLOperators.Unary.X, flowFormula.getPhi())));
-// %%% %%%%%%%%%%% NEW VERSION: We skip as long as no transition creating a new chain has been token by this subnet
-                        newlyCreatedChains = new LTLFormula(
-                                new LTLFormula(newChains, LTLOperators.Binary.OR, init),
-                                LTLOperators.Binary.U, flowFormula.getPhi());
+                        if (newChainsBySkippingTransitions) {
+                            // %%%%%%%%%%%%%%% OLD AND MORE EXPENSIVE VERSION: we skip all other transition than those which newly starts a chain, only in the next state the formula must hold
+                            List<ILTLFormula> elements = new ArrayList<>();
+                            Place p = net.getPlace(PnwtAndFlowLTLtoPN.NEW_TOKENFLOW_ID + "-" + i);
+                            for (Transition t : p.getPostset()) {
+                                elements.add(new LTLAtomicProposition(t));
+                            }
+                            List<ILTLFormula> others = new ArrayList<>();
+                            // All other transitions then those belonging to i, apart from the next transitions
+                            for (Transition t : net.getTransitions()) { // all transitions
+                                if (!(t.hasExtension("subformula") && t.getExtension("subformula").equals(i))
+                                        || // not of the subformula
+                                        t.getId().endsWith(PnwtAndFlowLTLtoPNSequential.NEXT_ID + "-" + i) // or its one of the nxt transitions
+                                        ) {
+                                    others.add(new LTLAtomicProposition(t));
+                                }
+                            }
+                            newlyCreatedChains = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(others, false), LTLOperators.Binary.U,
+                                    new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, false), LTLOperators.Binary.AND,
+                                            new LTLFormula(LTLOperators.Unary.X, flowFormula.getPhi())));
+                        } else {
+                            // %%% %%%%%%%%%%% NEW VERSION: We skip as long as no transition creating a new chain has been token by this subnet
+                            newlyCreatedChains = new LTLFormula(
+                                    new LTLFormula(newChains, LTLOperators.Binary.OR, init),
+                                    LTLOperators.Binary.U, flowFormula.getPhi());
+                        }
                     }
                 }
 
@@ -494,31 +501,41 @@ public class FlowLTLTransformerSequential extends FlowLTLTransformer {
 
         // %%%%%%%%%%%%%%%%%%%%%%%  ACTIVATION PART
         // since we don't want to stop within the subnets, omit these runs
-// %%%%% OLD VERSION: 
-        // this means we demand for every activation place of the subnets
-        // that it has to be left
-        List<LTLFormula> elements = new ArrayList<>();
-        for (Place p : net.getPlaces()) {
-            String id = p.getId();
-            if (id.startsWith(ACTIVATION_PREFIX_ID)) {
-                // this is the version when every original transition has its own activation token
-                // if it's not a orignal one (meaning the rest of the string is not a transition of the original net
+        if (!notStuckingInSubnetByActOPlace) {
+            // %%%%% OLD VERSION: 
+            // this means we demand for every activation place of the subnets
+            // that it has to be left
+            List<LTLFormula> elements = new ArrayList<>();
+            for (Place p : net.getPlaces()) {
+                String id = p.getId();
+                if (id.startsWith(ACTIVATION_PREFIX_ID)) {
+                    // this is the version when every original transition has its own activation token
+                    // if it's not a orignal one (meaning the rest of the string is not a transition of the original net
 //                if (!orig.containsTransition(id.substring(ACTIVATION_PREFIX_ID.length()))) {
-                if (!id.equals(ACTIVATION_PREFIX_ID + "orig")) { // not the activation place of the original transitions
-//                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p))));
-                    LTLFormula inf = new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p));
-                    elements.add(inf);
+                    if (!id.equals(ACTIVATION_PREFIX_ID + "orig")) { // not the activation place of the original transitions
+                        LTLFormula inf;
+                        if (notStuckingByActSubPlaceSeveralGFs) {
+                            inf = new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p))));
+                        } else {
+                            inf = new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(p));
+                        }
+                        elements.add(inf);
+                    }
                 }
             }
+            if (notStuckingByActSubPlaceSeveralGFs) {
+                ret = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, true), LTLOperators.Binary.IMP, ret);
+            } else {
+                ret = new LTLFormula(new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, FormulaCreator.bigWedgeOrVeeObject(elements, true))), LTLOperators.Binary.IMP, ret);
+            }
+        } else {
+            // %%%%% NEW VERSION:
+            // smaller is to just asked that again and again the activation token of the original net has to be occupied
+            // Also in the final setting this work since then it is an globally
+            ret = new LTLFormula(
+                    new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace(ACTIVATION_PREFIX_ID + "orig")))),
+                    LTLOperators.Binary.IMP, ret);
         }
-//        ret = new LTLFormula(FormulaCreator.bigWedgeOrVeeObject(elements, true), LTLOperators.Binary.IMP, ret);
-        ret = new LTLFormula(new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, FormulaCreator.bigWedgeOrVeeObject(elements, true))), LTLOperators.Binary.IMP, ret);
-// %%%%% NEW VERSION:
-//        // smaller is to just asked that again and again the activation token of the original net has to be occupied
-//        // Also in the final setting this work since then it is an globally
-//        ret = new LTLFormula(
-//                new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace(ACTIVATION_PREFIX_ID + "orig")))),
-//                LTLOperators.Binary.IMP, ret);
         return ret;
     }
 
