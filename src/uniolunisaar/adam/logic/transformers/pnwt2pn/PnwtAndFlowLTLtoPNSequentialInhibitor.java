@@ -173,7 +173,10 @@ public class PnwtAndFlowLTLtoPNSequentialInhibitor extends PnwtAndFlowLTLtoPN {
                 out.createFlow(actO, t);
                 if (!orig.getTransits(t).isEmpty()) { // if this transition has a token flow
                     // and move the active token to the first subnet
-                    out.createFlow(t, out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + 0));
+                    String id = ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + 0;
+                    if (out.containsPlace(id)) {
+                        out.createFlow(t, out.getPlace(id));
+                    }
                 } else {
                     // directly put it back
                     out.createFlow(t, actO);
