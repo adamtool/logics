@@ -22,6 +22,10 @@ public interface IFormula {
 
     public int getNbFormulas();
 
+    public int getNbAtomicPropositions();
+
+    public int getNbOperators();
+
     public int getDepth();
 
     public int getSize();

@@ -72,11 +72,21 @@ public class AtomicProposition implements IAtomicProposition {
 
     @Override
     public int getSize() {
-        return 1;
+        return getNbFormulas();
     }
 
     @Override
     public int getNbFormulas() {
+        return 1;
+    }
+
+    @Override
+    public int getNbOperators() {
+        return 0;
+    }
+
+    @Override
+    public int getNbAtomicPropositions() {
         return 1;
     }
 
