@@ -49,12 +49,22 @@ public abstract class Formula<F1 extends IFormula> implements IFormula {
 
     @Override
     public int getSize() {
-        return phi.getSize();
+        return getNbFormulas();
     }
 
     @Override
     public int getNbFormulas() {
         return phi.getNbFormulas();
+    }
+
+    @Override
+    public int getNbOperators() {
+        return phi.getNbOperators();
+    }
+
+    @Override
+    public int getNbAtomicPropositions() {
+        return phi.getNbAtomicPropositions();
     }
 
     @Override

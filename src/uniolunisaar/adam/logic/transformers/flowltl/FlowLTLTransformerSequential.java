@@ -37,7 +37,7 @@ import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
  */
 public class FlowLTLTransformerSequential extends FlowLTLTransformer {
 
-    public static final boolean newChainsBySkippingTransitions = true;
+    public static final boolean newChainsBySkippingTransitions = false;
     public static final boolean notStuckingInSubnetByActOPlace = false;
     public static final boolean notStuckingByActSubPlaceSeveralGFs = false;
 

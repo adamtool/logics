@@ -122,7 +122,16 @@ public abstract class Constants implements IAtomicProposition {
 
     @Override
     public int getSize() {
-        return 1;
+        return getNbFormulas();
     }
 
+    @Override
+    public int getNbOperators() {
+        return 0;// todo: normally I expect 1 since it is an abbreviation for false = p\wedge \neg p
+    }
+
+    @Override
+    public int getNbAtomicPropositions() {
+        return 0;// todo: normally I expect 2 since it is an abbreviation for false = p\wedge \neg p
+    }
 }
