@@ -12,6 +12,7 @@ import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.Tools;
+import uniolunisaar.adam.util.logics.benchmarks.mc.BenchmarksMC;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
 /**
@@ -78,18 +79,37 @@ public class CircuitAndLTLtoCircuit {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COLLECT STATISTICS
         if (stats != null) {
             // system size
-            stats.setSys_nb_latches(circuit.getNbOfLatches());
-            stats.setSys_nb_gates(circuit.getNbOfGates());
-            // total size 
+            int nb_latches = circuit.getNbOfLatches();
+            int nb_gates = circuit.getNbOfGates();
+            // total size             
+            int nb_total_latches = -1;
+            int nb_total_gates = -1;
             try ( BufferedReader mcHyperAag = new BufferedReader(new FileReader(outputPath + ".aag"))) {
                 String header = mcHyperAag.readLine();
                 String[] vals = header.split(" ");
-                stats.setTotal_nb_latches(Integer.parseInt(vals[3]));
-                stats.setTotal_nb_gates(Integer.parseInt(vals[5]));
+                nb_total_latches = Integer.parseInt(vals[3]);
+                nb_total_gates = Integer.parseInt(vals[5]);
             }
-            Logger.getInstance().addMessage(stats.getInputSizes(), true);
-            // if a file is given already write them to the file
-            stats.writeInputSizesToFile();
+            // set the values
+            stats.setSys_nb_latches(nb_latches);
+            stats.setSys_nb_gates(nb_gates);
+            stats.setTotal_nb_latches(nb_total_latches);
+            stats.setTotal_nb_gates(nb_total_gates);
+            // output the values
+            if (BenchmarksMC.EDACC) {
+                Logger.getInstance().addMessage("nb_places: " + stats.getIn_nb_places(), "edacc");
+                Logger.getInstance().addMessage("nb_transitions: " + stats.getIn_nb_transitions(), "edacc");
+                Logger.getInstance().addMessage("size_f: " + stats.getIn_size_formula(), "edacc");
+                Logger.getInstance().addMessage("nb_mc_places: " + stats.getMc_nb_places(), "edacc");
+                Logger.getInstance().addMessage("nb_mc_transitions: " + stats.getMc_nb_transitions(), "edacc");
+                Logger.getInstance().addMessage("size_mc_f: " + stats.getMc_size_formula(), "edacc");
+                Logger.getInstance().addMessage("nb_total_latches: " + nb_total_latches, "edacc");
+                Logger.getInstance().addMessage("nb_total_gates: " + nb_total_gates, "edacc");
+            } else {
+                Logger.getInstance().addMessage(stats.getInputSizes(), true);
+                // if a file is given already write them to the file
+                stats.writeInputSizesToFile();
+            }
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END COLLECT STATISTICS
 

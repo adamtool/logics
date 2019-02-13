@@ -154,10 +154,14 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
         }
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COLLECT STATISTICS
         if (stats != null) {
+            int nb_places = net.getPlaces().size();
+            int nb_transitions = net.getTransitions().size();
+            int size_f = f.getSize();
+            // Set the input sizes
             // input orignal net
-            stats.setIn_nb_places(net.getPlaces().size());
-            stats.setIn_nb_transitions(net.getTransitions().size());
-            stats.setIn_size_formula(f.getSize());
+            stats.setIn_nb_places(nb_places);
+            stats.setIn_nb_transitions(nb_transitions);
+            stats.setIn_size_formula(size_f);
             // input model checking net
             stats.setMc_net(netMC);
             stats.setMc_formula(formulaMC);
