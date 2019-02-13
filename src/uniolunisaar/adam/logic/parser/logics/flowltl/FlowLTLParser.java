@@ -1,6 +1,6 @@
 package uniolunisaar.adam.logic.parser.logics.flowltl;
 
-import uniolunisaar.adam.logic.parser.logics.FlowLogicsParseException;
+import uniolunisaar.adam.exception.logics.FlowLogicsParseException;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.adt.pn.PetriNet;
