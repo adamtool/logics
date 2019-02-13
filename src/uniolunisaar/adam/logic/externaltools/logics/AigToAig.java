@@ -8,6 +8,7 @@ import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -19,13 +20,14 @@ public class AigToAig {
     public static final String LOGGER_AIGER_OUT = "aigerOut";
     public static final String LOGGER_AIGER_ERR = "aigerErr";
 
-    public static void call(String inputFile, String output, boolean verbose) throws IOException, InterruptedException, ExternalToolException {
+    public static void call(String inputFile, String output, boolean verbose, String procFamilyID) throws IOException, InterruptedException, ExternalToolException {
         String[] aiger_command = {AdamProperties.getInstance().getProperty(AdamProperties.AIGER_TOOLS) + "aigtoaig", inputFile, output};
 
         Logger.getInstance().addMessage("", false);
         Logger.getInstance().addMessage("Calling Aiger ...", false);
         Logger.getInstance().addMessage(Arrays.toString(aiger_command), true);
         ExternalProcessHandler procAiger = new ExternalProcessHandler(aiger_command);
+        ProcessPool.getInstance().putProcess(procFamilyID + "#aiger", procAiger);
         PrintStream out = Logger.getInstance().getMessageStream(LOGGER_AIGER_OUT);
         PrintStream err = Logger.getInstance().getMessageStream(LOGGER_AIGER_ERR);
         PrintWriter outStream = null;

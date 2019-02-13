@@ -8,7 +8,8 @@ import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.tools.ProcessNotStartedException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -20,12 +21,13 @@ public class McHyper {
     public static final String LOGGER_MCHYPER_OUT = "mcHyperOut";
     public static final String LOGGER_MCHYPER_ERR = "mcHyperErr";
 
-    public static void call(String inputFile, String formula, String output, boolean verbose) throws IOException, InterruptedException, ProcessNotStartedException, ExternalToolException {
+    public static void call(String inputFile, String formula, String output, boolean verbose, String procFamilyID) throws IOException, InterruptedException, ProcessNotStartedException, ExternalToolException {
         String[] command = {AdamProperties.getInstance().getProperty(AdamProperties.MC_HYPER), inputFile, formula, output};
         Logger.getInstance().addMessage("", false);
         Logger.getInstance().addMessage("Calling MCHyper ...", false);
         Logger.getInstance().addMessage(Arrays.toString(command), true);
         ExternalProcessHandler procMCHyper = new ExternalProcessHandler(true, command);
+        ProcessPool.getInstance().putProcess(procFamilyID + "#mchyper", procMCHyper);
         PrintStream out = Logger.getInstance().getMessageStream(LOGGER_MCHYPER_OUT);
         PrintStream err = Logger.getInstance().getMessageStream(LOGGER_MCHYPER_ERR);
         PrintWriter outStream = null;
@@ -47,7 +49,7 @@ public class McHyper {
                 error = " Error parsing formula: " + formula;
             } else if (procMCHyper.getErrors().contains("mchyper: " + inputFile + ": openFile: does not exist (No such file or directory)")) {
                 error = " File '" + inputFile + "' does not exist (No such file or directory).";
-            } else if(procMCHyper.getErrors().contains("mchyper: Map.!: given key is not an element in the map")) {
+            } else if (procMCHyper.getErrors().contains("mchyper: Map.!: given key is not an element in the map")) {
                 error = " A used atom in the formula does not exists in the system.";
             }
             throw new ExternalToolException("MCHyper didn't finshed correctly." + error);

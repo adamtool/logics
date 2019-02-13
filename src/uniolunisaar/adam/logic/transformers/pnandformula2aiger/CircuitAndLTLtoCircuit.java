@@ -10,7 +10,7 @@ import uniolunisaar.adam.logic.externaltools.logics.AigToAig;
 import uniolunisaar.adam.logic.externaltools.logics.McHyper;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.tools.ProcessNotStartedException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
@@ -31,7 +31,7 @@ public class CircuitAndLTLtoCircuit {
      * @param verbose
      * @throws InterruptedException
      * @throws IOException
-     * @throws uniolunisaar.adam.tools.ProcessNotStartedException
+     * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public static void createCircuit(PetriNet net, AigerRenderer circ, String formula, String output, PnAndLTLtoCircuitStatistics stats, boolean verbose) throws InterruptedException, IOException, ProcessNotStartedException, ExternalToolException {
@@ -73,7 +73,7 @@ public class CircuitAndLTLtoCircuit {
         //%%%%%%%%%%%%%%%%%% MCHyper
         String inputFile = input;
         String outputPath = output;
-        McHyper.call(inputFile, formula, outputPath, verbose);
+        McHyper.call(inputFile, formula, outputPath, verbose, net.getName());
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COLLECT STATISTICS
         if (stats != null) {
@@ -81,7 +81,7 @@ public class CircuitAndLTLtoCircuit {
             stats.setSys_nb_latches(circuit.getNbOfLatches());
             stats.setSys_nb_gates(circuit.getNbOfGates());
             // total size 
-            try (BufferedReader mcHyperAag = new BufferedReader(new FileReader(outputPath + ".aag"))) {
+            try ( BufferedReader mcHyperAag = new BufferedReader(new FileReader(outputPath + ".aag"))) {
                 String header = mcHyperAag.readLine();
                 String[] vals = header.split(" ");
                 stats.setTotal_nb_latches(Integer.parseInt(vals[3]));
@@ -96,7 +96,7 @@ public class CircuitAndLTLtoCircuit {
         // %%%%%%%%%%%%%%%% Aiger
         inputFile = outputPath + ".aag";
         outputPath = output + ".aig";
-        AigToAig.call(inputFile, outputPath, verbose);
+        AigToAig.call(inputFile, outputPath, verbose, net.getName());
     }
 
     /**
@@ -107,7 +107,7 @@ public class CircuitAndLTLtoCircuit {
      * @param formula - in MCHyper format
      * @throws InterruptedException
      * @throws IOException
-     * @throws uniolunisaar.adam.tools.ProcessNotStartedException
+     * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public static void createCircuit(PetriNet net, AigerRenderer circ, String formula, String output) throws InterruptedException, IOException, ProcessNotStartedException, ExternalToolException {

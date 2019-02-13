@@ -19,7 +19,7 @@ import uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPNSequential
 import uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPNSequentialInhibitor;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.tools.ProcessNotStartedException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
 /**
@@ -57,7 +57,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
      * @throws IOException
      * @throws uniol.apt.io.parser.ParseException
      * @throws uniolunisaar.adam.exception.logics.NotConvertableException
-     * @throws uniolunisaar.adam.tools.ProcessNotStartedException
+     * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public AigerRenderer createCircuit(PetriNetWithTransits net, RunFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, NotConvertableException, ProcessNotStartedException, ExternalToolException {
@@ -76,7 +76,7 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
      * @throws IOException
      * @throws uniol.apt.io.parser.ParseException
      * @throws uniolunisaar.adam.exception.logics.NotConvertableException
-     * @throws uniolunisaar.adam.tools.ProcessNotStartedException
+     * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public AigerRenderer createCircuit(PetriNetWithTransits net, RunFormula formula, String output, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, NotConvertableException, ProcessNotStartedException, ExternalToolException {

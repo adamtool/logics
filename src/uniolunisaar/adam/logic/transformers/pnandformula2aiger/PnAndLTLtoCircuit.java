@@ -13,7 +13,7 @@ import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformer;
 import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformerHyperLTL;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.tools.ProcessNotStartedException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
 /**
@@ -65,7 +65,7 @@ public class PnAndLTLtoCircuit {
      * @throws InterruptedException
      * @throws IOException
      * @throws uniol.apt.io.parser.ParseException
-     * @throws uniolunisaar.adam.tools.ProcessNotStartedException
+     * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
@@ -83,7 +83,7 @@ public class PnAndLTLtoCircuit {
      * @throws InterruptedException
      * @throws IOException
      * @throws uniol.apt.io.parser.ParseException
-     * @throws uniolunisaar.adam.tools.ProcessNotStartedException
+     * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
     public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
