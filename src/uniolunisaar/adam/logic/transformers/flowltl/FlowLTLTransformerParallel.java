@@ -6,7 +6,7 @@ import java.util.List;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.exception.logics.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
@@ -23,7 +23,7 @@ import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.util.logics.FormulaCreator;
-import uniolunisaar.adam.exception.logics.NotConvertableException;
+import uniolunisaar.adam.exceptions.logics.NotConvertableException;
 import uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPN;
 import static uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPN.INIT_TOKENFLOW_ID;
 import static uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPN.TOKENFLOW_SUFFIX_ID;
@@ -150,7 +150,7 @@ public class FlowLTLTransformerParallel extends FlowLTLTransformer {
      * @param net
      * @param formula
      * @return
-     * @throws uniolunisaar.adam.exception.logics.NotConvertableException
+     * @throws uniolunisaar.adam.exceptions.logics.NotConvertableException
      */
     public static ILTLFormula createFormula4ModelChecking4CircuitParallel(PetriNetWithTransits orig, PetriNet net, IRunFormula formula) throws NotConvertableException {
         // replace the next operator in the run-part

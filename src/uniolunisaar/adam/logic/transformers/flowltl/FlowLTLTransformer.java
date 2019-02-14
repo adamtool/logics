@@ -28,7 +28,7 @@ import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLto
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Stuttering.PREFIX_REGISTER;
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Stuttering.REPLACEMENT;
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Stuttering.REPLACEMENT_REGISTER;
-import uniolunisaar.adam.exception.logics.NotConvertableException;
+import uniolunisaar.adam.exceptions.logics.NotConvertableException;
 
 /**
  *

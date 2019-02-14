@@ -1,6 +1,6 @@
 package uniolunisaar.adam.logic.parser.logics;
 
-import uniolunisaar.adam.exception.logics.FlowLogicsParseException;
+import uniolunisaar.adam.exceptions.logics.FlowLogicsParseException;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;

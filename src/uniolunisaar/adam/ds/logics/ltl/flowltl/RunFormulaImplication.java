@@ -4,7 +4,7 @@ import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import java.util.ArrayList;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.exception.logics.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *

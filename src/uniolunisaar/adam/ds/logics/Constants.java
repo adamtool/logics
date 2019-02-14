@@ -2,7 +2,7 @@ package uniolunisaar.adam.ds.logics;
 
 import java.util.ArrayList;
 import java.util.List;
-import uniolunisaar.adam.exception.logics.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *

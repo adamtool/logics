@@ -1,4 +1,4 @@
-package uniolunisaar.adam.exception.logics;
+package uniolunisaar.adam.exceptions.logics;
 
 /**
  *
