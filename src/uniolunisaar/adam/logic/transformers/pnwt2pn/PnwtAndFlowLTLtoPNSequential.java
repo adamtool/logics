@@ -264,10 +264,13 @@ public class PnwtAndFlowLTLtoPNSequential extends PnwtAndFlowLTLtoPN {
             // move the active token through the subnets
             for (int i = 1; i < flowFormulas.size(); i++) {
                 for (Transition t : orig.getTransitions()) {
-                    Place acti = out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + (i - 1));
-                    Place actii = out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + i);
-                    for (Transition tr : acti.getPostset()) {
-                        out.createFlow(tr, actii);
+                    String id = ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + (i - 1);
+                    if (out.containsPlace(id)) {
+                        Place acti = out.getPlace(id);
+                        Place actii = out.getPlace(ACTIVATION_PREFIX_ID + t.getId() + TOKENFLOW_SUFFIX_ID + "-" + i);
+                        for (Transition tr : acti.getPostset()) {
+                            out.createFlow(tr, actii);
+                        }
                     }
                 }
             }
