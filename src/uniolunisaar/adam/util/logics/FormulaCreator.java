@@ -22,6 +22,7 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
  */
 public class FormulaCreator {
 
+    @Deprecated
     public static String bigWedgeOrVee(Collection<String> elements, boolean wedge) {
         if (elements.isEmpty()) {
 //            throw new RuntimeException("Iteration over an empty set."); 
@@ -72,6 +73,7 @@ public class FormulaCreator {
         }
     }
 
+    @Deprecated
     public static String enabled(Transition t) {
         Collection<String> elements = new ArrayList<>();
         for (Place p : t.getPreset()) {

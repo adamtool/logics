@@ -55,28 +55,29 @@ public class FormulaCreatorIngoingSemantics {
         }
     }
 
+    @Deprecated
     public static String getMaximalityInterleaving(PetriNet net) {
-        StringBuilder sb = new StringBuilder("G ((X(");
+        StringBuilder sb = new StringBuilder("G (X ");
 
         // big wedge no transition fires
         Collection<String> elements = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            elements.add("!(" + t.getId() + ")");
+            elements.add("! " + t.getId() + "");
         }
         sb.append(FormulaCreator.bigWedgeOrVee(elements, true));
 
         // implies
-        sb.append(") -> ");
+        sb.append(" -> ");
 
         // big wedge no transition is enabled
         elements = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            elements.add("!(" + FormulaCreator.enabled(t) + ")");
+            elements.add("! " + FormulaCreator.enabled(t) + " ");
         }
         sb.append(FormulaCreator.bigWedgeOrVee(elements, true));
 
         // closing implies and globally
-        sb.append("))");
+        sb.append(")");
 
         return sb.toString();
     }
@@ -94,12 +95,13 @@ public class FormulaCreatorIngoingSemantics {
         }
     }
 
+    @Deprecated
     public static String getMaximalityConcurrent(PetriNet net) {
         // all transitions have to globally be eventually not enabled or another transition with a place in the transitions preset fires
         Collection<String> elements = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            StringBuilder sb = new StringBuilder("G(F(");
-            sb.append("(!(").append(FormulaCreator.enabled(t)).append(") OR X(");
+            StringBuilder sb = new StringBuilder("G F ");
+            sb.append("(! ").append(FormulaCreator.enabled(t)).append(" OR X ");
             Collection<String> elems = new ArrayList<>();
             for (Place p : t.getPreset()) {
                 for (Transition t2 : p.getPostset()) {
@@ -107,7 +109,7 @@ public class FormulaCreatorIngoingSemantics {
                 }
             }
             sb.append(FormulaCreator.bigWedgeOrVee(elems, false));
-            sb.append("))))");
+            sb.append(")");
             elements.add(sb.toString());
         }
         return FormulaCreator.bigWedgeOrVee(elements, true);
