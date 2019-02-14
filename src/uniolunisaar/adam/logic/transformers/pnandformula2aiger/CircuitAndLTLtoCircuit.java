@@ -44,7 +44,7 @@ public class CircuitAndLTLtoCircuit {
         Tools.saveFile(input, circuit.toString());
 
         if (data.isOutputCircuit()) { // save as circuit
-            TransformerTools.saveAiger2DotAndPDF(input, output, net.getName());
+            TransformerTools.saveAiger2DotAndPDF(input, output + "_circ_system", net.getName());
         }
 
         final String timeCommand = "/usr/bin/time";
@@ -96,7 +96,7 @@ public class CircuitAndLTLtoCircuit {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END COLLECT STATISTICS
 
         if (data.isOutputCircuit()) { // save as circuit
-            TransformerTools.saveAiger2DotAndPDF(outputPath + ".aag", output + "_all", net.getName());
+            TransformerTools.saveAiger2DotAndPDF(outputPath + ".aag", output + "_circ_all", net.getName());
         }
 
         // %%%%%%%%%%%%%%%% Aiger
