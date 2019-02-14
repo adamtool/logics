@@ -7,6 +7,7 @@ import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
+import uniolunisaar.adam.util.logics.transformers.logics.ModelCheckingOutputData;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformer;
@@ -59,8 +60,7 @@ public class PnAndLTLtoCircuit {
      *
      * @param net
      * @param formula
-     * @param path
-     * @param verbose
+     * @param data
      * @return
      * @throws InterruptedException
      * @throws IOException
@@ -68,16 +68,15 @@ public class PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
-    public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
-        return createCircuit(net, formula, path, verbose, null);
+    public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, ModelCheckingOutputData data) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+        return createCircuit(net, formula, data, null);
     }
 
     /**
      *
      * @param net
      * @param formula
-     * @param path
-     * @param verbose
+     * @param data
      * @param stats
      * @return
      * @throws InterruptedException
@@ -86,26 +85,25 @@ public class PnAndLTLtoCircuit {
      * @throws uniolunisaar.adam.exceptions.ProcessNotStartedException
      * @throws uniolunisaar.adam.exceptions.ExternalToolException
      */
-    public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
-        return createCircuit(net, formula, path, verbose, stats, false);
+    public AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, ModelCheckingOutputData data, PnAndLTLtoCircuitStatistics stats) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+        return createCircuit(net, formula, data, stats, false);
     }
 
     /**
-     * 
+     *
      * @param net
      * @param formula
-     * @param path
-     * @param verbose
      * @param stats
-     * @param skipMax - used if this method is called from the FlowLTL-Part and the maximality is already handled there.
+     * @param skipMax - used if this method is called from the FlowLTL-Part and
+     * the maximality is already handled there.
      * @return
      * @throws InterruptedException
      * @throws IOException
      * @throws ParseException
      * @throws ProcessNotStartedException
-     * @throws ExternalToolException 
+     * @throws ExternalToolException
      */
-    AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, String path, boolean verbose, PnAndLTLtoCircuitStatistics stats, boolean skipMax) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
+    AigerRenderer createCircuit(PetriNetWithTransits net, ILTLFormula formula, ModelCheckingOutputData data, PnAndLTLtoCircuitStatistics stats, boolean skipMax) throws InterruptedException, IOException, ParseException, ProcessNotStartedException, ExternalToolException {
         Logger.getInstance().addMessage("Creating the net '" + net.getName() + "' for the formula '" + formula.toSymbolString() + "'.\n"
                 + " With maximality term: " + maximality
                 + " semantics: " + semantics
@@ -137,7 +135,7 @@ public class PnAndLTLtoCircuit {
         }
 
         Logger.getInstance().addMessage("This means we create the product for F='" + formula.toSymbolString() + "'.");
-        CircuitAndLTLtoCircuit.createCircuit(net, renderer, FlowLTLTransformerHyperLTL.toMCHyperFormat(formula), path, stats, verbose);
+        CircuitAndLTLtoCircuit.createCircuit(net, renderer, FlowLTLTransformerHyperLTL.toMCHyperFormat(formula), data, stats);
         return renderer;
     }
 

@@ -14,6 +14,9 @@ import uniolunisaar.adam.ds.logics.FormulaBinary;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
+import uniolunisaar.adam.exceptions.ExternalToolException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.logic.externaltools.logics.AigToDot;
 import uniolunisaar.adam.util.logics.FormulaCreatorIngoingSemantics;
 import uniolunisaar.adam.util.logics.FormulaCreatorOutgoingSemantics;
 import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
@@ -23,6 +26,9 @@ import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLto
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Maximality.MAX_INTERLEAVING_IN_CIRCUIT;
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Maximality.MAX_NONE;
 import uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.TransitionSemantics;
+import uniolunisaar.adam.tools.ExternalProcessHandler;
+import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.tools.ProcessPool;
 
 /**
  *
@@ -84,43 +90,54 @@ public class TransformerTools {
         }
     }
 
-    public static void save2AigerAndDot(PetriNet net, AigerRenderer renderer, String path) throws FileNotFoundException, IOException, InterruptedException {
-        save2Aiger(net, renderer, path);
-//        String command = AdamProperties.getInstance().getLibFolder() + "/aigtodot";
-//        Logger.getInstance().addMessage(command, true);
-//        ProcessBuilder procBuilder = new ProcessBuilder(command, path + ".aiger", path + "_circuit.dot");
-//        Process proc = procBuilder.start();
-//        proc.waitFor();
-//        String error = IOUtils.toString(proc.getErrorStream());
-//        Logger.getInstance().addMessage(error, true);
-//        String output = IOUtils.toString(proc.getInputStream());
-//        Logger.getInstance().addMessage(output, true);
+    public static void saveAiger2Dot(String input, String output, String procFamilyID) throws ExternalToolException, IOException, InterruptedException {
+        AigToDot.call(input, output, procFamilyID);
     }
 
-    public static void save2AigerAndDotAndPdf(PetriNet net, AigerRenderer renderer, String path) throws FileNotFoundException, IOException, InterruptedException {
-        save2AigerAndDot(net, renderer, path);
-        // show circuit
-//        String dotCommand = "dot -Tpdf " + path + "_circuit.dot -o " + path + "_circuit.pdf";
-//        Logger.getInstance().addMessage(dotCommand, true);
-//        ProcessBuilder procBuilder = new ProcessBuilder("dot", "-Tpdf", path + "_circuit.dot", "-o", path + "_circuit.pdf");
-//        Process proc = procBuilder.start();
-//        proc.waitFor();
-//        String error = IOUtils.toString(proc.getErrorStream());
-//        Logger.getInstance().addMessage(error, true);
-//        String output = IOUtils.toString(proc.getInputStream());
-//        Logger.getInstance().addMessage(output, true);
+    public static Thread saveAiger2DotAndPDF(String input, String output, String procFamilyID) throws IOException, InterruptedException, ExternalToolException {
+        saveAiger2Dot(input, output, procFamilyID);
+        String[] command = {"dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
+        ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
+        ProcessPool.getInstance().putProcess(procFamilyID + "#dot2pdf", procH);
+        // start it in an extra thread
+        Thread thread = new Thread(() -> {
+            try {
+                procH.startAndWaitFor();
+//                    if (deleteDot) {
+//                        // Delete dot file
+//                        new File(path + ".dot").delete();
+//                        Logger.getInstance().addMessage("Deleted: " + path + ".dot", true);
+//                    }
+            } catch (IOException | InterruptedException ex) {
+                String errors = "";
+                try {
+                    errors = procH.getErrors();
+                } catch (ProcessNotStartedException e) {
+                }
+                Logger.getInstance().addError("Saving pdf from dot failed.\n" + errors, ex);
+            }
+        });
+        thread.start();
+        return thread;
     }
 
-    public static void save2AigerAndPdf(PetriNet net, AigerRenderer renderer, String path) throws FileNotFoundException, IOException, InterruptedException {
-        String bufferpath = path + "_" + System.currentTimeMillis();
-        save2AigerAndDotAndPdf(net, renderer, bufferpath);
-//        // Delete dot file
-//        new File(bufferpath + "_circuit.dot").delete();
-//        Logger.getInstance().addMessage("Deleted: " + bufferpath + "_circuit.dot", true);
-//        // move to original name
-//        Files.move(new File(bufferpath + "_circuit.pdf").toPath(), new File(path + "_circuit.pdf").toPath(), REPLACE_EXISTING);
-//        Logger.getInstance().addMessage("Moved: " + bufferpath + "_circuit.pdf --> " + path + "_circuit.pdf", true);
-        Files.move(new File(bufferpath + ".aag").toPath(), new File(path + ".aag").toPath(), REPLACE_EXISTING);
-//        Logger.getInstance().addMessage("Moved: " + bufferpath + ".aiger --> " + path + ".aag", true);
+    public static Thread saveAiger2PDF(String input, String output, String procFamiliyID) throws IOException, InterruptedException, ExternalToolException {
+        String bufferpath = output + "_" + System.currentTimeMillis();
+        Thread dot = saveAiger2DotAndPDF(input, bufferpath, procFamiliyID);
+        Thread mvPdf = new Thread(() -> {
+            try {
+                dot.join();
+                // Delete dot file
+                new File(bufferpath + ".dot").delete();
+                Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
+                // move to original name 
+                Files.move(new File(bufferpath + ".pdf").toPath(), new File(output + ".pdf").toPath(), REPLACE_EXISTING);
+                Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + output + ".pdf", true);
+            } catch (IOException | InterruptedException ex) {
+                Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
+            }
+        });
+        mvPdf.start();
+        return mvPdf;
     }
 }
