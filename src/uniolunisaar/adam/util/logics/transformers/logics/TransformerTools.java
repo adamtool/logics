@@ -96,7 +96,7 @@ public class TransformerTools {
 
     public static Thread saveAiger2DotAndPDF(String input, String output, String procFamilyID) throws IOException, InterruptedException, ExternalToolException {
         saveAiger2Dot(input, output, procFamilyID);
-        String[] command = {"dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
+        String[] command = {"/usr/local/bin/dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
         ProcessPool.getInstance().putProcess(procFamilyID + "#dot2pdf", procH);
         // start it in an extra thread
