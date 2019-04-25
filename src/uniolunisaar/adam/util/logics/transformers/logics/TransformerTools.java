@@ -97,6 +97,8 @@ public class TransformerTools {
     public static Thread saveAiger2DotAndPDF(String input, String output, String procFamilyID) throws IOException, InterruptedException, ExternalToolException {
         saveAiger2Dot(input, output, procFamilyID);
         String[] command = {"dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
+        // Mac:
+        // String[] command = {"/usr/local/bin/dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
         ProcessPool.getInstance().putProcess(procFamilyID + "#dot2pdf", procH);
         // start it in an extra thread
@@ -130,7 +132,7 @@ public class TransformerTools {
                 // Delete dot file
                 new File(bufferpath + ".dot").delete();
                 Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
-                // move to original name 
+                // move to original name
                 Files.move(new File(bufferpath + ".pdf").toPath(), new File(output + ".pdf").toPath(), REPLACE_EXISTING);
                 Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + output + ".pdf", true);
             } catch (IOException | InterruptedException ex) {
