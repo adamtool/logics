@@ -12,6 +12,7 @@ import uniolunisaar.adam.logic.externaltools.logics.McHyper;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.util.logics.benchmarks.mc.BenchmarksMC;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
@@ -44,7 +45,7 @@ public class CircuitAndLTLtoCircuit {
         Tools.saveFile(input, circuit.toString());
 
         if (data.isOutputCircuit()) { // save as circuit
-            TransformerTools.saveAiger2DotAndPDF(input, output + "_circ_system", net.getName());
+            TransformerTools.saveAiger2DotAndPDF(input, output + "_circ_system", PetriNetExtensionHandler.getProcessFamilyID(net));
         }
 
         final String timeCommand = "/usr/bin/time";
@@ -56,7 +57,7 @@ public class CircuitAndLTLtoCircuit {
         //%%%%%%%%%%%%%%%%%% MCHyper
         String inputFile = input;
         String outputPath = output;
-        McHyper.call(inputFile, formula, outputPath, data.isVerbose(), net.getName());
+        McHyper.call(inputFile, formula, outputPath, data.isVerbose(), PetriNetExtensionHandler.getProcessFamilyID(net));
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COLLECT STATISTICS
         if (stats != null) {
@@ -96,13 +97,13 @@ public class CircuitAndLTLtoCircuit {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END COLLECT STATISTICS
 
         if (data.isOutputCircuit()) { // save as circuit
-            TransformerTools.saveAiger2DotAndPDF(outputPath + ".aag", output + "_circ_all", net.getName());
+            TransformerTools.saveAiger2DotAndPDF(outputPath + ".aag", output + "_circ_all", PetriNetExtensionHandler.getProcessFamilyID(net));
         }
 
         // %%%%%%%%%%%%%%%% Aiger
         inputFile = outputPath + ".aag";
         outputPath = output + ".aig";
-        AigToAig.call(inputFile, outputPath, data.isVerbose(), net.getName());
+        AigToAig.call(inputFile, outputPath, data.isVerbose(), PetriNetExtensionHandler.getProcessFamilyID(net));
     }
 
     /**

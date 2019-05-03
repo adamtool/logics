@@ -37,9 +37,9 @@ import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
  */
 public class FlowLTLTransformerSequential extends FlowLTLTransformer {
 
-    public static final boolean newChainsBySkippingTransitions = false;
-    public static final boolean notStuckingInSubnetByActOPlace = false;
-    public static final boolean notStuckingByActSubPlaceSeveralGFs = false;
+    private static final boolean newChainsBySkippingTransitions = false;
+    private static final boolean notStuckingInSubnetByActOPlace = false;
+    private static final boolean notStuckingByActSubPlaceSeveralGFs = false;
 
     private static FlowFormula replaceNextInFlowFormulaSequential(PetriNet orig, PetriNet net, FlowFormula flowFormula, int nb_ff) {
         ILTLFormula phi = flowFormula.getPhi();
