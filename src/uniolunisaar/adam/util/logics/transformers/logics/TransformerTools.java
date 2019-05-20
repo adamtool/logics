@@ -26,6 +26,7 @@ import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLto
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Maximality.MAX_INTERLEAVING_IN_CIRCUIT;
 import static uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.Maximality.MAX_NONE;
 import uniolunisaar.adam.logic.transformers.pnandformula2aiger.PnAndLTLtoCircuit.TransitionSemantics;
+import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.ProcessPool;
@@ -95,8 +96,9 @@ public class TransformerTools {
     }
 
     public static Thread saveAiger2DotAndPDF(String input, String output, String procFamilyID) throws IOException, InterruptedException, ExternalToolException {
-        saveAiger2Dot(input, output, procFamilyID);
-        String[] command = {"dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
+        saveAiger2Dot(input, output, procFamilyID);        
+        String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
+        String[] command = {dot, "-Tpdf", output + ".dot", "-o", output + ".pdf"};
         // Mac:
         // String[] command = {"/usr/local/bin/dot", "-Tpdf", output + ".dot", "-o", output + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
