@@ -36,6 +36,10 @@ public class PnAndLTLtoCircuitStatistics {
     // for time outs
     private String path = null;
 
+    // flag to indicate whether the circuit sizes of the system should 
+    // separately be printed
+    private boolean printSysCircuitSizes = true;
+
     public PnAndLTLtoCircuitStatistics() {
 
     }
@@ -169,6 +173,14 @@ public class PnAndLTLtoCircuitStatistics {
         this.aiger_mem = aiger_mem;
     }
 
+    public boolean isPrintSysCircuitSizes() {
+        return printSysCircuitSizes;
+    }
+
+    public void setPrintSysCircuitSizes(boolean printSysCircuitSizes) {
+        this.printSysCircuitSizes = printSysCircuitSizes;
+    }
+
     public void writeInputSizesToFile() throws FileNotFoundException {
         if (path != null) {
             Tools.saveFile(path, getInputSizes());
@@ -188,10 +200,12 @@ public class PnAndLTLtoCircuitStatistics {
                 .append(in_size_formula).append("  &  ")
                 .append(getMc_nb_places()).append("  &  ")
                 .append(getMc_nb_transitions()).append("  &  ")
-                .append(getMc_size_formula()).append("  &  ")
-                .append(sys_nb_latches).append("  &  ")
-                .append(sys_nb_gates).append("  &  ")
-                .append(total_nb_latches).append("  &  ")
+                .append(getMc_size_formula()).append("  &  ");
+        if (printSysCircuitSizes) {
+            sb.append(sys_nb_latches).append("  &  ")
+                    .append(sys_nb_gates).append("  &  ");
+        }
+        sb.append(total_nb_latches).append("  &  ")
                 .append(total_nb_gates);
         return sb.toString();
     }
