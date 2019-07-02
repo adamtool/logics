@@ -15,6 +15,7 @@ import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformerHyperLTL;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.Optimizations;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
 /**
@@ -46,14 +47,21 @@ public class PnAndLTLtoCircuit {
 //    private Maximality maximality = Maximality.MAX_INTERLEAVING;
     private Maximality maximality = Maximality.MAX_NONE;
     private Stuttering stuttering = Stuttering.PREFIX_REGISTER;
+    private final Optimizations optimizations;
 
     public PnAndLTLtoCircuit() {
+        this.optimizations = Optimizations.NONE;
     }
 
-    public PnAndLTLtoCircuit(TransitionSemantics semantics, Maximality maximality, Stuttering stuttering) {
+    public PnAndLTLtoCircuit(Optimizations optimizations) {
+        this.optimizations = optimizations;
+    }
+
+    public PnAndLTLtoCircuit(TransitionSemantics semantics, Maximality maximality, Stuttering stuttering, Optimizations optimizations) {
         this.semantics = semantics;
         this.maximality = maximality;
         this.stuttering = stuttering;
+        this.optimizations = optimizations;
     }
 
     /**
@@ -133,6 +141,7 @@ public class PnAndLTLtoCircuit {
                 renderer = Circuit.getRenderer(Circuit.Renderer.OUTGOING_REGISTER);
             }
         }
+        renderer.setOptimizations(optimizations);
 
         Logger.getInstance().addMessage("This means we create the product for F='" + formula.toSymbolString() + "'.");
         CircuitAndLTLtoCircuit.createCircuit(net, renderer, FlowLTLTransformerHyperLTL.toMCHyperFormat(formula), data, stats);
