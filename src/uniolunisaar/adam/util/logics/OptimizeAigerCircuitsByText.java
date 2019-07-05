@@ -208,7 +208,7 @@ public class OptimizeAigerCircuitsByText {
             }
         }
         if(withIdxSqueezing) {
-            
+            // todo: finish
         }
         
         // adapt the header to the new number of gates

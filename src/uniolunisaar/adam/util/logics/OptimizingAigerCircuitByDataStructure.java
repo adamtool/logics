@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import uniolunisaar.adam.ds.circuits.AigerFile;
-import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGates;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OptimizationsSystem;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.Tools;
 
@@ -15,16 +16,14 @@ import uniolunisaar.adam.tools.Tools;
 public class OptimizingAigerCircuitByDataStructure {
 
     /**
-     * Currently the symbols and comments are rerendered or deleted,
-     * respectively.
      *
      * @param output
-     * @param withIdxSqueezing
+     * @param opt
      * @throws IOException
      */
-    public static void optimizeByCreatingAigerfileAndRendering(String output, boolean withIdxSqueezing) throws IOException {
+    public static void optimizeByCreatingAigerfileAndRendering(String output, OptimizationsSystem opt) throws IOException {
         Logger.getInstance().addMessage("Optimizing the aiger file ...", false);
-        AigerFile file = new AigerFileOptimizedGates(false);
+        AigerFile file = AigerRenderer.getFile(opt);
         // read original file and map it into the new one
         String symbols = "";
         String comments = "";

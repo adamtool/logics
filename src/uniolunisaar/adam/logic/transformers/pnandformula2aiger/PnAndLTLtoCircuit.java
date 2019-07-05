@@ -15,7 +15,8 @@ import uniolunisaar.adam.logic.transformers.flowltl.FlowLTLTransformerHyperLTL;
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
-import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.Optimizations;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OptimizationsComplete;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OptimizationsSystem;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
 /**
@@ -47,21 +48,25 @@ public class PnAndLTLtoCircuit {
 //    private Maximality maximality = Maximality.MAX_INTERLEAVING;
     private Maximality maximality = Maximality.MAX_NONE;
     private Stuttering stuttering = Stuttering.PREFIX_REGISTER;
-    private final Optimizations optimizations;
+    private final OptimizationsSystem optsSys;
+    private final OptimizationsComplete optsComp;
 
     public PnAndLTLtoCircuit() {
-        this.optimizations = Optimizations.NONE;
+        this.optsSys = OptimizationsSystem.NONE;
+        this.optsComp = OptimizationsComplete.NONE;
     }
 
-    public PnAndLTLtoCircuit(Optimizations optimizations) {
-        this.optimizations = optimizations;
+    public PnAndLTLtoCircuit(OptimizationsSystem optsSys, AigerRenderer.OptimizationsComplete optsComp) {
+        this.optsSys = optsSys;
+        this.optsComp = optsComp;
     }
 
-    public PnAndLTLtoCircuit(TransitionSemantics semantics, Maximality maximality, Stuttering stuttering, Optimizations optimizations) {
+    public PnAndLTLtoCircuit(TransitionSemantics semantics, Maximality maximality, Stuttering stuttering, OptimizationsSystem optsSys, AigerRenderer.OptimizationsComplete optsComp) {
         this.semantics = semantics;
         this.maximality = maximality;
         this.stuttering = stuttering;
-        this.optimizations = optimizations;
+        this.optsSys = optsSys;
+        this.optsComp = optsComp;
     }
 
     /**
@@ -141,7 +146,8 @@ public class PnAndLTLtoCircuit {
                 renderer = Circuit.getRenderer(Circuit.Renderer.OUTGOING_REGISTER);
             }
         }
-        renderer.setOptimizations(optimizations);
+        renderer.setSystemOptimizations(optsSys);
+        renderer.setMCHyperResultOptimizations(optsComp);
 
         Logger.getInstance().addMessage("This means we create the product for F='" + formula.toSymbolString() + "'.");
         CircuitAndLTLtoCircuit.createCircuit(net, renderer, FlowLTLTransformerHyperLTL.toMCHyperFormat(formula), data, stats);

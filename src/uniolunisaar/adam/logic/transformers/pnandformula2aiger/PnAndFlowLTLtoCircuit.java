@@ -23,7 +23,7 @@ import uniolunisaar.adam.logic.transformers.pnwt2pn.PnwtAndFlowLTLtoPNSequential
 import uniolunisaar.adam.util.logics.transformers.logics.TransformerTools;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
-import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.Optimizations;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OptimizationsSystem;
 import uniolunisaar.adam.util.logics.transformers.logics.PnAndLTLtoCircuitStatistics;
 
 /**
@@ -44,12 +44,12 @@ public class PnAndFlowLTLtoCircuit extends PnAndLTLtoCircuit {
     public PnAndFlowLTLtoCircuit() {
     }
 
-    public PnAndFlowLTLtoCircuit(Optimizations optimizations) {
-        super(optimizations);
+    public PnAndFlowLTLtoCircuit(OptimizationsSystem optsSys, AigerRenderer.OptimizationsComplete optsComp) {
+        super(optsSys, optsComp);
     }
 
-    public PnAndFlowLTLtoCircuit(TransitionSemantics semantics, Approach approach, Maximality maximality, Stuttering stuttering, Optimizations optimizations, boolean initFirst) {
-        super(semantics, maximality, stuttering, optimizations);
+    public PnAndFlowLTLtoCircuit(TransitionSemantics semantics, Approach approach, Maximality maximality, Stuttering stuttering, OptimizationsSystem optsSys, AigerRenderer.OptimizationsComplete optsComp, boolean initFirst) {
+        super(semantics, maximality, stuttering, optsSys, optsComp);
         this.approach = approach;
         this.initFirst = initFirst;
     }

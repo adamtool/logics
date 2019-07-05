@@ -57,7 +57,7 @@ public class CircuitAndLTLtoCircuit {
         //%%%%%%%%%%%%%%%%%% MCHyper
         String inputFile = input;
         String outputPath = output;
-        McHyper.call(inputFile, formula, outputPath, data.isVerbose(), PetriNetExtensionHandler.getProcessFamilyID(net), circ.getOptimizations() == AigerRenderer.Optimizations.NB_GATES_BY_FILE);
+        McHyper.call(inputFile, formula, outputPath, data.isVerbose(), PetriNetExtensionHandler.getProcessFamilyID(net), circ.getMCHyperResultOptimizations());
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COLLECT STATISTICS
         if (stats != null) {
