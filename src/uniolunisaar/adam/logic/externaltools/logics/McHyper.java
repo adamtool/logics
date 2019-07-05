@@ -1,13 +1,9 @@
 package uniolunisaar.adam.logic.externaltools.logics;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
@@ -15,7 +11,7 @@ import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
-import uniolunisaar.adam.util.logics.OptimizeAigerCircuits;
+import uniolunisaar.adam.util.logics.OptimizingAigerCircuitByDataStructure;
 
 /**
  *
@@ -62,10 +58,10 @@ public class McHyper {
         Logger.getInstance().addMessage("... finished calling MCHyper", false);
 //        if (optimizeOutput) {
         if (true) {
-            OptimizeAigerCircuits.optimizeByTextReplacement(output, true);
+//            OptimizeAigerCircuitsByText.optimizeByTextReplacement(output, true);
+            OptimizingAigerCircuitByDataStructure.optimizeByCreatingAigerfileAndRendering(output, true);
         }
         Logger.getInstance().addMessage("", false);
     }
 
-  
 }

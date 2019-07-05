@@ -12,7 +12,7 @@ import uniolunisaar.adam.tools.Tools;
  *
  * @author Manuel Gieseking
  */
-public class OptimizeAigerCircuits {
+public class OptimizeAigerCircuitsByText {
 
     public static boolean withEqualInputs = false;
     public static boolean withEqualOrCommGates = false;
