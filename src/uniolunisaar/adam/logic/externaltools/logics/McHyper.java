@@ -1,9 +1,13 @@
 package uniolunisaar.adam.logic.externaltools.logics;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
@@ -11,6 +15,7 @@ import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
+import uniolunisaar.adam.util.logics.OptimizeAigerCircuits;
 
 /**
  *
@@ -21,7 +26,7 @@ public class McHyper {
     public static final String LOGGER_MCHYPER_OUT = "mcHyperOut";
     public static final String LOGGER_MCHYPER_ERR = "mcHyperErr";
 
-    public static void call(String inputFile, String formula, String output, boolean verbose, String procFamilyID) throws IOException, InterruptedException, ProcessNotStartedException, ExternalToolException {
+    public static void call(String inputFile, String formula, String output, boolean verbose, String procFamilyID, boolean optimizeOutput) throws IOException, InterruptedException, ProcessNotStartedException, ExternalToolException {
         String[] command = {AdamProperties.getInstance().getProperty(AdamProperties.MC_HYPER), inputFile, formula, output};
         Logger.getInstance().addMessage("", false);
         Logger.getInstance().addMessage("Calling MCHyper ...", false);
@@ -55,7 +60,12 @@ public class McHyper {
             throw new ExternalToolException("MCHyper didn't finshed correctly." + error);
         }
         Logger.getInstance().addMessage("... finished calling MCHyper", false);
+//        if (optimizeOutput) {
+        if (true) {
+            OptimizeAigerCircuits.optimizeByTextReplacement(output, true);
+        }
         Logger.getInstance().addMessage("", false);
     }
 
+  
 }
