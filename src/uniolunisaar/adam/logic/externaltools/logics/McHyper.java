@@ -68,7 +68,7 @@ public class McHyper {
                 OptimizeAigerCircuitsByText.optimizeByTextReplacement(output, false);
                 break;
             case NB_GATES_BY_REGEX_WITH_IDX_SQUEEZING:
-                OptimizeAigerCircuitsByText.optimizeByTextReplacement(output, false);
+                OptimizeAigerCircuitsByText.optimizeByTextReplacement(output, true);
                 break;
             case NB_GATES_BY_DS:
                 OptimizingAigerCircuitByDataStructure.optimizeByCreatingAigerfileAndRendering(output, AigerRenderer.OptimizationsSystem.NB_GATES);
