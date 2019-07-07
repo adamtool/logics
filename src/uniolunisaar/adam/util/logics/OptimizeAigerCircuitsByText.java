@@ -1,6 +1,5 @@
 package uniolunisaar.adam.util.logics;
 
-import static java.awt.SystemColor.text;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static java.util.stream.Collectors.joining;
-import java.util.stream.Stream;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.Tools;
 
@@ -216,75 +213,85 @@ public class OptimizeAigerCircuitsByText {
         String[] idxs = header.split(" ");
         // 0 - aag; 1 - max idx; 2 - nb in; 3 - nb latches; 4 - nb out; 5 - nb ands        
         if (withIdxSqueezing) {// todo: finish
+            // Choose the replacements
+            Map<String, String> replacement = new HashMap<>();
+            int idx = 2;
+            // inputs
+            String[] ins = inputs.split(linSep);
+            inputs = "";
+            for (int i = 0; i < ins.length; i++) {
+                replacement.put(ins[i], String.valueOf(idx));
+                replacement.put(String.valueOf(Integer.parseInt(ins[i]) + 1), String.valueOf(idx + 1));
+                inputs += idx + linSep; // already update the inputs
+                idx += 2;
+            }
+            // latches
+            String[] ls = latches.split(linSep);
+            for (int i = 0; i < ls.length; i++) {
+                int val = Integer.parseInt(ls[i].substring(0, ls[i].indexOf(" ")));
+                replacement.put(String.valueOf(val), String.valueOf(idx));
+                replacement.put(String.valueOf(val + 1), String.valueOf(idx + 1));
+                idx += 2;
+            }
+            // gates
+            String[] gs = gates.split(linSep);
+            for (int i = 0; i < gs.length; i++) {
+                int val = Integer.parseInt(gs[i].substring(0, gs[i].indexOf(" ")));
+                replacement.put(String.valueOf(val), String.valueOf(idx));
+                replacement.put(String.valueOf(val + 1), String.valueOf(idx + 1));
+                idx += 2;
+            }
 
-//            // Choose the replacements
-//            Map<String, String> replacement = new HashMap<>();
-//            int idx = 2;
-//            // inputs
-//            String[] ins = inputs.split(linSep);
-//            inputs = "";
-//            for (int i = 0; i < ins.length; i++) {
-//                replacement.put(ins[i], String.valueOf(idx));
-//                inputs += idx + linSep; // already update the inputs
-//                idx += 2;
-//            }
-//            // latches
-//            String[] ls = latches.split(linSep);
-//            for (int i = 0; i < ls.length; i++) {
-//                replacement.put(ls[i].substring(0, ls[i].indexOf(" ")), String.valueOf(idx));
-//                idx += 2;
-//            }
-//            // gates
-//            String[] gs = gates.split(linSep);
-//            for (int i = 0; i < gs.length; i++) {
-//                replacement.put(gs[i].substring(0, gs[i].indexOf(" ")), String.valueOf(idx));
-//                idx += 2;
-//            }
-//
-//            System.out.println(replacement);
-//            // Do the replacement simultanouesly
-//            String[] pat = new String[replacement.size()];
-//            int i = 0;
-//            for (String search : replacement.keySet()) {
-//                pat[i++] = "(?<A" + search + "Start>^|\\s)" + search + "(?<A" + search + "End>\\s)";
-//            }
-//            Pattern pattern = Pattern.compile(Stream.of(pat).collect(joining("|")));
-//            // latches
-//            StringBuffer newLatches = new StringBuffer();
-//            Matcher matcher = pattern.matcher(latches);
-//            while (matcher.find()) {
-////                System.out.print("before");
-////                System.out.print(matcher.group());
-////                System.out.print("after");
-//                String match = matcher.group().trim();
-//                matcher.appendReplacement(newLatches, matcher.group("A" + match + "Start") + replacement.get(match.trim()) + matcher.group("A" + match + "End"));
-//            }
-//            matcher.appendTail(newLatches);
-//            latches = newLatches.toString();
-//
-//            // outputs
-//            StringBuffer newOutputs = new StringBuffer();
-//            matcher = pattern.matcher(outputs);
-//            while (matcher.find()) {
-//                String match = matcher.group().trim();
-//                matcher.appendReplacement(newOutputs, matcher.group("A" + match + "Start") + replacement.get(match.trim()) + matcher.group("A" + match + "End"));
-////                matcher.appendReplacement(newOutputs, replacement.get(matcher.group().trim()));
-//            }
-//            matcher.appendTail(newOutputs);
-//            outputs = newOutputs.toString();
-//
-//            //gates            
-//            StringBuffer newGates = new StringBuffer();
-//            matcher = pattern.matcher(gates);
-//            while (matcher.find()) {
-//                String match = matcher.group().trim();
-//                matcher.appendReplacement(newGates, matcher.group("A" + match + "Start") + replacement.get(match.trim()) + matcher.group("A" + match + "End"));
-////                matcher.appendReplacement(newGates, replacement.get(matcher.group().trim()));
-//            }
-//            matcher.appendTail(newGates);
-//            gates = newGates.toString();
-//            // adapt the header to the new number of gates and the new number of max indices
-//            header = idxs[0] + " " + (idx / 2 - 1) + " " + idxs[2] + " " + idxs[3] + " " + idxs[4] + " " + (Integer.parseInt(idxs[5]) - count);
+            // Do the replacement simultanouesly
+//            StringBuilder pat = new StringBuilder("(?:^|" + linSep + "| |\\G)(?:");
+            StringBuilder pat = new StringBuilder("(?:^|\\s|\\G)(?:");
+            for (String search : replacement.keySet()) {
+                pat.append(search).append("|");
+            }
+            pat.replace(pat.length() - 1, pat.length(), ")");
+//            pat.append("(?:$|").append(linSep).append(")");
+            pat.append("(?:$|\\s").append(")");
+            Pattern pattern = Pattern.compile(pat.toString());
+            // latches
+            StringBuffer newLatches = new StringBuffer();
+            Matcher matcher = pattern.matcher(latches);
+            while (matcher.find()) {
+                String match = matcher.group();
+                String matchTrimmed = match.trim();
+                String pre = match.substring(0, match.indexOf(matchTrimmed));
+                String post = match.substring(pre.length() + matchTrimmed.length());
+                matcher.appendReplacement(newLatches, pre + replacement.get(matchTrimmed) + post);
+            }
+            matcher.appendTail(newLatches);
+            latches = newLatches.toString();
+
+            // outputs
+            StringBuffer newOutputs = new StringBuffer();
+            matcher = pattern.matcher(outputs);
+            while (matcher.find()) {
+                String match = matcher.group();
+                String matchTrimmed = match.trim();
+                String pre = match.substring(0, match.indexOf(matchTrimmed));
+                String post = match.substring(pre.length() + matchTrimmed.length());
+                matcher.appendReplacement(newOutputs, pre + replacement.get(matchTrimmed) + post);
+            }
+            matcher.appendTail(newOutputs);
+            outputs = newOutputs.toString();
+
+            //gates            
+            StringBuffer newGates = new StringBuffer();
+            matcher = pattern.matcher(gates);
+            while (matcher.find()) {
+                String match = matcher.group();
+                String matchTrimmed = match.trim();
+                String pre = match.substring(0, match.indexOf(matchTrimmed));
+                String post = match.substring(pre.length() + matchTrimmed.length());
+                matcher.appendReplacement(newGates, pre + replacement.get(matchTrimmed) + post);
+            }
+            matcher.appendTail(newGates);
+            gates = newGates.toString();
+            // adapt the header to the new number of gates and the new number of max indices
+            header = idxs[0] + " " + (idx / 2 - 1) + " " + idxs[2] + " " + idxs[3] + " " + idxs[4] + " " + (Integer.parseInt(idxs[5]) - count);
         } else {
             // adapt the header to the new number of gates
             // todo: the max number if indices could be to large, but maybe it's more expensive to search for the highes index
@@ -296,8 +303,7 @@ public class OptimizeAigerCircuitsByText {
 
         Tools.saveFile(output
                 + ".aag", optFile.trim());
-        Logger.getInstance()
-                .addMessage("... finished optimizing the aiger file.", false);
+        Logger.getInstance().addMessage("... finished optimizing the aiger file.", false);
     }
 
     private static String replaceLatches(String latches, String old, String with) {
