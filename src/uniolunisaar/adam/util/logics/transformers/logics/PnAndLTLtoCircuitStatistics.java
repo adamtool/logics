@@ -73,6 +73,9 @@ public class PnAndLTLtoCircuitStatistics {
     }
 
     public long getMc_nb_places() {
+        if (transformedNet == null) {
+            return -1;
+        }
         return transformedNet.getPlaces().size();
     }
 
@@ -80,6 +83,9 @@ public class PnAndLTLtoCircuitStatistics {
 //        this.mc_nb_places = mc_nb_places;
 //    }
     public long getMc_nb_transitions() {
+        if (transformedNet == null) {
+            return -1;
+        }
         return transformedNet.getTransitions().size();
     }
 
@@ -87,6 +93,9 @@ public class PnAndLTLtoCircuitStatistics {
 //        this.mc_nb_transitions = mc_nb_transitions;
 //    }
     public long getMc_size_formula() {
+        if (transformedFormula == null) {
+            return -1;
+        }
         return transformedFormula.getSize();
     }
 
@@ -191,7 +200,7 @@ public class PnAndLTLtoCircuitStatistics {
         return path;
     }
 
-    public String getInputSizes() {
+    public String getInputSizes() { // todo: when it's only LTL?
         StringBuilder sb = new StringBuilder();
         sb.append("#P, #T, #F, #Pmc, #Tmc, #Fmc, #L, #G, #Lt, #Gt, |=\n");
         sb.append("sizes:")
