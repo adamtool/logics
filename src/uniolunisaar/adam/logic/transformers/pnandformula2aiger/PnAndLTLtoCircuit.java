@@ -149,6 +149,14 @@ public class PnAndLTLtoCircuit {
         renderer.setSystemOptimizations(optsSys);
         renderer.setMCHyperResultOptimizations(optsComp);
 
+            // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COLLECT STATISTICS
+        if (stats != null) {
+            // input model checking net
+            stats.setMc_net(net);
+            stats.setMc_formula(formula);
+        }
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END COLLECT STATISTICS
+        
         Logger.getInstance().addMessage("This means we create the product for F='" + formula.toSymbolString() + "'.");
         CircuitAndLTLtoCircuit.createCircuit(net, renderer, FlowLTLTransformerHyperLTL.toMCHyperFormat(formula), data, stats);
         return renderer;
