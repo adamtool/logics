@@ -32,6 +32,8 @@ public class PnAndLTLtoCircuitStatistics {
     private long aiger_sec;
     private long aiger_mem;
 
+    private boolean append = false;
+
     // Write the input sizes directly into a file before the checking starts
     // for time outs
     private String path = null;
@@ -192,12 +194,20 @@ public class PnAndLTLtoCircuitStatistics {
 
     public void writeInputSizesToFile() throws FileNotFoundException {
         if (path != null) {
-            Tools.saveFile(path, getInputSizes());
+            Tools.saveFile(path, getInputSizes(), append);
         }
     }
 
     public String getPath() {
         return path;
+    }
+
+    public boolean isAppend() {
+        return append;
+    }
+
+    public void setAppend(boolean append) {
+        this.append = append;
     }
 
     public String getInputSizes() { // todo: when it's only LTL?
