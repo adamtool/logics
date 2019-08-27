@@ -163,6 +163,13 @@ public class MCCXMLFormulaParser {
         if (opSecond.equals("tokens-count")) {
             tokCSecond = parseTokensCount(second, net);
         }
+        // Since we only consider safe nets, the following holds:
+        // Case i <= p, i > 1: = false
+        //              i = 1: = p
+        //              i = 0: = true
+        // Case p <= i, i > 1: = true
+        //              i = 1: = true
+        //              i = 0: = neg p
         if (valFirst != null) {
             if (valSecond != null) { // int <= int
                 if (valFirst <= valSecond) {
@@ -172,7 +179,7 @@ public class MCCXMLFormulaParser {
                 }
             } else { // int <= place
                 if (valFirst > 1) {
-                    throw new ParseException("Currently only safe nets are supported.");
+                    return new LTLConstants.False();// todo: since only safe nets are supported
                 }
                 if (valFirst == 1) {
                     return tokCSecond;
@@ -182,15 +189,16 @@ public class MCCXMLFormulaParser {
             }
         } else {
             if (valSecond != null) { // place <= int
-                if (valSecond > 1) {
-                    throw new ParseException("Currently only safe nets are supported.");
-                }
+//                if (valSecond > 1) {
+//                    throw new ParseException("Currently only safe nets are supported.");
+//                }
                 if (valSecond == 0) {
                     return new LTLFormula(LTLOperators.Unary.NEG, tokCFirst);
                 } else { // p \leq 1
                     return new LTLConstants.True();
                 }
             } else { // place <= place
+                // since safe only case which would result in false is p1 and not p2
                 return new LTLFormula(LTLOperators.Unary.NEG, new LTLFormula(tokCFirst, LTLOperators.Binary.AND, new LTLFormula(LTLOperators.Unary.NEG, tokCSecond)));
             }
         }
