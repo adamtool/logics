@@ -31,6 +31,10 @@ public abstract class Constants implements IAtomicProposition {
         public String toReplacableString() {
             return "TRUE";
         }
+
+        public String toLoLA() {
+            return "TRUE";
+        }
     }
 
     public static class False extends Constants {
@@ -52,6 +56,10 @@ public abstract class Constants implements IAtomicProposition {
 
         @Override
         public String toReplacableString() {
+            return "FALSE";
+        }
+
+        public String toLoLA() {
             return "FALSE";
         }
     }
@@ -82,6 +90,10 @@ public abstract class Constants implements IAtomicProposition {
         @Override
         public String toReplacableString() {
             return "'" + id + "'";
+        }
+
+        public String toLoLA() {
+            return id;
         }
     }
 

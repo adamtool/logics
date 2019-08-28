@@ -3,6 +3,7 @@ package uniolunisaar.adam.ds.logics.ltl;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.Formula;
+import uniolunisaar.adam.exceptions.logics.NotConvertableException;
 
 /**
  *
@@ -26,7 +27,7 @@ public class LTLFormula extends Formula<ILTLFormula> implements ILTLFormula {
     @Override
     public LTLFormula createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
         IFormula phisubs = getPhi().substitute(subformula, with);
-        if (phisubs instanceof ILTLFormula) {           
+        if (phisubs instanceof ILTLFormula) {
             return new LTLFormula((ILTLFormula) phisubs);
         } else {
             throw new NotSubstitutableException("Error creating LTL formula. Substituting '" + subformula.toString() + "' with '" + with.toString() + "' "
@@ -51,4 +52,8 @@ public class LTLFormula extends Formula<ILTLFormula> implements ILTLFormula {
 //            throw new NotSubstitutableException("Error creating LTL formula.");
 //        }
 //    }
+    @Override
+    public String toLoLA() throws NotConvertableException {
+        return getPhi().toLoLA();
+    }
 }
