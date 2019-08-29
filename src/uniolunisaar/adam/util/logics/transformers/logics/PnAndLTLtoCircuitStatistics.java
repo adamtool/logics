@@ -225,7 +225,8 @@ public class PnAndLTLtoCircuitStatistics {
                     .append(sys_nb_gates).append("  &  ");
         }
         sb.append(total_nb_latches).append("  &  ")
-                .append(total_nb_gates);
+                .append(total_nb_gates).append("\n");
+        sb.append("formula: ").append(transformedFormula.toString());
         return sb.toString();
     }
 
