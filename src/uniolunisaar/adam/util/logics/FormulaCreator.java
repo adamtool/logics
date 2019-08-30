@@ -15,6 +15,7 @@ import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.util.logics.LogicsTools.TransitionSemantics;
 
 /**
  *
@@ -169,5 +170,21 @@ public class FormulaCreator {
 
     public static LTLFormula live(PetriNet net) {
         return new LTLFormula(LTLOperators.Unary.G, quasiLive(net));
+    }
+
+    public static ILTLFormula getInterleavingMaximality(TransitionSemantics semantics, PetriNet net) {
+        if (semantics == TransitionSemantics.INGOING) {
+            return FormulaCreatorIngoingSemantics.getMaximalityInterleavingDirectAsObject(net);
+        } else {
+            return FormulaCreatorOutgoingSemantics.getMaximalityInterleavingDirectAsObject(net);
+        }
+    }
+
+    public static ILTLFormula getConcurrentMaximality(TransitionSemantics semantics, PetriNet net) {
+        if (semantics == TransitionSemantics.INGOING) {
+            return FormulaCreatorIngoingSemantics.getMaximalityConcurrentDirectAsObject(net);
+        } else {
+            return FormulaCreatorOutgoingSemantics.getMaximalityConcurrentDirectAsObject(net);
+        }
     }
 }
