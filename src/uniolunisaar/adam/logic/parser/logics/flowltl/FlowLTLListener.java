@@ -77,7 +77,7 @@ public class FlowLTLListener extends FlowLTLFormatBaseListener {
         if (ctx.atom() != null) {
             String id = ctx.atom().getText();
             f = net.containsPlace(id) ? new LTLAtomicProposition(net.getPlace(id)) : (net.containsTransition(id) ? new LTLAtomicProposition(net.getTransition(id)) : null);
-            if (f == null) {
+            if (f == null) { //todo: could also say in these cases 'false' holds
                 // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
                 throw new RuntimeException("The atom '" + id + "' is no identifier of a place or a transition of the net '" + net.getName() + "'."
                         + "\nThe places are " + net.getPlaces().toString()

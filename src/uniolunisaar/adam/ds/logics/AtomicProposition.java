@@ -13,15 +13,28 @@ public class AtomicProposition implements IAtomicProposition {
 
     private final String id;
     private final boolean isTransition;
+    private final boolean firableProposition;
 
     public AtomicProposition(Transition t) {
         id = t.getId();
+        isTransition = true;
+        firableProposition = false;
+    }
+
+    public AtomicProposition(Transition t, boolean isFirableProposition) {
+        if (isFirableProposition) {
+            id = "{" + t.getId() + ">";
+        } else {
+            id = t.getId();
+        }
+        this.firableProposition = isFirableProposition;
         isTransition = true;
     }
 
     public AtomicProposition(Place p) {
         id = p.getId();
         isTransition = false;
+        firableProposition = false;
     }
 
     public String get() {
@@ -109,4 +122,9 @@ public class AtomicProposition implements IAtomicProposition {
     public String toReplacableString() {
         return "'" + id + "'";
     }
+
+    public boolean isFirableProposition() {
+        return firableProposition;
+    }
+
 }

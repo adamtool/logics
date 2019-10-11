@@ -39,10 +39,18 @@ public class MCCXMLFormulaParser {
     }
 
     public static Map<String, ILTLFormula> parseLTLFromFile(String path, PetriNet net) throws SAXException, ParserConfigurationException, IOException, ParseException {
-        return parseLTL(new FileInputStream(new File(path)), net);
+        return parseLTL(new FileInputStream(new File(path)), net, false);
+    }
+
+    public static Map<String, ILTLFormula> parseLTLFromFile(String path, PetriNet net, boolean convertFirableToConjunctionOfPlaces) throws SAXException, ParserConfigurationException, IOException, ParseException {
+        return parseLTL(new FileInputStream(new File(path)), net, convertFirableToConjunctionOfPlaces);
     }
 
     public static Map<String, ILTLFormula> parseLTL(InputStream in, PetriNet net) throws SAXException, ParserConfigurationException, IOException, ParseException {
+        return parseLTL(in, net, false);
+    }
+
+    public static Map<String, ILTLFormula> parseLTL(InputStream in, PetriNet net, boolean convertFirableToConjunctionOfPlaces) throws SAXException, ParserConfigurationException, IOException, ParseException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
 
@@ -61,20 +69,20 @@ public class MCCXMLFormulaParser {
 //                System.out.println("Expecting the LTL MCC formulas to start with an all-path operator");
                 throw new ParseException("Expecting the LTL MCC formulas to start with an all-path operator.");
             }
-            list.put(id, parseFormula(allPaths.getFirstChild(), net));
+            list.put(id, parseFormula(allPaths.getFirstChild(), net, convertFirableToConjunctionOfPlaces));
         }
         return list;
     }
 
-    private static ILTLFormula parseFormula(Node formula, PetriNet net) throws ParseException {
+    private static ILTLFormula parseFormula(Node formula, PetriNet net, boolean convertFirableToConjunctionOfPlaces) throws ParseException {
         Node f = formula.getNextSibling();
         String op = f.getNodeName();
         if (op.equals("globally")) {
-            return new LTLFormula(LTLOperators.Unary.G, parseFormula(f.getFirstChild(), net));
+            return new LTLFormula(LTLOperators.Unary.G, parseFormula(f.getFirstChild(), net, convertFirableToConjunctionOfPlaces));
         } else if (op.equals("finally")) {
-            return new LTLFormula(LTLOperators.Unary.F, parseFormula(f.getFirstChild(), net));
+            return new LTLFormula(LTLOperators.Unary.F, parseFormula(f.getFirstChild(), net, convertFirableToConjunctionOfPlaces));
         } else if (op.equals("next")) {
-            return new LTLFormula(LTLOperators.Unary.X, parseFormula(f.getFirstChild(), net));
+            return new LTLFormula(LTLOperators.Unary.X, parseFormula(f.getFirstChild(), net, convertFirableToConjunctionOfPlaces));
         } else if (op.equals("until")) {
             // before
             Node before = f.getFirstChild().getNextSibling();
@@ -86,21 +94,21 @@ public class MCCXMLFormulaParser {
             if (!reach.getNodeName().equals("reach")) {
                 throw new ParseException("Something is wrong while parsing an until formula.");
             }
-            return new LTLFormula(parseFormula(before.getFirstChild(), net), LTLOperators.Binary.U, parseFormula(reach.getFirstChild(), net));
+            return new LTLFormula(parseFormula(before.getFirstChild(), net, convertFirableToConjunctionOfPlaces), LTLOperators.Binary.U, parseFormula(reach.getFirstChild(), net, convertFirableToConjunctionOfPlaces));
         } else if (op.equals("negation")) {
-            return new LTLFormula(LTLOperators.Unary.NEG, parseFormula(f.getFirstChild(), net));
+            return new LTLFormula(LTLOperators.Unary.NEG, parseFormula(f.getFirstChild(), net, convertFirableToConjunctionOfPlaces));
         } else if (op.equals("conjunction")) {
             NodeList childs = f.getFirstChild().getNextSibling().getChildNodes();
             Collection<ILTLFormula> subs = new ArrayList<>();
             for (int i = 0; i < childs.getLength(); i++) {
-                subs.add(parseFormula(childs.item(i).getFirstChild(), net));
+                subs.add(parseFormula(childs.item(i).getFirstChild(), net, convertFirableToConjunctionOfPlaces));
             }
             return FormulaCreator.bigWedgeOrVeeObject(subs, true);
         } else if (op.equals("disjunction")) {
             NodeList childs = f.getFirstChild().getNextSibling().getChildNodes();
             Collection<ILTLFormula> subs = new ArrayList<>();
             for (int i = 0; i < childs.getLength(); i++) {
-                subs.add(parseFormula(childs.item(i).getFirstChild(), net));
+                subs.add(parseFormula(childs.item(i).getFirstChild(), net, convertFirableToConjunctionOfPlaces));
             }
             return FormulaCreator.bigWedgeOrVeeObject(subs, false);
         } else if (op.equals("deadlock")) {
@@ -114,11 +122,18 @@ public class MCCXMLFormulaParser {
                     throw new ParseException("Something is wrong while parsing an is-firable part.");
                 }
                 String id = transition.getFirstChild().getNodeValue();
-                Collection<ILTLFormula> places = new ArrayList<>();
-                for (Place place : net.getTransition(id).getPreset()) {
-                    places.add(new LTLAtomicProposition(place));
+                if (!net.containsTransition(id)) {
+                    return new LTLConstants.False();
                 }
-                firable.add(FormulaCreator.bigWedgeOrVeeObject(places, true));
+                if (convertFirableToConjunctionOfPlaces) {
+                    Collection<ILTLFormula> places = new ArrayList<>();
+                    for (Place place : net.getTransition(id).getPreset()) {
+                        places.add(new LTLAtomicProposition(place));
+                    }
+                    firable.add(FormulaCreator.bigWedgeOrVeeObject(places, true));
+                } else {
+                    firable.add(new LTLAtomicProposition(net.getTransition(id), true));
+                }
             }
             return FormulaCreator.bigWedgeOrVeeObject(firable, true);
         } else if (op.equals("integer-le")) {
@@ -155,8 +170,8 @@ public class MCCXMLFormulaParser {
         if (opSecond.equals("integer-constant")) {
             valSecond = Integer.parseInt(second.getFirstChild().getNodeValue());
         }
-        LTLAtomicProposition tokCFirst = null;
-        LTLAtomicProposition tokCSecond = null;
+        ILTLFormula tokCFirst = null;
+        ILTLFormula tokCSecond = null;
         if (opFirst.equals("tokens-count")) {
             tokCFirst = parseTokensCount(first, net);
         }
@@ -205,16 +220,20 @@ public class MCCXMLFormulaParser {
     }
 
     /**
-     * Currently only on place is allowed
+     * Currently only one place is allowed
      *
      * @param n
      * @return
      */
-    private static LTLAtomicProposition parseTokensCount(Node n, PetriNet net) throws ParseException {
+    private static ILTLFormula parseTokensCount(Node n, PetriNet net) throws ParseException {
         if (n.getChildNodes().getLength() > 3) { // todo: check this! Is there really each time the second child with the #text name? And a last one I cannot call?
             throw new ParseException("A list of places for the tokens-count is currently not supported.");
         }
         String id = n.getFirstChild().getNextSibling().getFirstChild().getNodeValue();
-        return new LTLAtomicProposition(net.getPlace(id));
+        if (net.containsPlace(id)) {
+            return new LTLAtomicProposition(net.getPlace(id));
+        } else {
+            return new LTLConstants.False();
+        }
     }
 }

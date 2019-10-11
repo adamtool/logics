@@ -11,6 +11,10 @@ import uniolunisaar.adam.exceptions.logics.NotConvertableException;
  */
 public class LTLAtomicProposition extends AtomicProposition implements ILTLFormula {
 
+    public LTLAtomicProposition(Transition t, boolean isFirableProposition) {
+        super(t, isFirableProposition);
+    }
+
     public LTLAtomicProposition(Transition t) {
         super(t);
     }

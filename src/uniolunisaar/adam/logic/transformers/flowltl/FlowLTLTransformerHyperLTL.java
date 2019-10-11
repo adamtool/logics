@@ -4,6 +4,7 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniolunisaar.adam.ds.circuits.AigerFile;
 import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.Constants;
 import uniolunisaar.adam.ds.logics.Constants.Container;
@@ -27,6 +28,7 @@ import static uniolunisaar.adam.ds.logics.ltl.LTLOperators.Unary.NEG;
 import static uniolunisaar.adam.ds.logics.ltl.LTLOperators.Unary.X;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
 import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
+import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
 
 /**
  *
@@ -90,7 +92,7 @@ public class FlowLTLTransformerHyperLTL {
         } else if (formula instanceof Constants.Container) {
             return "(AP \"" + ((Container) formula).toString() + "\" 0)";
         } else if (formula instanceof AtomicProposition) {
-            return "(AP \"#out#_" + ((AtomicProposition) formula).toString() + "\" 0)";
+            return "(AP \"" + AigerRenderer.OUTPUT_PREFIX + ((AtomicProposition) formula).toString() + "\" 0)";
         } else if (formula instanceof Formula) {
             return subformulaToMCHyperFormat(((Formula) formula).getPhi());
         } else if (formula instanceof FormulaUnary) {
