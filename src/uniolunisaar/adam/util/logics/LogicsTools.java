@@ -39,8 +39,8 @@ public class LogicsTools {
             return flowFormulas;
         } else if (formula instanceof RunFormula) {
             return getFlowFormulas(((RunFormula) formula).getPhi());
-        } else if (formula instanceof FormulaBinary) {
-            FormulaBinary binF = (FormulaBinary) formula;
+        } else if (formula instanceof FormulaBinary<?, ?, ?>) {
+            FormulaBinary<?, ?, ?> binF = (FormulaBinary<?, ?, ?>) formula;
             flowFormulas.addAll(getFlowFormulas(binF.getPhi1()));
             flowFormulas.addAll(getFlowFormulas(binF.getPhi2()));
         }
@@ -77,8 +77,8 @@ public class LogicsTools {
         } else if (f instanceof RunFormula) {
             return new LTLFormula(convert(((RunFormula) f).getPhi()));
         } else if (f instanceof IRunFormula && f instanceof FormulaBinary) {
-            FormulaBinary form = ((FormulaBinary) f);
-            IOperatorBinary op = form.getOp();
+            FormulaBinary<?, ?, ?> form = ((FormulaBinary<?, ?, ?>) f);
+            IOperatorBinary<?, ?> op = form.getOp();
             ILTLFormula f1 = convert(form.getPhi1());
             ILTLFormula f2 = convert(form.getPhi2());
             if (op instanceof RunOperators.Binary) {

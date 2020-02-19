@@ -14,6 +14,7 @@ import uniolunisaar.adam.ds.logics.FormulaUnary;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.IOperatorBinary;
 import uniolunisaar.adam.ds.logics.IOperatorUnary;
+import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import static uniolunisaar.adam.ds.logics.ltl.LTLOperators.Binary.AND;
 import static uniolunisaar.adam.ds.logics.ltl.LTLOperators.Binary.BIMP;
@@ -36,7 +37,7 @@ import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
  */
 public class FlowLTLTransformerHyperLTL {
 
-    public static String toMCHyperFormat(IOperatorUnary op) {
+    public static String toMCHyperFormat(IOperatorUnary<?> op) {
         if (op instanceof LTLOperators.Unary) {
             switch ((LTLOperators.Unary) op) {
                 case F:
@@ -52,7 +53,7 @@ public class FlowLTLTransformerHyperLTL {
         throw new RuntimeException("Only LTL operators are supported.");
     }
 
-    public static String toMCHyperFormat(IOperatorBinary op) {
+    public static String toMCHyperFormat(IOperatorBinary<?, ?> op) {
         if (op instanceof LTLOperators.Binary) {
             switch ((LTLOperators.Binary) op) {
                 case AND:
@@ -95,11 +96,13 @@ public class FlowLTLTransformerHyperLTL {
             return "(AP \"" + AigerRenderer.OUTPUT_PREFIX + ((AtomicProposition) formula).toString() + "\" 0)";
         } else if (formula instanceof Formula) {
             return subformulaToMCHyperFormat(((Formula) formula).getPhi());
-        } else if (formula instanceof FormulaUnary) {
-            FormulaUnary f = (FormulaUnary) formula;
+        } else if (formula instanceof FormulaUnary<?, ?>) {
+//            FormulaUnary<ILTLFormula, IOperatorUnary<ILTLFormula>> f = (FormulaUnary<ILTLFormula, IOperatorUnary<ILTLFormula>>) formula;
+            FormulaUnary<?, ?> f = (FormulaUnary<?, ?>) formula;
             return "(" + toMCHyperFormat(f.getOp()) + " " + subformulaToMCHyperFormat(f.getPhi()) + ")";
-        } else if (formula instanceof FormulaBinary) {
-            FormulaBinary f = (FormulaBinary) formula;
+        } else if (formula instanceof FormulaBinary<?, ?, ?>) {
+//            FormulaBinary<IFormula, IOperatorBinary<IFormula, IFormula>, IFormula> f = (FormulaBinary<IFormula, IOperatorBinary<IFormula, IFormula>, IFormula>) formula;
+            FormulaBinary<?, ?, ?> f = (FormulaBinary<?, ?, ?>) formula;
             return "(" + toMCHyperFormat(f.getOp()) + " " + subformulaToMCHyperFormat(f.getPhi1()) + " " + subformulaToMCHyperFormat(f.getPhi2()) + ")";
         } else {
             throw new RuntimeException("Forgotten to handle is subformula in the transformation to HyperLTL: '" + formula + "'.");
