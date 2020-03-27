@@ -12,11 +12,11 @@ import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatBaseListener;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser.FlowFormulaContext;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser.LtlContext;
-import uniolunisaar.adam.logic.logics.ltl.flowltlparser.antlr.FlowLTLFormatParser.RunFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatBaseListener;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.FlowFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.LtlContext;
+import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.RunFormulaContext;
 
 /**
  *
@@ -77,7 +77,7 @@ public class FlowLTLListener extends FlowLTLFormatBaseListener {
         if (ctx.atom() != null) {
             String id = ctx.atom().getText();
             f = net.containsPlace(id) ? new LTLAtomicProposition(net.getPlace(id)) : (net.containsTransition(id) ? new LTLAtomicProposition(net.getTransition(id)) : null);
-            if (f == null) {
+            if (f == null) { //todo: could also say in these cases 'false' holds
                 // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
                 throw new RuntimeException("The atom '" + id + "' is no identifier of a place or a transition of the net '" + net.getName() + "'."
                         + "\nThe places are " + net.getPlaces().toString()

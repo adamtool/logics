@@ -55,6 +55,7 @@ public class FormulaCreatorOutgoingSemantics {
         }
     }
 
+    @Deprecated
     public static String getMaximalityInterleaving(PetriNet net) {
         StringBuilder sb = new StringBuilder("G ((");
 
@@ -94,6 +95,7 @@ public class FormulaCreatorOutgoingSemantics {
         }
     }
 
+    @Deprecated
     public static String getMaximalityConcurrent(PetriNet net) {
         // all transitions have to globally be eventually not enabled or another transition with a place in the transitions preset fires
         Collection<String> elements = new ArrayList<>();

@@ -2,7 +2,7 @@ package uniolunisaar.adam.ds.logics.ltl.flowltl;
 
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.logics.IFormula;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
@@ -92,7 +92,7 @@ public class RunFormula extends Formula<IFormula> implements IRunFormula {
         if (getPhi() instanceof ILTLFormula) {
             return (ILTLFormula) getPhi();
         }
-        throw new RuntimeException("'" + this.toString() + "' is not a LTL formula");
+        throw new RuntimeException("'" + this.toString() + "' is not an LTL formula");
     }
 
     public IFlowFormula toFlowFormula() {

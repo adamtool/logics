@@ -3,7 +3,7 @@ package uniolunisaar.adam.ds.logics.ltl.flowltl;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import java.util.ArrayList;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *

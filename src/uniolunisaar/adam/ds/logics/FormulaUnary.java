@@ -1,7 +1,7 @@
 package uniolunisaar.adam.ds.logics;
 
 import java.util.ArrayList;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *
@@ -58,12 +58,22 @@ public abstract class FormulaUnary<F1 extends IFormula, OP extends IOperatorUnar
 
     @Override
     public int getSize() {
-        return phi.getSize() + 1;
+        return getNbFormulas();
     }
 
     @Override
     public int getNbFormulas() {
         return phi.getNbFormulas() + 1;
+    }
+
+    @Override
+    public int getNbOperators() {
+        return phi.getNbOperators() + 1;
+    }
+
+    @Override
+    public int getNbAtomicPropositions() {
+        return phi.getNbAtomicPropositions();
     }
 
     @Override

@@ -2,7 +2,7 @@ package uniolunisaar.adam.ds.logics;
 
 import java.util.ArrayList;
 import java.util.List;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *
@@ -31,6 +31,10 @@ public abstract class Constants implements IAtomicProposition {
         public String toReplacableString() {
             return "TRUE";
         }
+
+        public String toLoLA() {
+            return "TRUE";
+        }
     }
 
     public static class False extends Constants {
@@ -52,6 +56,10 @@ public abstract class Constants implements IAtomicProposition {
 
         @Override
         public String toReplacableString() {
+            return "FALSE";
+        }
+
+        public String toLoLA() {
             return "FALSE";
         }
     }
@@ -82,6 +90,10 @@ public abstract class Constants implements IAtomicProposition {
         @Override
         public String toReplacableString() {
             return "'" + id + "'";
+        }
+
+        public String toLoLA() {
+            return id;
         }
     }
 
@@ -122,7 +134,16 @@ public abstract class Constants implements IAtomicProposition {
 
     @Override
     public int getSize() {
-        return 1;
+        return getNbFormulas();
     }
 
+    @Override
+    public int getNbOperators() {
+        return 0;// todo: normally I expect 1 since it is an abbreviation for false = p\wedge \neg p
+    }
+
+    @Override
+    public int getNbAtomicPropositions() {
+        return 0;// todo: normally I expect 2 since it is an abbreviation for false = p\wedge \neg p
+    }
 }

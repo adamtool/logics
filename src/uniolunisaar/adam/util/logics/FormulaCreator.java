@@ -8,13 +8,14 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.winningconditions.WinningCondition;
+import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.util.logics.LogicsTools.TransitionSemantics;
 
 /**
  *
@@ -22,6 +23,7 @@ import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
  */
 public class FormulaCreator {
 
+    @Deprecated
     public static String bigWedgeOrVee(Collection<String> elements, boolean wedge) {
         if (elements.isEmpty()) {
 //            throw new RuntimeException("Iteration over an empty set."); 
@@ -72,6 +74,7 @@ public class FormulaCreator {
         }
     }
 
+    @Deprecated
     public static String enabled(Transition t) {
         Collection<String> elements = new ArrayList<>();
         for (Place p : t.getPreset()) {
@@ -100,15 +103,15 @@ public class FormulaCreator {
         return new LTLFormula(infEvnEnabled, LTLOperators.Binary.IMP, infFired);
     }
 
-    public static FlowFormula createLTLFormulaOfWinCon(PetriGame game, WinningCondition.Objective winCon) {
+    public static FlowFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
         List<Place> specialPlaces = new ArrayList<>();
-        for (Place p : game.getPlaces()) {
-            if (game.isSpecial(p)) {
+        for (Place p : net.getPlaces()) {
+            if (net.isSpecial(p)) {
                 specialPlaces.add(p);
             }
         }
         ILTLFormula f;
-        switch (winCon) {
+        switch (condition) {
             case A_SAFETY: {
                 Collection<ILTLFormula> elems = new ArrayList<>();
                 for (Place specialPlace : specialPlaces) {
@@ -167,5 +170,21 @@ public class FormulaCreator {
 
     public static LTLFormula live(PetriNet net) {
         return new LTLFormula(LTLOperators.Unary.G, quasiLive(net));
+    }
+
+    public static ILTLFormula getInterleavingMaximality(TransitionSemantics semantics, PetriNet net) {
+        if (semantics == TransitionSemantics.INGOING) {
+            return FormulaCreatorIngoingSemantics.getMaximalityInterleavingDirectAsObject(net);
+        } else {
+            return FormulaCreatorOutgoingSemantics.getMaximalityInterleavingDirectAsObject(net);
+        }
+    }
+
+    public static ILTLFormula getConcurrentMaximality(TransitionSemantics semantics, PetriNet net) {
+        if (semantics == TransitionSemantics.INGOING) {
+            return FormulaCreatorIngoingSemantics.getMaximalityConcurrentDirectAsObject(net);
+        } else {
+            return FormulaCreatorOutgoingSemantics.getMaximalityConcurrentDirectAsObject(net);
+        }
     }
 }

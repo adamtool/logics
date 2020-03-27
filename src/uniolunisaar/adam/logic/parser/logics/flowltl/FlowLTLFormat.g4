@@ -13,11 +13,11 @@ runFormula: ltl |
 runBinary: '(' phi1=runFormula op=rbin phi2=runFormula ')';
 
 // flowFormula
-flowFormula: forallFlows '('? phi=ltl ')'?;
+flowFormula: forallFlows phi=ltl;
 
 // LTL
 ltl: ltlUnary | ltlBinary | tt | ff | atom;
-ltlUnary: op=unaryOp '('? phi=ltl ')'?;
+ltlUnary: op=unaryOp phi=ltl;
 ltlBinary:  '(' phi1=ltl op=binaryOp phi2=ltl ')';
 
 atom:  id=ID | id=INT;

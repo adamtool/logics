@@ -1,7 +1,7 @@
 package uniolunisaar.adam.ds.logics;
 
 import java.util.List;
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *
@@ -21,6 +21,10 @@ public interface IFormula {
     public Closure getClosure();
 
     public int getNbFormulas();
+
+    public int getNbAtomicPropositions();
+
+    public int getNbOperators();
 
     public int getDepth();
 

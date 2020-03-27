@@ -1,6 +1,6 @@
 package uniolunisaar.adam.ds.logics;
 
-import uniolunisaar.adam.logic.exceptions.NotSubstitutableException;
+import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  * @author Manuel Gieseking
@@ -57,12 +57,22 @@ public abstract class FormulaBinary<F1 extends IFormula, OP extends IOperatorBin
 
     @Override
     public int getSize() {
-        return phi1.getSize() + phi2.getSize();
+        return getNbFormulas();
     }
 
     @Override
     public int getNbFormulas() {
         return phi1.getNbFormulas() + phi2.getNbFormulas() + 1;
+    }
+
+    @Override
+    public int getNbOperators() {
+        return phi1.getNbOperators() + phi2.getNbOperators() + 1;
+    }
+
+    @Override
+    public int getNbAtomicPropositions() {
+        return phi1.getNbAtomicPropositions() + phi2.getNbAtomicPropositions();
     }
 
     @Override
