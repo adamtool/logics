@@ -9,7 +9,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.petrinet.objectives.Condition;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowLTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
@@ -103,7 +103,7 @@ public class FormulaCreator {
         return new LTLFormula(infEvnEnabled, LTLOperators.Binary.IMP, infFired);
     }
 
-    public static FlowFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
+    public static FlowLTLFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
         List<Place> specialPlaces = new ArrayList<>();
         for (Place p : net.getPlaces()) {
             if (net.isSpecial(p)) {
@@ -139,7 +139,7 @@ public class FormulaCreator {
             default:
                 throw new RuntimeException("Existential acceptance conditions are not yet implemented");
         }
-        return new FlowFormula(f);
+        return new FlowLTLFormula(f);
     }
 
     public static LTLFormula deadlock(PetriNet net) {

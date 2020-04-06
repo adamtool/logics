@@ -9,10 +9,13 @@ import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatBaseListener;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.CtlContext;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.FlowFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.RunFormulaContext;
 
 /**
  *
@@ -24,7 +27,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
 //    private RunFormula formula;
     private FlowCTLFormula formula;
     private final Map<CtlContext, ICTLFormula> ctlFormulas = new HashMap<>();
-//    private final Map<RunFormulaContext, RunFormula> runFormulas = new HashMap<>();
+    private final Map<RunFormulaContext, RunLTLFormula> runFormulas = new HashMap<>();
     private final Map<FlowFormulaContext, FlowCTLFormula> flowFormulas = new HashMap<>();
 
     public FlowCTLListener(PetriNet net) {
@@ -34,38 +37,38 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
     @Override
     public void exitFlowCTL(FlowCTLFormatParser.FlowCTLContext ctx) {
 //        formula = runFormulas.get(ctx.runFormula());
-        formula = flowFormulas.get(ctx.flowFormula());
+//        formula = flowFormulas.get(ctx.flowFormula()); // todo: original old version
     }
 
-//    @Override
-//    public void exitRunFormula(FlowLTLFormatParser.RunFormulaContext ctx) {
-//        RunFormula f = null;
-//        if (ctx.rimp() != null) {
-//            f = new RunFormula(ctlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2));
-//        } else if (ctx.ltl() != null) {
-//            f = new RunFormula(ctlFormulas.get(ctx.ltl()));
-//        } else if (ctx.flowFormula() != null) {
-//            f = new RunFormula(flowFormulas.get(ctx.flowFormula()));
-//        } else if (ctx.runBinary() != null) {
-//            if (ctx.runBinary().op.rand() != null) {
-//                f = new RunFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
-//            } else if (ctx.runBinary().op.ror() != null) {
-//                f = new RunFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
-//            } else {
-//                // todo: throw proper exception
-//                throw new RuntimeException("Could not parse the Run formula. There should be a binary run formula, but the operators are different to 'AND' and 'OR'.");
-//            }
-//        }
-//        if (f != null) {
-//            runFormulas.put(ctx, f);
-//        } else {
-//            // todo: throw proper exception
-//            throw new RuntimeException("Could not parse the Run formula. The context '" + ctx.toString() + "' does not fit any alternative.");
-//        }
-//    }
+    @Override
+    public void exitRunFormula(FlowCTLFormatParser.RunFormulaContext ctx) {
+        RunLTLFormula f = null;
+        if (ctx.rimp() != null) {
+//            f = new RunLTLFormula(ctlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2)); // todo: do it
+        } else if (ctx.ctl() != null) {
+            f = new RunLTLFormula(ctlFormulas.get(ctx.ctl()));
+        } else if (ctx.flowFormula() != null) {
+            f = new RunLTLFormula(flowFormulas.get(ctx.flowFormula()));
+        } else if (ctx.runBinary() != null) {
+            if (ctx.runBinary().op.rand() != null) {
+                f = new RunLTLFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
+            } else if (ctx.runBinary().op.ror() != null) {
+                f = new RunLTLFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
+            } else {
+                // todo: throw proper exception
+                throw new RuntimeException("Could not parse the Run formula. There should be a binary run formula, but the operators are different to 'AND' and 'OR'.");
+            }
+        }
+        if (f != null) {
+            runFormulas.put(ctx, f);
+        } else {
+            // todo: throw proper exception
+            throw new RuntimeException("Could not parse the Run formula. The context '" + ctx.toString() + "' does not fit any alternative.");
+        }
+    }
     @Override
     public void exitFlowFormula(FlowCTLFormatParser.FlowFormulaContext ctx) {
-        flowFormulas.put(ctx, new FlowCTLFormula(ctlFormulas.get(ctx.phi)));
+//        flowFormulas.put(ctx, new FlowCTLFormula(ctlFormulas.get(ctx.phi))); /todo: do it when we know the concrete syntax
     }
 
     @Override

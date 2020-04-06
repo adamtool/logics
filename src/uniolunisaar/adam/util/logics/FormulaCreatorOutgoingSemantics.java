@@ -7,11 +7,11 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
 import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
 
 /**
@@ -44,7 +44,7 @@ public class FormulaCreatorOutgoingSemantics {
     }
 
     @Deprecated
-    public static RunFormula getMaximalityInterleavingObject(PetriNet net) {
+    public static RunLTLFormula getMaximalityInterleavingObject(PetriNet net) {
         String formula = getMaximalityInterleaving(net);
         try {
             return FlowLTLParser.parse(net, formula);

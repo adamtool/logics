@@ -1,28 +1,30 @@
 package uniolunisaar.adam.ds.logics.ltl.flowltl;
 
-import uniolunisaar.adam.ds.logics.IFormula;
-import uniolunisaar.adam.ds.logics.FormulaBinary;
 import java.util.ArrayList;
+import uniolunisaar.adam.ds.logics.FormulaBinary;
+import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
+import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
 
 /**
  *
  * @author Manuel Gieseking
  */
-class RunFormulaImplication extends FormulaBinary<ILTLFormula, RunOperators.Implication, IRunFormula> implements IRunFormula {
+class RunLTLFormulaImplication extends FormulaBinary<ILTLFormula, RunOperators.Implication, IRunFormula> implements IRunFormula {
 
-    public RunFormulaImplication(ILTLFormula phi1, RunOperators.Implication op, IRunFormula phi2) {
+    public RunLTLFormulaImplication(ILTLFormula phi1, RunOperators.Implication op, IRunFormula phi2) {
         super(phi1, op, phi2);
     }
 
     @Override
-    public RunFormulaImplication createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
+    public RunLTLFormulaImplication createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
         IFormula phi1 = getPhi1().substitute(subformula, with);
         IFormula phi2 = getPhi2().substitute(subformula, with);
         if (phi1 instanceof ILTLFormula) {
             if (phi2 instanceof IRunFormula) {
-                return new RunFormulaImplication((ILTLFormula) phi1, getOp(), (IRunFormula) phi2);
+                return new RunLTLFormulaImplication((ILTLFormula) phi1, getOp(), (IRunFormula) phi2);
             } else {
                 throw new NotSubstitutableException(
                         "The substituted subformula '" + phi2.toString() + "', created by substituting '"

@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.logics.ltl.flowltl;
+package uniolunisaar.adam.ds.logics.flowlogics;
 
 import uniolunisaar.adam.ds.logics.IOperatorBinary;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;

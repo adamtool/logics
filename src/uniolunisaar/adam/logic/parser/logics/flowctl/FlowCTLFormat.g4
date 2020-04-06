@@ -2,23 +2,22 @@
 // @author Manuel Gieseking
 grammar FlowCTLFormat;
 
-//flowCTL: runFormula EOF;
-flowCTL: flowFormula EOF;
+flowCTL: runFormula EOF;
 
-// flowLTL
-//runFormula: ltl | 
-//              '(' phi1=ltl rimp phi2=runFormula ')' |
-//              runBinary |
- //             flowFormula;
+// flowCTL
+runFormula: ctl | 
+              '(' phi1=ctl rimp phi2=runFormula ')' |
+              runBinary |
+             flowFormula;
 
-//runBinary: '(' phi1=runFormula op=rbin phi2=runFormula ')';
+runBinary: '(' phi1=runFormula op=rbin phi2=runFormula ')';
 
 // flowFormula
 flowFormula: forallFlows '('? phi=ctl ')'?;
 
-// LTL
+// CTL
 ctl: ctlUnary | ctlBinary | tt | ff | atom;
-ctlUnary: op=unaryOp '('? phi=ctl ')'?;
+ctlUnary: op=unaryOp  phi=ctl;
 ctlBinary:  '(' phi1=ctl stdOp=binaryOp phi2=ctl ')' | all'(' phi1=ctl op=until phi2=ctl ')' | exists'(' phi1=ctl op=until phi2=ctl ')';
 
 atom:  id=ID | id=INT;
@@ -49,10 +48,10 @@ until: 'U' | '𝓤';
 forallFlows: 'All' | '𝔸';
 
 // RunFormula
-//rbin: rand | ror;
-//rand: 'AND' | '⋀';
-//ror: 'OR' | '⋁';
-//rimp: 'IMP' | '->' | '⇒';
+rbin: rand | ror;
+rand: 'AND' | '⋀';
+ror: 'OR' | '⋁';
+rimp: 'IMP' | '->' | '⇒';
 
 tt: 'TRUE' | '⊤';
 ff: 'FALSE' | '⊥';

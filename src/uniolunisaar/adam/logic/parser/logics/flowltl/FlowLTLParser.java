@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.io.parser.ParseException;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
 import uniolunisaar.adam.exceptions.pnwt.LineParseException;
 import uniolunisaar.adam.logic.parser.ParsingUtils;
 import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatLexer;
@@ -16,7 +16,7 @@ import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser;
  */
 public class FlowLTLParser {
 
-    public static RunFormula parse(PetriNet net, String formula) throws ParseException {
+    public static RunLTLFormula parse(PetriNet net, String formula) throws ParseException {
         try {
             FlowLTLFormatLexer lexer = new FlowLTLFormatLexer(new ANTLRInputStream(formula));
 
