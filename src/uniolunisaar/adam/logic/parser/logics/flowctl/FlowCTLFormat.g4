@@ -32,22 +32,30 @@ ctl: tt | ff | atom | ctlUnary | ctlBinary;
 atom:  id=ID | id=INT;
 ctlUnary: op=unaryOp  phi=ctl;
 ctlBinary:      '(' phi1=ctl stdOp=binaryOp phi2=ctl ')' |
-             all'(' phi1=ctl op=binaryTempOp phi2=ctl ')' |
-          exists'(' phi1=ctl op=binaryTempOp phi2=ctl ')' ;
+               'A(' phi1=ctl op=binaryTempOp phi2=ctl ')' |
+               'E(' phi1=ctl op=binaryTempOp phi2=ctl ')' ;
 
 // Operators
 unaryOp: (ex | ax | ef | af | eg | ag | neg);
 binaryOp: (and | or | imp | bimp );
 binaryTempOp: (until | weak | opRelease);
 
-exists: 'E';
+/*exists: 'E';
 all: 'A';
 ex: exists 'X';
 ax: all 'X';
 ef: exists 'F';
 af: all 'F';
 eg: exists 'G';
-ag: all 'G';
+ag: all 'G';*/
+
+ex: 'EX';
+ax: 'AX';
+ef: 'EF';
+af: 'AF';
+eg: 'EG';
+ag: 'AG';
+
 neg: 'NEG' | '!' | '¬';
 and: 'AND' | '⋏' ;
 or: 'OR' | '⋎' ;
