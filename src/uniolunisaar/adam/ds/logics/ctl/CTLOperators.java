@@ -205,6 +205,28 @@ public class CTLOperators {
                 return "UNTIL"; // also UNTIL
             }
         },
+        AW {
+            @Override
+            public String toSymbol() {
+                return "𝓦"; //u+1D4E6
+            }
+
+            @Override
+            public String toLoLA() throws NotConvertableException {
+                throw new NotConvertableException("LoLA does not support a weak until.");
+            }
+        },
+        EW {
+            @Override
+            public String toSymbol() {
+                return "𝓦"; //u+1D4E6
+            }
+
+            @Override
+            public String toLoLA() throws NotConvertableException {
+                throw new NotConvertableException("LoLA does not support a weak until.");
+            }
+        },
         AR {
             @Override
             public String toSymbol() {

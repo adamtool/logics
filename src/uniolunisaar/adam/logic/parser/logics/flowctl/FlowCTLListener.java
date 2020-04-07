@@ -9,8 +9,8 @@ import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
-import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatBaseListener;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser;
 import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.CtlContext;
@@ -24,10 +24,9 @@ import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.R
 public class FlowCTLListener extends FlowCTLFormatBaseListener {
 
     private final PetriNet net;
-//    private RunFormula formula;
-    private FlowCTLFormula formula;
+    private RunCTLFormula formula;
     private final Map<CtlContext, ICTLFormula> ctlFormulas = new HashMap<>();
-    private final Map<RunFormulaContext, RunLTLFormula> runFormulas = new HashMap<>();
+    private final Map<RunFormulaContext, RunCTLFormula> runFormulas = new HashMap<>();
     private final Map<FlowFormulaContext, FlowCTLFormula> flowFormulas = new HashMap<>();
 
     public FlowCTLListener(PetriNet net) {
@@ -36,41 +35,50 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
 
     @Override
     public void exitFlowCTL(FlowCTLFormatParser.FlowCTLContext ctx) {
-//        formula = runFormulas.get(ctx.runFormula());
-//        formula = flowFormulas.get(ctx.flowFormula()); // todo: original old version
+        formula = runFormulas.get(ctx.runFormula());
     }
 
     @Override
     public void exitRunFormula(FlowCTLFormatParser.RunFormulaContext ctx) {
-        RunLTLFormula f = null;
-//        if (ctx.rimp() != null) {
-//            f = new RunLTLFormula(ctlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2)); // todo: do it
-//        } else
+        RunCTLFormula f = null;
         if (ctx.ctl() != null) {
-            f = new RunLTLFormula(ctlFormulas.get(ctx.ctl()));
-        } else if (ctx.flowFormula() != null) {
-            f = new RunLTLFormula(flowFormulas.get(ctx.flowFormula()));
+            f = new RunCTLFormula(ctlFormulas.get(ctx.ctl()));
+        } else if (ctx.runUnary() != null) {
+            f = new RunCTLFormula(RunCTLOperators.Unary.NEG, runFormulas.get(ctx.runUnary().phi));
         } else if (ctx.runBinary() != null) {
             if (ctx.runBinary().op.rand() != null) {
-                f = new RunLTLFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
             } else if (ctx.runBinary().op.ror() != null) {
-                f = new RunLTLFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
+            } else if (ctx.runBinary().op.rimp() != null) {
+                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.IMP, runFormulas.get(ctx.runBinary().phi2));
+            } else if (ctx.runBinary().op.rbimp() != null) {
+                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.BIMP, runFormulas.get(ctx.runBinary().phi2));
             } else {
                 // todo: throw proper exception
-                throw new RuntimeException("Could not parse the Run formula. There should be a binary run formula, but the operators are different to 'AND' and 'OR'.");
+                throw new RuntimeException("Could not parse the run formula. There should be a binary run formula, but the operators are different to 'AND', 'OR', 'IMP', and 'BIMP'.");
             }
+        } else if (ctx.flowFormula() != null) {
+            f = new RunCTLFormula(flowFormulas.get(ctx.flowFormula()));
         }
         if (f != null) {
             runFormulas.put(ctx, f);
         } else {
             // todo: throw proper exception
-            throw new RuntimeException("Could not parse the Run formula. The context '" + ctx.toString() + "' does not fit any alternative.");
+            throw new RuntimeException("Could not parse the run formula. The context '" + ctx.toString() + "' does not fit any alternative.");
         }
     }
 
     @Override
     public void exitFlowFormula(FlowCTLFormatParser.FlowFormulaContext ctx) {
-//        flowFormulas.put(ctx, new FlowCTLFormula(ctlFormulas.get(ctx.phi))); /todo: do it when we know the concrete syntax
+        if (ctx.op.existsFlows() != null) {
+            flowFormulas.put(ctx, new FlowCTLFormula(FlowCTLFormula.FlowCTLOperator.Exists, ctlFormulas.get(ctx.phi)));
+        } else if (ctx.op.forallFlows() != null) {
+            flowFormulas.put(ctx, new FlowCTLFormula(FlowCTLFormula.FlowCTLOperator.All, ctlFormulas.get(ctx.phi)));
+        } else {
+            // todo: throw proper exception
+            throw new RuntimeException("Could not parse the flow formula. The context '" + ctx.toString() + "' does not fit any alternative.");
+        }
     }
 
     @Override
@@ -113,16 +121,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
         } else if (ctx.ctlBinary() != null) {
             ICTLFormula phi1 = ctlFormulas.get(ctx.ctlBinary().phi1);
             ICTLFormula phi2 = ctlFormulas.get(ctx.ctlBinary().phi2);
-            if (ctx.ctlBinary().op != null) {
-                if (ctx.ctlBinary().all() != null) {
-                    f = new CTLFormula(phi1, CTLOperators.Binary.AU, phi2);
-                } else if (ctx.ctlBinary().exists() != null) {
-                    f = new CTLFormula(phi1, CTLOperators.Binary.EU, phi2);
-                } else {
-                    // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
-                    throw new RuntimeException("Didn't considered all CTL binary operators for until.");
-                }
-            } else if (ctx.ctlBinary().stdOp != null) {
+            if (ctx.ctlBinary().stdOp != null) {
                 FlowCTLFormatParser.BinaryOpContext opCtx = ctx.ctlBinary().stdOp;
                 if (opCtx.and() != null) {
                     f = new CTLFormula(phi1, CTLOperators.Binary.AND, phi2);
@@ -134,7 +133,32 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
                     f = new CTLFormula(phi1, CTLOperators.Binary.BIMP, phi2);
                 } else {
                     // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
-                    throw new RuntimeException("Didn't considered all CTL binary operators for until.");
+                    throw new RuntimeException("Didn't considered all CTL binary operators (AND, OR, IMP, BIMP).");
+                }
+            } else if (ctx.ctlBinary().op != null) {
+                FlowCTLFormatParser.BinaryTempOpContext opCtx = ctx.ctlBinary().op;
+                if (opCtx.until() != null) {
+                    if (ctx.ctlBinary().all() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.AU, phi2);
+                    } else if (ctx.ctlBinary().exists() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.EU, phi2);
+                    }
+                } else if (opCtx.weak() != null) {
+                    if (ctx.ctlBinary().all() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.AW, phi2);
+                    } else if (ctx.ctlBinary().exists() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.EW, phi2);
+                    }
+                }
+                if (opCtx.opRelease() != null) {
+                    if (ctx.ctlBinary().all() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.AR, phi2);
+                    } else if (ctx.ctlBinary().exists() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.ER, phi2);
+                    }
+                } else {
+                    // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
+                    throw new RuntimeException("Didn't considered all CTL binary operators regarding U, R, W.");
                 }
             } else {
                 // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
@@ -148,11 +172,8 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
             throw new RuntimeException("Could not parse the LTL formula. The context '" + ctx.toString() + "' does not fit any alternative.");
         }
     }
-    //    public RunFormula getFormula() {
-    //        return formula;
-    //    }
 
-    public FlowCTLFormula getFormula() {
+    public RunCTLFormula getFormula() {
         return formula;
     }
 

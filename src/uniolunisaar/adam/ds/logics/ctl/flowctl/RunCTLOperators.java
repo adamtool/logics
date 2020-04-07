@@ -2,12 +2,22 @@ package uniolunisaar.adam.ds.logics.ctl.flowctl;
 
 import uniolunisaar.adam.ds.logics.flowlogics.*;
 import uniolunisaar.adam.ds.logics.IOperatorBinary;
+import uniolunisaar.adam.ds.logics.IOperatorUnary;
 
 /**
  *
  * @author Manuel Gieseking
  */
 public class RunCTLOperators {
+
+    public enum Unary implements IOperatorUnary<IRunFormula> {
+        NEG {
+            @Override
+            public String toSymbol() {
+                return "¬";// "\u00AC";
+            }
+        }
+    };
 
     public enum Binary implements IOperatorBinary<IRunFormula, IRunFormula> {
         AND {

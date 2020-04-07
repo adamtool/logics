@@ -43,6 +43,14 @@ public class RunCTLFormula extends Formula<IFormula> implements IRunFormula {
     }
 
     // Run Fragment
+    public RunCTLFormula(RunCTLOperators.Unary op, IRunFormula phi) {
+        super(new RunCTLFormulaUnary(op, phi));
+    }
+
+    public RunCTLFormula(RunCTLOperators.Unary op, ICTLFormula phi) {
+        super(new RunCTLFormulaUnary(op, new RunCTLFormula(phi)));
+    }
+
     public RunCTLFormula(IRunFormula phi1, RunCTLOperators.Binary op, IRunFormula phi2) {
         super(new RunCTLFormulaBinary(phi1, op, phi2));
     }
