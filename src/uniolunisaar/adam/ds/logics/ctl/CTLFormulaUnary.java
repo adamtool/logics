@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.logics.ctl;
 
 import uniolunisaar.adam.ds.logics.FormulaUnary;
 import uniolunisaar.adam.ds.logics.IFormula;
+import uniolunisaar.adam.exceptions.logics.NotConvertableException;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
@@ -26,5 +27,10 @@ class CTLFormulaUnary extends FormulaUnary<ICTLFormula, CTLOperators.Unary> impl
                     + subformula.toString() + "' with '" + with.toString() + "'"
                     + " is not an LTL formula and thus cannot be used for '" + toString() + "'.");
         }
+    }
+    
+        @Override
+    public String toLoLA() throws NotConvertableException {
+        return getOp().toLoLA() + " " + getPhi().toLoLA();
     }
 }

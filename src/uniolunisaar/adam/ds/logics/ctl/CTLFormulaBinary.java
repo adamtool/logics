@@ -3,6 +3,7 @@ package uniolunisaar.adam.ds.logics.ctl;
 import java.util.ArrayList;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import uniolunisaar.adam.ds.logics.IFormula;
+import uniolunisaar.adam.exceptions.logics.NotConvertableException;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
@@ -62,4 +63,10 @@ class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Binary, I
         String pref = getOp().equals(CTLOperators.Binary.AU) ? CTLOperators.all : (getOp().equals(CTLOperators.Binary.EU) ? CTLOperators.exists : "");
         return pref + "(" + getPhi1().toReplacableString() + " " + getOp().toString() + " " + getPhi2().toReplacableString() + ")";
     }
+
+    @Override
+    public String toLoLA() throws NotConvertableException {
+        return "(" + getPhi1().toLoLA() + " " + getOp().toLoLA() + " " + getPhi2().toLoLA() + ")";
+    }
+
 }

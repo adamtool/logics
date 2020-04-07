@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.logics.ctl;
 
 import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.IFormula;
+import uniolunisaar.adam.exceptions.logics.NotConvertableException;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
@@ -51,4 +52,8 @@ public class CTLFormula extends Formula<ICTLFormula> implements ICTLFormula {
 //            throw new NotSubstitutableException("Error creating LTL formula.");
 //        }
 //    }
+    @Override
+    public String toLoLA() throws NotConvertableException {
+        return getPhi().toLoLA();
+    }
 }
