@@ -36,13 +36,13 @@ class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Binary, I
                 throw new NotSubstitutableException(
                         "The substituted subformula '" + phi2.toString() + "', created by substituting '"
                         + subformula.toString() + "' with '" + with.toString() + "'"
-                        + " is not an LTL formula and thus cannot be used for '" + toString() + "'.");
+                        + " is not a CTL formula and thus cannot be used for '" + toString() + "'.");
             }
         } else {
             throw new NotSubstitutableException(
                     "The substituted subformula '" + phi1.toString() + "', created by substituting '"
                     + subformula.toString() + "' with '" + with.toString() + "'"
-                    + " is not an LTL formula and thus cannot be used for '" + toString() + "'.");
+                    + " is not a CTL formula and thus cannot be used for '" + toString() + "'.");
         }
     }
 
@@ -66,7 +66,8 @@ class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Binary, I
 
     @Override
     public String toLoLA() throws NotConvertableException {
-        return "(" + getPhi1().toLoLA() + " " + getOp().toLoLA() + " " + getPhi2().toLoLA() + ")";
+        String pref = getOp().equals(CTLOperators.Binary.AU) ? CTLOperators.allLoLA : (getOp().equals(CTLOperators.Binary.EU) ? CTLOperators.existsLoLA : "");
+        return pref + "(" + getPhi1().toLoLA() + " " + getOp().toLoLA() + " " + getPhi2().toLoLA() + ")";
     }
 
 }
