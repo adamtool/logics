@@ -43,9 +43,10 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
     @Override
     public void exitRunFormula(FlowCTLFormatParser.RunFormulaContext ctx) {
         RunLTLFormula f = null;
-        if (ctx.rimp() != null) {
+//        if (ctx.rimp() != null) {
 //            f = new RunLTLFormula(ctlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2)); // todo: do it
-        } else if (ctx.ctl() != null) {
+//        } else
+        if (ctx.ctl() != null) {
             f = new RunLTLFormula(ctlFormulas.get(ctx.ctl()));
         } else if (ctx.flowFormula() != null) {
             f = new RunLTLFormula(flowFormulas.get(ctx.flowFormula()));
@@ -66,6 +67,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
             throw new RuntimeException("Could not parse the Run formula. The context '" + ctx.toString() + "' does not fit any alternative.");
         }
     }
+
     @Override
     public void exitFlowFormula(FlowCTLFormatParser.FlowFormulaContext ctx) {
 //        flowFormulas.put(ctx, new FlowCTLFormula(ctlFormulas.get(ctx.phi))); /todo: do it when we know the concrete syntax

@@ -5,27 +5,39 @@ grammar FlowCTLFormat;
 flowCTL: runFormula EOF;
 
 // flowCTL
-runFormula: ctl | 
-              '(' phi1=ctl rimp phi2=runFormula ')' |
-              runBinary |
-             flowFormula;
+runFormula: ctl | runUnary | runBinary | flowFormula;
 
+//%%%%%%%%%% RUN PART
+runUnary: op=neg phi=runFormula;
 runBinary: '(' phi1=runFormula op=rbin phi2=runFormula ')';
 
-// flowFormula
-flowFormula: forallFlows '('? phi=ctl ')'?;
+// Operators
+rbin: rand | ror | rimp | rbimp;
+rand: 'AND' | '⋀';
+ror: 'OR' | '⋁';
+rimp: 'IMP' | '->' | '⇒';
+rbimp: 'BIMP' | '<->' | '⇔';
 
-// CTL
-ctl: ctlUnary | ctlBinary | tt | ff | atom;
-ctlUnary: op=unaryOp  phi=ctl;
-ctlBinary:  '(' phi1=ctl stdOp=binaryOp phi2=ctl ')' | all'(' phi1=ctl op=until phi2=ctl ')' | exists'(' phi1=ctl op=until phi2=ctl ')';
+//%%%%%%%%%% flowFormula
+flowFormula: (forallFlows | existsFlows) phi=ctl ;
+
+// Operators
+forallFlows: 'All' | '𝔸';
+existsFlows: 'Exists' | '𝔼';
+
+//%%%%%%%%%% CTL
+ctl: tt | ff | atom | ctlUnary | ctlBinary;
 
 atom:  id=ID | id=INT;
+ctlUnary: op=unaryOp  phi=ctl;
+ctlBinary:      '(' phi1=ctl stdOp=binaryOp phi2=ctl ')' |
+             all'(' phi1=ctl op=binaryTempOp phi2=ctl ')' |
+          exists'(' phi1=ctl op=binaryTempOp phi2=ctl ')' ;
 
-/* operators */
-// CTL
+// Operators
 unaryOp: (ex | ax | ef | af | eg | ag | neg);
 binaryOp: (and | or | imp | bimp );
+binaryTempOp: (until | weak | opRelease);
 
 exists: 'E';
 all: 'A';
@@ -41,17 +53,8 @@ or: 'OR' | '⋎' ;
 imp: 'IMP' | '->' | '→' ;
 bimp: 'BIMP' | '<->' | '↔';
 until: 'U' | '𝓤';
-//weak: 'W' | '𝓦';
-//release: 'R' | '𝓡';
-
-// FlowFormula
-forallFlows: 'All' | '𝔸';
-
-// RunFormula
-rbin: rand | ror;
-rand: 'AND' | '⋀';
-ror: 'OR' | '⋁';
-rimp: 'IMP' | '->' | '⇒';
+weak: 'W' | '𝓦';
+opRelease: 'R' | '𝓡';
 
 tt: 'TRUE' | '⊤';
 ff: 'FALSE' | '⊥';
