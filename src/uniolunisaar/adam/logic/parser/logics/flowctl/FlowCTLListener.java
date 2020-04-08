@@ -149,8 +149,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
                     } else if (ctx.ctlBinary().exists() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.EW, phi2);
                     }
-                }
-                if (opCtx.opRelease() != null) {
+                } else if (opCtx.opRelease() != null) {
                     if (ctx.ctlBinary().all() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.AR, phi2);
                     } else if (ctx.ctlBinary().exists() != null) {
@@ -160,6 +159,31 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
                     // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
                     throw new RuntimeException("Didn't considered all CTL binary operators regarding U, R, W.");
                 }
+                // also working code, when not having E and A as nonterminals
+//                FlowCTLFormatParser.BinaryTempOpContext opCtx = ctx.ctlBinary().op;
+//                String start = ctx.ctlBinary().getStart().getText();
+//                if (opCtx.until() != null) {
+//                    if (start.equals("A")) {
+//                        f = new CTLFormula(phi1, CTLOperators.Binary.AU, phi2);
+//                    } else if (start.equals("E")) {
+//                        f = new CTLFormula(phi1, CTLOperators.Binary.EU, phi2);
+//                    }
+//                } else if (opCtx.weak() != null) {
+//                    if (start.equals("A")) {
+//                        f = new CTLFormula(phi1, CTLOperators.Binary.AW, phi2);
+//                    } else if (start.equals("E")) {
+//                        f = new CTLFormula(phi1, CTLOperators.Binary.EW, phi2);
+//                    }
+//                } else if (opCtx.opRelease() != null) {
+//                    if (start.equals("A")) {
+//                        f = new CTLFormula(phi1, CTLOperators.Binary.AR, phi2);
+//                    } else if (start.equals("E")) {
+//                        f = new CTLFormula(phi1, CTLOperators.Binary.ER, phi2);
+//                    }
+//                } else {
+//                    // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
+//                    throw new RuntimeException("Didn't considered all CTL binary operators regarding U, R, W.");
+//                }
             } else {
                 // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
                 throw new RuntimeException("Didn't considered all CTL binary operators.");
@@ -169,7 +193,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
             ctlFormulas.put(ctx, f);
         } else {
             // todo: throw proper exception
-            throw new RuntimeException("Could not parse the LTL formula. The context '" + ctx.toString() + "' does not fit any alternative.");
+            throw new RuntimeException("Could not parse the CTL formula. The context '" + ctx.getText() + "' does not fit any alternative.");
         }
     }
 
