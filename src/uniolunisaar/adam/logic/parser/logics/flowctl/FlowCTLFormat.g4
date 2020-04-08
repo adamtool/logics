@@ -19,7 +19,7 @@ rimp: 'IMP' | '->' | '⇒';
 rbimp: 'BIMP' | '<->' | '⇔';
 
 //%%%%%%%%%% flowFormula
-flowFormula: op=flowOperators phi=ctl;
+flowFormula: op=flowOperators  phi=ctl;
 
 // Operators
 flowOperators: forallFlows | existsFlows;
