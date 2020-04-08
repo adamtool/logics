@@ -11,9 +11,9 @@ import uniolunisaar.adam.ds.logics.IOperatorUnary;
  * @param <F>
  */
 //public class FlowFormula extends FormulaUnary<IFlowFormula, ILTLFormula, FlowFormula.FlowOperator> implements IFlowFormula {
-public abstract class FlowFormula<F extends IFormula> extends FormulaUnary<F, IOperatorUnary<F>> implements IFlowFormula {
+public abstract class FlowFormula<F extends IFormula, OP extends IOperatorUnary<F>> extends FormulaUnary<F, OP> implements IFlowFormula {
 
-    protected FlowFormula(IOperatorUnary<F> op, F phi) {
+    protected FlowFormula(OP op, F phi) {
         super(op, phi);
     }
 

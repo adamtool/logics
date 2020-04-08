@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.logics.flowlogics.FlowFormula;
  *
  * @author Manuel Gieseking
  */
-public class FlowLTLFormula extends FlowFormula<ILTLFormula> {
+public class FlowLTLFormula extends FlowFormula<ILTLFormula, FlowLTLFormula.FlowLTLOperator> {
 
     public enum FlowLTLOperator implements IOperatorUnary<ILTLFormula> {
         A {
