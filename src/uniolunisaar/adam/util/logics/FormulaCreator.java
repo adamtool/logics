@@ -7,6 +7,10 @@ import java.util.List;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.logics.ctl.CTLConstants;
+import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
+import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowLTLFormula;
@@ -69,6 +73,30 @@ public class FormulaCreator {
             while (it.hasNext()) {
                 ILTLFormula next = it.next();
                 last = new LTLFormula(next, op, last);
+            }
+            return last;
+        }
+    }
+
+    public static ICTLFormula bigWedgeOrVeeObjectCTL(Collection<? extends ICTLFormula> elements, boolean wedge) {
+        if (elements.isEmpty()) {
+//            throw new RuntimeException("Iteration over an empty set."); 
+            // and means all must be fullfilled -> true, or at least one must be fullfilled -> false
+            if (wedge) {
+                return new CTLConstants.True();
+            } else {
+                return new CTLConstants.False();
+            }
+        }
+        CTLOperators.Binary op = (wedge) ? CTLOperators.Binary.AND : CTLOperators.Binary.OR;
+        if (elements.size() == 1) {
+            return elements.iterator().next();
+        } else {
+            Iterator<? extends ICTLFormula> it = elements.iterator();
+            ICTLFormula last = new CTLFormula(it.next(), op, it.next());
+            while (it.hasNext()) {
+                ICTLFormula next = it.next();
+                last = new CTLFormula(next, op, last);
             }
             return last;
         }
