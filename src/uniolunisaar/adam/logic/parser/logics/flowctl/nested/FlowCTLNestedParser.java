@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.io.parser.ParseException;
-import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.separate.RunCTLSeparateFormula;
 import uniolunisaar.adam.exceptions.pnwt.LineParseException;
 import uniolunisaar.adam.logic.parser.ParsingUtils;
 import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatLexer;
@@ -16,7 +16,7 @@ import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedF
  */
 public class FlowCTLNestedParser {
 
-    public static RunCTLFormula parse(PetriNet net, String formula) throws ParseException {
+    public static RunCTLSeparateFormula parse(PetriNet net, String formula) throws ParseException {
         try {
             FlowCTLNestedFormatLexer lexer = new FlowCTLNestedFormatLexer(new ANTLRInputStream(formula));
 

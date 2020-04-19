@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
-import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.separate.RunCTLSeparateFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
 import uniolunisaar.adam.logic.parser.logics.flowctl.separate.antlr.FlowCTLSeparateFormatBaseListener;
 import uniolunisaar.adam.logic.parser.logics.flowctl.separate.antlr.FlowCTLSeparateFormatParser;
@@ -24,9 +24,9 @@ import uniolunisaar.adam.logic.parser.logics.flowctl.separate.antlr.FlowCTLSepar
 public class FlowCTLSeparateListener extends FlowCTLSeparateFormatBaseListener {
 
     private final PetriNet net;
-    private RunCTLFormula formula;
+    private RunCTLSeparateFormula formula;
     private final Map<CtlContext, ICTLFormula> ctlFormulas = new HashMap<>();
-    private final Map<RunFormulaContext, RunCTLFormula> runFormulas = new HashMap<>();
+    private final Map<RunFormulaContext, RunCTLSeparateFormula> runFormulas = new HashMap<>();
     private final Map<FlowFormulaContext, FlowCTLFormula> flowFormulas = new HashMap<>();
 
     public FlowCTLSeparateListener(PetriNet net) {
@@ -40,26 +40,26 @@ public class FlowCTLSeparateListener extends FlowCTLSeparateFormatBaseListener {
 
     @Override
     public void exitRunFormula(FlowCTLSeparateFormatParser.RunFormulaContext ctx) {
-        RunCTLFormula f = null;
+        RunCTLSeparateFormula f = null;
         if (ctx.ctl() != null) {
-            f = new RunCTLFormula(ctlFormulas.get(ctx.ctl()));
+            f = new RunCTLSeparateFormula(ctlFormulas.get(ctx.ctl()));
         } else if (ctx.runUnary() != null) {
-            f = new RunCTLFormula(RunCTLOperators.Unary.NEG, runFormulas.get(ctx.runUnary().phi));
+            f = new RunCTLSeparateFormula(RunCTLOperators.Unary.NEG, runFormulas.get(ctx.runUnary().phi));
         } else if (ctx.runBinary() != null) {
             if (ctx.runBinary().op.rand() != null) {
-                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunCTLSeparateFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
             } else if (ctx.runBinary().op.ror() != null) {
-                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunCTLSeparateFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
             } else if (ctx.runBinary().op.rimp() != null) {
-                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.IMP, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunCTLSeparateFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.IMP, runFormulas.get(ctx.runBinary().phi2));
             } else if (ctx.runBinary().op.rbimp() != null) {
-                f = new RunCTLFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.BIMP, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunCTLSeparateFormula(runFormulas.get(ctx.runBinary().phi1), RunCTLOperators.Binary.BIMP, runFormulas.get(ctx.runBinary().phi2));
             } else {
                 // todo: throw proper exception
                 throw new RuntimeException("Could not parse the run formula. There should be a binary run formula, but the operators are different to 'AND', 'OR', 'IMP', and 'BIMP'.");
             }
         } else if (ctx.flowFormula() != null) {
-            f = new RunCTLFormula(flowFormulas.get(ctx.flowFormula()));
+            f = new RunCTLSeparateFormula(flowFormulas.get(ctx.flowFormula()));
         }
         if (f != null) {
             runFormulas.put(ctx, f);
@@ -197,7 +197,7 @@ public class FlowCTLSeparateListener extends FlowCTLSeparateFormatBaseListener {
         }
     }
 
-    public RunCTLFormula getFormula() {
+    public RunCTLSeparateFormula getFormula() {
         return formula;
     }
 

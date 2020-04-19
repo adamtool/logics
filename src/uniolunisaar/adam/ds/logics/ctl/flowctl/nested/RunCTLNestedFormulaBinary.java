@@ -1,8 +1,9 @@
-package uniolunisaar.adam.ds.logics.ctl.flowctl;
+package uniolunisaar.adam.ds.logics.ctl.flowctl.nested;
 
 import java.util.ArrayList;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import uniolunisaar.adam.ds.logics.IFormula;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
 
@@ -10,9 +11,9 @@ import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
  *
  * @author Manuel Gieseking
  */
-class RunCTLFormulaBinary extends FormulaBinary<IRunFormula, RunCTLOperators.Binary, IRunFormula> implements IRunFormula {
+class RunCTLNestedFormulaBinary extends FormulaBinary<IRunFormula, RunCTLOperators.Binary, IRunFormula> implements IRunFormula {
 
-    public RunCTLFormulaBinary(IRunFormula phi1, RunCTLOperators.Binary op, IRunFormula phi2) {
+    public RunCTLNestedFormulaBinary(IRunFormula phi1, RunCTLOperators.Binary op, IRunFormula phi2) {
         super(phi1, op, phi2);
     }
 
@@ -25,12 +26,12 @@ class RunCTLFormulaBinary extends FormulaBinary<IRunFormula, RunCTLOperators.Bin
     }
 
     @Override
-    public RunCTLFormula createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
+    public RunCTLNestedFormula createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
         IFormula phi1 = getPhi1().substitute(subformula, with);
         IFormula phi2 = getPhi2().substitute(subformula, with);
         if (phi1 instanceof IRunFormula) {
             if (phi2 instanceof IRunFormula) {
-                return new RunCTLFormula((IRunFormula) phi1, getOp(), (IRunFormula) phi2);
+                return new RunCTLNestedFormula((IRunFormula) phi1, getOp(), (IRunFormula) phi2);
             } else {
                 throw new NotSubstitutableException(
                         "The substituted subformula '" + phi2.toString() + "', created by substituting '"

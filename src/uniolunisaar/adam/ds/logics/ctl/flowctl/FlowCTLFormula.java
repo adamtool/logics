@@ -38,7 +38,7 @@ public class FlowCTLFormula extends FlowFormula<ICTLFormula, FlowCTLOperator> {
     public IFormula createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
         IFormula f = getPhi().substitute(subformula, with);
         if (f instanceof ICTLFormula) {
-            return new FlowCTLFormula((FlowCTLOperator) getOp(), (ICTLFormula) f);
+            return new FlowCTLFormula(getOp(), (ICTLFormula) f);
         } else {
             throw new NotSubstitutableException(
                     "The substituted subformula '" + f.toString() + "', created by substituting '"

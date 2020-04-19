@@ -12,7 +12,7 @@ import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
-import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.separate.RunCTLSeparateFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
@@ -60,8 +60,8 @@ public class LogicsTools {
             return flowFormulas;
         } else if (formula instanceof ICTLFormula) {
             return flowFormulas;
-        } else if (formula instanceof RunCTLFormula) {
-            return getFlowCTLFormulas(((RunCTLFormula) formula).getPhi());
+        } else if (formula instanceof RunCTLSeparateFormula) {
+            return getFlowCTLFormulas(((RunCTLSeparateFormula) formula).getPhi());
         } else if (formula instanceof FormulaBinary<?, ?, ?>) {
             FormulaBinary<?, ?, ?> binF = (FormulaBinary<?, ?, ?>) formula;
             flowFormulas.addAll(getFlowCTLFormulas(binF.getPhi1()));
@@ -122,8 +122,8 @@ public class LogicsTools {
     public static ICTLFormula convert2CTL(IFormula f) throws NotConvertableException {
         if (f instanceof IFlowFormula) {
             throw new NotConvertableException("The formula contains a flow formula '" + f.toSymbolString() + "'. Hence, we cannot transform it to a CTL formula.");
-        } else if (f instanceof RunCTLFormula) {
-            return new CTLFormula(convert2CTL(((RunCTLFormula) f).getPhi()));
+        } else if (f instanceof RunCTLSeparateFormula) {
+            return new CTLFormula(convert2CTL(((RunCTLSeparateFormula) f).getPhi()));
         } else if (f instanceof IRunFormula && f instanceof FormulaBinary) {
             FormulaBinary<?, ?, ?> form = ((FormulaBinary<?, ?, ?>) f);
             IOperatorBinary<?, ?> op = form.getOp();
