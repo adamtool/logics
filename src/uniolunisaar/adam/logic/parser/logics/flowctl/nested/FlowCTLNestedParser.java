@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.parser.logics.flowctl;
+package uniolunisaar.adam.logic.parser.logics.flowctl.nested;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -7,32 +7,32 @@ import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
 import uniolunisaar.adam.exceptions.pnwt.LineParseException;
 import uniolunisaar.adam.logic.parser.ParsingUtils;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatLexer;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatLexer;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class FlowCTLParser {
+public class FlowCTLNestedParser {
 
     public static RunCTLFormula parse(PetriNet net, String formula) throws ParseException {
         try {
-            FlowCTLFormatLexer lexer = new FlowCTLFormatLexer(new ANTLRInputStream(formula));
+            FlowCTLNestedFormatLexer lexer = new FlowCTLNestedFormatLexer(new ANTLRInputStream(formula));
 
             // Get a list of matched tokens
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
             // Pass the tokens to the parser
-            FlowCTLFormatParser parser = new FlowCTLFormatParser(tokens);
+            FlowCTLNestedFormatParser parser = new FlowCTLNestedFormatParser(tokens);
 
             ParsingUtils.handleErrors(lexer, parser, true);
 
             // Specify our entry point
-            FlowCTLFormatParser.FlowCTLContext context = parser.flowCTL();
+            FlowCTLNestedFormatParser.FlowCTLContext context = parser.flowCTL();
 
             // Walk it and attach our listener
-            FlowCTLListener listener = new FlowCTLListener(net);
+            FlowCTLNestedListener listener = new FlowCTLNestedListener(net);
             ParsingUtils.walk(listener, context);
             return listener.getFormula();
         } catch (LineParseException e) {

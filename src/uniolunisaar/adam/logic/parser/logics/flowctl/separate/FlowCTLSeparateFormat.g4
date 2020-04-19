@@ -1,6 +1,6 @@
 // For parsing the flow ctl formulas.
 // @author Manuel Gieseking
-grammar FlowCTLFormat;
+grammar FlowCTLSeparateFormat;
 
 flowCTL: runFormula EOF;
 

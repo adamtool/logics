@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.parser.logics.flowctl;
+package uniolunisaar.adam.logic.parser.logics.flowctl.nested;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,17 +11,17 @@ import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatBaseListener;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.CtlContext;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.FlowFormulaContext;
-import uniolunisaar.adam.logic.parser.logics.flowctl.antlr.FlowCTLFormatParser.RunFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatBaseListener;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.CtlContext;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.FlowFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.RunFormulaContext;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class FlowCTLListener extends FlowCTLFormatBaseListener {
+public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
 
     private final PetriNet net;
     private RunCTLFormula formula;
@@ -29,17 +29,17 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
     private final Map<RunFormulaContext, RunCTLFormula> runFormulas = new HashMap<>();
     private final Map<FlowFormulaContext, FlowCTLFormula> flowFormulas = new HashMap<>();
 
-    public FlowCTLListener(PetriNet net) {
+    public FlowCTLNestedListener(PetriNet net) {
         this.net = net;
     }
 
     @Override
-    public void exitFlowCTL(FlowCTLFormatParser.FlowCTLContext ctx) {
+    public void exitFlowCTL(FlowCTLNestedFormatParser.FlowCTLContext ctx) {
         formula = runFormulas.get(ctx.runFormula());
     }
 
     @Override
-    public void exitRunFormula(FlowCTLFormatParser.RunFormulaContext ctx) {
+    public void exitRunFormula(FlowCTLNestedFormatParser.RunFormulaContext ctx) {
         RunCTLFormula f = null;
         if (ctx.ctl() != null) {
             f = new RunCTLFormula(ctlFormulas.get(ctx.ctl()));
@@ -70,7 +70,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
     }
 
     @Override
-    public void exitFlowFormula(FlowCTLFormatParser.FlowFormulaContext ctx) {
+    public void exitFlowFormula(FlowCTLNestedFormatParser.FlowFormulaContext ctx) {
         if (ctx.op.existsFlows() != null) {
             flowFormulas.put(ctx, new FlowCTLFormula(FlowCTLFormula.FlowCTLOperator.Exists, ctlFormulas.get(ctx.phi)));
         } else if (ctx.op.forallFlows() != null) {
@@ -82,7 +82,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
     }
 
     @Override
-    public void exitCtl(FlowCTLFormatParser.CtlContext ctx) {
+    public void exitCtl(FlowCTLNestedFormatParser.CtlContext ctx) {
         ICTLFormula f = null;
         if (ctx.atom() != null) {
             String id = ctx.atom().getText();
@@ -98,7 +98,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
         } else if (ctx.ff() != null) {
             f = new CTLConstants.False();
         } else if (ctx.ctlUnary() != null) {
-            FlowCTLFormatParser.UnaryOpContext opCtx = ctx.ctlUnary().op;
+            FlowCTLNestedFormatParser.UnaryOpContext opCtx = ctx.ctlUnary().op;
             ICTLFormula phi = ctlFormulas.get(ctx.ctlUnary().phi);
             if (opCtx.ex() != null) {
                 f = new CTLFormula(CTLOperators.Unary.EX, phi);
@@ -122,7 +122,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
             ICTLFormula phi1 = ctlFormulas.get(ctx.ctlBinary().phi1);
             ICTLFormula phi2 = ctlFormulas.get(ctx.ctlBinary().phi2);
             if (ctx.ctlBinary().stdOp != null) {
-                FlowCTLFormatParser.BinaryOpContext opCtx = ctx.ctlBinary().stdOp;
+                FlowCTLNestedFormatParser.BinaryOpContext opCtx = ctx.ctlBinary().stdOp;
                 if (opCtx.and() != null) {
                     f = new CTLFormula(phi1, CTLOperators.Binary.AND, phi2);
                 } else if (opCtx.or() != null) {
@@ -136,7 +136,7 @@ public class FlowCTLListener extends FlowCTLFormatBaseListener {
                     throw new RuntimeException("Didn't considered all CTL binary operators (AND, OR, IMP, BIMP).");
                 }
             } else if (ctx.ctlBinary().op != null) {
-                FlowCTLFormatParser.BinaryTempOpContext opCtx = ctx.ctlBinary().op;
+                FlowCTLNestedFormatParser.BinaryTempOpContext opCtx = ctx.ctlBinary().op;
                 if (opCtx.until() != null) {
                     if (ctx.ctlBinary().all() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.AU, phi2);
