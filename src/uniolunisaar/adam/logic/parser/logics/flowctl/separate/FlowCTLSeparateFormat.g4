@@ -33,7 +33,7 @@ atom:  id=ID | id=INT;
 ctlUnary: op=unaryOp  phi=ctl;
 ctlBinary:     exists '(' phi1=ctl op=binaryTempOp phi2=ctl ')' |
                all '(' phi1=ctl op=binaryTempOp phi2=ctl ')' |
-                '(' phi1=ctl stdOp=binaryOp phi2=ctl ')';
+                '(' phi1=ctl stdOp=binaryOp phi2=ctl ')'; 
 
 // Operators
 unaryOp: (ex | ax | ef | af | eg | ag | neg);

@@ -11,10 +11,16 @@ import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
+import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
+import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
+import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
+import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
+import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatBaseListener;
 import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser;
 import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.CtlContext;
 import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.FlowFormulaContext;
+import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.LtlContext;
 import uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr.FlowCTLNestedFormatParser.RunFormulaContext;
 
 /**
@@ -26,6 +32,7 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
     private final PetriNet net;
     private RunCTLFormula formula;
     private final Map<CtlContext, ICTLFormula> ctlFormulas = new HashMap<>();
+    private final Map<LtlContext, ILTLFormula> ltlFormulas = new HashMap<>();
     private final Map<RunFormulaContext, RunCTLFormula> runFormulas = new HashMap<>();
     private final Map<FlowFormulaContext, FlowCTLFormula> flowFormulas = new HashMap<>();
 
@@ -41,8 +48,8 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
     @Override
     public void exitRunFormula(FlowCTLNestedFormatParser.RunFormulaContext ctx) {
         RunCTLFormula f = null;
-        if (ctx.ctl() != null) {
-            f = new RunCTLFormula(ctlFormulas.get(ctx.ctl()));
+        if (ctx.ltl() != null) {
+            f = new RunCTLFormula(ltlFormulas.get(ctx.ltl()));
         } else if (ctx.runUnary() != null) {
             f = new RunCTLFormula(RunCTLOperators.Unary.NEG, runFormulas.get(ctx.runUnary().phi));
         } else if (ctx.runBinary() != null) {
@@ -98,7 +105,7 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
         } else if (ctx.ff() != null) {
             f = new CTLConstants.False();
         } else if (ctx.ctlUnary() != null) {
-            FlowCTLNestedFormatParser.UnaryOpContext opCtx = ctx.ctlUnary().op;
+            FlowCTLNestedFormatParser.CtlUnaryOpContext opCtx = ctx.ctlUnary().op;
             ICTLFormula phi = ctlFormulas.get(ctx.ctlUnary().phi);
             if (opCtx.ex() != null) {
                 f = new CTLFormula(CTLOperators.Unary.EX, phi);
@@ -122,7 +129,7 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
             ICTLFormula phi1 = ctlFormulas.get(ctx.ctlBinary().phi1);
             ICTLFormula phi2 = ctlFormulas.get(ctx.ctlBinary().phi2);
             if (ctx.ctlBinary().stdOp != null) {
-                FlowCTLNestedFormatParser.BinaryOpContext opCtx = ctx.ctlBinary().stdOp;
+                FlowCTLNestedFormatParser.CtlBinaryOpContext opCtx = ctx.ctlBinary().stdOp;
                 if (opCtx.and() != null) {
                     f = new CTLFormula(phi1, CTLOperators.Binary.AND, phi2);
                 } else if (opCtx.or() != null) {
@@ -136,7 +143,7 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
                     throw new RuntimeException("Didn't considered all CTL binary operators (AND, OR, IMP, BIMP).");
                 }
             } else if (ctx.ctlBinary().op != null) {
-                FlowCTLNestedFormatParser.BinaryTempOpContext opCtx = ctx.ctlBinary().op;
+                FlowCTLNestedFormatParser.CtlBinaryTempOpContext opCtx = ctx.ctlBinary().op;
                 if (opCtx.until() != null) {
                     if (ctx.ctlBinary().all() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.AU, phi2);
@@ -149,7 +156,7 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
                     } else if (ctx.ctlBinary().exists() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.EW, phi2);
                     }
-                } else if (opCtx.opRelease() != null) {
+                } else if (opCtx.release() != null) {
                     if (ctx.ctlBinary().all() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.AR, phi2);
                     } else if (ctx.ctlBinary().exists() != null) {
@@ -194,6 +201,62 @@ public class FlowCTLNestedListener extends FlowCTLNestedFormatBaseListener {
         } else {
             // todo: throw proper exception
             throw new RuntimeException("Could not parse the CTL formula. The context '" + ctx.getText() + "' does not fit any alternative.");
+        }
+    }
+
+    @Override
+    public void exitLtl(FlowCTLNestedFormatParser.LtlContext ctx) {
+        ILTLFormula f = null;
+        if (ctx.atom() != null) {
+            String id = ctx.atom().getText();
+            f = net.containsPlace(id) ? new LTLAtomicProposition(net.getPlace(id)) : (net.containsTransition(id) ? new LTLAtomicProposition(net.getTransition(id)) : null);
+            if (f == null) { //todo: could also say in these cases 'false' holds
+                // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
+                throw new RuntimeException("The atom '" + id + "' is no identifier of a place or a transition of the net '" + net.getName() + "'."
+                        + "\nThe places are " + net.getPlaces().toString()
+                        + "\nThe transitions are " + net.getTransitions().toString());
+            }
+        } else if (ctx.tt() != null) {
+            f = new LTLConstants.True();
+        } else if (ctx.ff() != null) {
+            f = new LTLConstants.False();
+        } else if (ctx.ltlUnary() != null) {
+            String operator = ctx.ltlUnary().op.getText();
+            ILTLFormula phi = ltlFormulas.get(ctx.ltlUnary().phi);
+            if (operator.equals(LTLOperators.Unary.F.name()) || operator.equals(LTLOperators.Unary.F.toSymbol())) {
+                f = new LTLFormula(LTLOperators.Unary.F, phi);
+            } else if (operator.equals(LTLOperators.Unary.G.name()) || operator.equals(LTLOperators.Unary.G.toSymbol())) {
+                f = new LTLFormula(LTLOperators.Unary.G, phi);
+            } else if (operator.equals(LTLOperators.Unary.X.name()) || operator.equals(LTLOperators.Unary.X.toSymbol())) {
+                f = new LTLFormula(LTLOperators.Unary.X, phi);
+            } else if (operator.equals("!") || operator.equals(LTLOperators.Unary.NEG.name()) || operator.equals(LTLOperators.Unary.NEG.toSymbol())) {
+                f = new LTLFormula(LTLOperators.Unary.NEG, phi);
+            }
+        } else if (ctx.ltlBinary() != null) {
+            String operator = ctx.ltlBinary().op.getText();
+            ILTLFormula phi1 = ltlFormulas.get(ctx.ltlBinary().phi1);
+            ILTLFormula phi2 = ltlFormulas.get(ctx.ltlBinary().phi2);
+            if (operator.equals(LTLOperators.Binary.AND.name()) || operator.equals(LTLOperators.Binary.AND.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.AND, phi2);
+            } else if (operator.equals(LTLOperators.Binary.OR.name()) || operator.equals(LTLOperators.Binary.OR.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.OR, phi2);
+            } else if (operator.equals(LTLOperators.Binary.IMP.name()) || operator.equals("->") || operator.equals(LTLOperators.Binary.IMP.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.IMP, phi2);
+            } else if (operator.equals(LTLOperators.Binary.BIMP.name()) || operator.equals("<->") || operator.equals(LTLOperators.Binary.BIMP.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.BIMP, phi2);
+            } else if (operator.equals(LTLOperators.Binary.W.name()) || operator.equals(LTLOperators.Binary.W.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.W, phi2);
+            } else if (operator.equals(LTLOperators.Binary.U.name()) || operator.equals(LTLOperators.Binary.U.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.U, phi2);
+            } else if (operator.equals(LTLOperators.Binary.R.name()) || operator.equals(LTLOperators.Binary.R.toSymbol())) {
+                f = new LTLFormula(phi1, LTLOperators.Binary.R, phi2);
+            }
+        }
+        if (f != null) {
+            ltlFormulas.put(ctx, f);
+        } else {
+            // todo: throw proper exception
+            throw new RuntimeException("Could not parse the LTL formula. The context '" + ctx.toString() + "' does not fit any alternative.");
         }
     }
 
