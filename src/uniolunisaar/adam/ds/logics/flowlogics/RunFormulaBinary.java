@@ -5,7 +5,7 @@ import uniolunisaar.adam.ds.logics.FormulaBinary;
 
 /**
  *
- * Not really used so far. Maybe try to use it for have common things for CTL and LTL
+ * Not really used so far. Maybe try to use it for having common things for CTL and LTL
  * @author Manuel Gieseking
  */
 //class RunFormulaBinary extends FormulaBinary<IRunFormula, IRunFormula, RunOperators.Binary, IRunFormula> implements IRunFormula {
