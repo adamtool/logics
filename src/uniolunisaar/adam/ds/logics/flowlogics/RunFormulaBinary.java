@@ -2,9 +2,6 @@ package uniolunisaar.adam.ds.logics.flowlogics;
 
 import java.util.ArrayList;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
-import uniolunisaar.adam.ds.logics.IFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
-import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
 
 /**
  *
