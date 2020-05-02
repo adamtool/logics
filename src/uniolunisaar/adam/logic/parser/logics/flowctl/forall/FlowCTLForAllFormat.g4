@@ -50,7 +50,7 @@ ctlBinary:  exists '(' phi1=ctl op=ctlBinaryTempOp phi2=ctl ')' |
 // Operators
 ctlUnaryOp: (ex | ax | ef | af | eg | ag | neg);
 ctlBinaryOp: (and | or | imp | bimp );
-ctlBinaryTempOp: (until | weak | release);
+ctlBinaryTempOp: (until | untilDual | weak | release);
 
 exists: 'E';
 all: 'A';
@@ -78,6 +78,7 @@ or: 'OR' | '⋎' ;
 imp: 'IMP' | '->' | '→' ;
 bimp: 'BIMP' | '<->' | '↔';
 until: 'U' | '𝓤';
+untilDual: 'U_' | '𝓤_';
 weak: 'W' | '𝓦';
 release: 'R' | '𝓡';
 

@@ -9,7 +9,6 @@ import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.FlowCTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
-import uniolunisaar.adam.ds.logics.ctl.flowctl.RunCTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.flowctl.forall.RunCTLForAllFormula;
 import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
@@ -51,7 +50,7 @@ public class FlowCTLForAllListener extends FlowCTLForAllFormatBaseListener {
         RunCTLForAllFormula f = null;
         if (ctx.ltl() != null) {
             f = new RunCTLForAllFormula(ltlFormulas.get(ctx.ltl()));
-        } else if (ctx.rimp()!= null) {            
+        } else if (ctx.rimp() != null) {
             f = new RunCTLForAllFormula(ltlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2));
         } else if (ctx.runBinary() != null) {
             if (ctx.runBinary().op.rand() != null) {
@@ -150,6 +149,12 @@ public class FlowCTLForAllListener extends FlowCTLForAllFormatBaseListener {
                         f = new CTLFormula(phi1, CTLOperators.Binary.AU, phi2);
                     } else if (ctx.ctlBinary().exists() != null) {
                         f = new CTLFormula(phi1, CTLOperators.Binary.EU, phi2);
+                    }
+                } else if (opCtx.untilDual() != null) {
+                    if (ctx.ctlBinary().all() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.AUD, phi2);
+                    } else if (ctx.ctlBinary().exists() != null) {
+                        f = new CTLFormula(phi1, CTLOperators.Binary.EUD, phi2);
                     }
                 } else if (opCtx.weak() != null) {
                     if (ctx.ctlBinary().all() != null) {

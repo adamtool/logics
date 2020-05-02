@@ -205,6 +205,28 @@ public class CTLOperators {
                 return "UNTIL"; // also UNTIL
             }
         },
+        AUD {
+            @Override
+            public String toSymbol() {
+                return "𝓤_"; //u+1D4E4
+            }
+
+            @Override
+            public String toLoLA() throws NotConvertableException {
+                throw new NotConvertableException("LoLA does not support a dual of the until operator.");
+            }
+        },
+        EUD {
+            @Override
+            public String toSymbol() {
+                return "𝓤_"; //u+1D4E4
+            }
+
+            @Override
+            public String toLoLA() throws NotConvertableException {
+                throw new NotConvertableException("LoLA does not support a dual of the until operator.");
+            }
+        },
         AW {
             @Override
             public String toSymbol() {
