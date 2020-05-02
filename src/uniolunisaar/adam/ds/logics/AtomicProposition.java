@@ -37,7 +37,7 @@ public class AtomicProposition implements IAtomicProposition {
         firableProposition = false;
     }
 
-    public String get() {
+    public String getId() {
         return id;
     }
 

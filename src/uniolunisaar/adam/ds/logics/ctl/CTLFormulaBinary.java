@@ -11,9 +11,9 @@ import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
  * @author Manuel Gieseking
  */
 //class CTLFormulaBinary extends FormulaBinary<ILTLFormula, ICTLFormula, CTLOperators.Binary, ICTLFormula> implements ICTLFormula {
-class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Binary, ICTLFormula> implements ICTLFormula {
+public class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Binary, ICTLFormula> implements ICTLFormula {
 
-    public CTLFormulaBinary(ICTLFormula phi1, CTLOperators.Binary op, ICTLFormula phi2) {
+    CTLFormulaBinary(ICTLFormula phi1, CTLOperators.Binary op, ICTLFormula phi2) {
         super(phi1, op, phi2);
     }
 

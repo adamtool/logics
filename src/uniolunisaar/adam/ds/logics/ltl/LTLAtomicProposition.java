@@ -28,7 +28,7 @@ public class LTLAtomicProposition extends AtomicProposition implements ILTLFormu
         if (isTransition()) {
             throw new NotConvertableException("LoLA does not support transitions as atomic propositions (only for firability).");
         }
-        return '(' + get() + " = 1)";
+        return '(' + getId() + " = 1)";
     }
 
 }

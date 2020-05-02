@@ -10,9 +10,9 @@ import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
  * @author Manuel Gieseking
  */
 //class CTLFormulaUnary extends FormulaUnary<ILTLFormula, ICTLFormula, CTLOperators.Unary> implements ICTLFormula {
-class CTLFormulaUnary extends FormulaUnary<ICTLFormula, CTLOperators.Unary> implements ICTLFormula {
+public class CTLFormulaUnary extends FormulaUnary<ICTLFormula, CTLOperators.Unary> implements ICTLFormula {
 
-    public CTLFormulaUnary(CTLOperators.Unary op, ICTLFormula phi) {
+    CTLFormulaUnary(CTLOperators.Unary op, ICTLFormula phi) {
         super(op, phi);
     }
 
@@ -28,8 +28,8 @@ class CTLFormulaUnary extends FormulaUnary<ICTLFormula, CTLOperators.Unary> impl
                     + " is not an LTL formula and thus cannot be used for '" + toString() + "'.");
         }
     }
-    
-        @Override
+
+    @Override
     public String toLoLA() throws NotConvertableException {
         return getOp().toLoLA() + " " + getPhi().toLoLA();
     }

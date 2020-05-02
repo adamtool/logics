@@ -10,6 +10,9 @@ import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
  */
 public abstract class Constants implements IAtomicProposition {
 
+    public static final String TO_STRING_RESULT_TRUE = "TRUE";
+    public static final String TO_STRING_RESULT_FALSE = "FALSE";
+
     public static class True extends Constants {
 
         @Override
@@ -24,7 +27,7 @@ public abstract class Constants implements IAtomicProposition {
 
         @Override
         public String toString() {
-            return "TRUE";
+            return TO_STRING_RESULT_TRUE;
         }
 
         @Override
@@ -51,7 +54,7 @@ public abstract class Constants implements IAtomicProposition {
 
         @Override
         public String toString() {
-            return "FALSE";
+            return TO_STRING_RESULT_FALSE;
         }
 
         @Override
