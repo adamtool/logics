@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.IOperatorBinary;
@@ -60,8 +61,8 @@ public class LogicsTools {
             return flowFormulas;
         } else if (formula instanceof ICTLFormula) {
             return flowFormulas;
-        } else if (formula instanceof RunCTLSeparateFormula) {
-            return getFlowCTLFormulas(((RunCTLSeparateFormula) formula).getPhi());
+        } else if (formula instanceof Formula<?>) {
+            return getFlowCTLFormulas(((Formula<?>) formula).getPhi());
         } else if (formula instanceof FormulaBinary<?, ?, ?>) {
             FormulaBinary<?, ?, ?> binF = (FormulaBinary<?, ?, ?>) formula;
             flowFormulas.addAll(getFlowCTLFormulas(binF.getPhi1()));
