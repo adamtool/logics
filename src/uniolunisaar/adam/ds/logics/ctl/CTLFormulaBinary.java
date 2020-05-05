@@ -46,27 +46,33 @@ public class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Bi
         }
     }
 
+    private String getPrefix() {
+        return getOp().equals(CTLOperators.Binary.AU) || getOp().equals(CTLOperators.Binary.AUD) || getOp().equals(CTLOperators.Binary.AR) || getOp().equals(CTLOperators.Binary.AW) ? CTLOperators.all
+                : (getOp().equals(CTLOperators.Binary.EU) || getOp().equals(CTLOperators.Binary.EUD) || getOp().equals(CTLOperators.Binary.ER) || getOp().equals(CTLOperators.Binary.EW) ? CTLOperators.exists : "");
+    }
+
     @Override
     public String toSymbolString() {
-        String pref = getOp().equals(CTLOperators.Binary.AU) ? CTLOperators.all : (getOp().equals(CTLOperators.Binary.EU) ? CTLOperators.exists : "");
+        String pref = getPrefix();
         return pref + "(" + getPhi1().toSymbolString() + " " + getOp().toSymbol() + " " + getPhi2().toSymbolString() + ")";
     }
 
     @Override
     public String toString() {
-        String pref = getOp().equals(CTLOperators.Binary.AU) ? CTLOperators.all : (getOp().equals(CTLOperators.Binary.EU) ? CTLOperators.exists : "");
+        String pref = getPrefix();
         return pref + "(" + getPhi1().toString() + " " + getOp().toString() + " " + getPhi2().toString() + ")";
     }
 
     @Override
     public String toReplacableString() {
-        String pref = getOp().equals(CTLOperators.Binary.AU) ? CTLOperators.all : (getOp().equals(CTLOperators.Binary.EU) ? CTLOperators.exists : "");
+        String pref = getPrefix();
         return pref + "(" + getPhi1().toReplacableString() + " " + getOp().toString() + " " + getPhi2().toReplacableString() + ")";
     }
 
     @Override
     public String toLoLA() throws NotConvertableException {
-        String pref = getOp().equals(CTLOperators.Binary.AU) ? CTLOperators.allLoLA : (getOp().equals(CTLOperators.Binary.EU) ? CTLOperators.existsLoLA : "");
+        String pref = getOp().equals(CTLOperators.Binary.AU) || getOp().equals(CTLOperators.Binary.AUD) || getOp().equals(CTLOperators.Binary.AR) || getOp().equals(CTLOperators.Binary.AW) ? CTLOperators.allLoLA
+                : (getOp().equals(CTLOperators.Binary.EU) || getOp().equals(CTLOperators.Binary.EUD) || getOp().equals(CTLOperators.Binary.ER) || getOp().equals(CTLOperators.Binary.EW) ? CTLOperators.existsLoLA : "");
         return pref + "(" + getPhi1().toLoLA() + " " + getOp().toLoLA() + " " + getPhi2().toLoLA() + ")";
     }
 
