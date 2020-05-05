@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -18,6 +19,7 @@ import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.util.logics.LogicsTools.TransitionSemantics;
 
@@ -105,16 +107,25 @@ public class FormulaCreator {
     @Deprecated
     public static String enabled(Transition t) {
         Collection<String> elements = new ArrayList<>();
-        for (Place p : t.getPreset()) {
-            elements.add(p.getId());
+        for (Flow edge : t.getPresetEdges()) {
+            if (PetriNetExtensionHandler.isInhibitor(edge)) {
+                elements.add("NEG" + edge.getPlace().getId());
+            } else {
+                elements.add(edge.getPlace().getId());
+            }
         }
         return bigWedgeOrVee(elements, true);
     }
 
     public static ILTLFormula enabledObject(Transition t) {
         Collection<ILTLFormula> elements = new ArrayList<>();
-        for (Place p : t.getPreset()) {
-            elements.add(new LTLAtomicProposition(p));
+        for (Flow edge : t.getPresetEdges()) {
+            LTLAtomicProposition p = new LTLAtomicProposition(edge.getPlace());
+            if (PetriNetExtensionHandler.isInhibitor(edge)) {
+                elements.add(new LTLFormula(LTLOperators.Unary.NEG, p));
+            } else {
+                elements.add(p);
+            }
         }
         return bigWedgeOrVeeObject(elements, true);
     }
