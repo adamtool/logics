@@ -41,7 +41,8 @@ public class CTL2AlternatingBuchiTreeAutomaton {
      * allowed as temporal operators.
      *
      * @param inputFormula
-     * @param pnwt
+     * @param pnwt -- only needed because AtomicPropositions saves only the id
+     * and not the node itself which we need for the NodeLabel
      * @return
      * @throws uniolunisaar.adam.exceptions.logics.NotConvertableException
      */
