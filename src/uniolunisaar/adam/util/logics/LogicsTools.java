@@ -32,11 +32,6 @@ import uniolunisaar.adam.exceptions.logics.NotConvertableException;
  */
 public class LogicsTools {
 
-    public enum TransitionSemantics {
-        INGOING,
-        OUTGOING
-    }
-
     public static List<FlowLTLFormula> getFlowLTLFormulas(IFormula formula) {
         List<FlowLTLFormula> flowFormulas = new ArrayList<>();
         if (formula instanceof FlowLTLFormula) {

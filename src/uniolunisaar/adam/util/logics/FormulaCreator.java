@@ -8,6 +8,7 @@ import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.circuits.CircuitRendererSettings.TransitionSemantics;
 import uniolunisaar.adam.ds.logics.ctl.CTLConstants;
 import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
@@ -21,7 +22,6 @@ import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
-import uniolunisaar.adam.util.logics.LogicsTools.TransitionSemantics;
 
 /**
  *
