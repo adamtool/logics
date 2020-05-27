@@ -20,24 +20,49 @@ import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
  */
 public class FormulaCreatorOutgoingSemantics {
 
+    /**
+     * G ( (AND_t !t) -> AND_t ! [t>) equivalent to G ( OR_t [t> -> OR_t t)
+     *
+     * @param net
+     * @return
+     */
     public static ILTLFormula getMaximalityInterleavingDirectAsObject(PetriNet net) {
-        // big wedge no transition fires
+        // the following code is equivalent but uses more operators
+//        // big wedge no transition fires
+//        Collection<ILTLFormula> elements = new ArrayList<>();
+//        for (Transition t : net.getTransitions()) {
+//            elements.add(new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(t)));
+//        }
+//
+//        // big wedge no transition is enabled
+//        Collection<ILTLFormula> elements2 = new ArrayList<>();
+//        for (Transition t : net.getTransitions()) {
+//            elements2.add(new LTLFormula(LTLOperators.Unary.NEG, FormulaCreator.enabledObject(t)));
+//        }
+//        // implies        
+//        ILTLFormula imp = new LTLFormula(
+//                FormulaCreator.bigWedgeOrVeeObject(elements, true),
+//                LTLOperators.Binary.IMP,
+//                FormulaCreator.bigWedgeOrVeeObject(elements2, true)
+//        );
+
+        // some transition is enable (big vee)
         Collection<ILTLFormula> elements = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            elements.add(new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(t)));
+            elements.add(FormulaCreator.enabledObject(t));
         }
 
-        // big wedge no transition is enabled
+        // some transitions fires
         Collection<ILTLFormula> elements2 = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            elements2.add(new LTLFormula(LTLOperators.Unary.NEG, FormulaCreator.enabledObject(t)));
+            elements2.add(new LTLAtomicProposition(t));
         }
 
         // implies        
         ILTLFormula imp = new LTLFormula(
-                FormulaCreator.bigWedgeOrVeeObject(elements, true),
+                FormulaCreator.bigWedgeOrVeeObject(elements, false),
                 LTLOperators.Binary.IMP,
-                FormulaCreator.bigWedgeOrVeeObject(elements2, true)
+                FormulaCreator.bigWedgeOrVeeObject(elements2, false)
         );
 
         return new LTLFormula(LTLOperators.Unary.G, imp);
@@ -115,6 +140,15 @@ public class FormulaCreatorOutgoingSemantics {
         return FormulaCreator.bigWedgeOrVee(elements, true);
     }
 
+    /**
+     * when a transition t is from a moment on always enabled, infinitely often
+     * a transition t' (including t) sharing a place in the preset has to fire.
+     *
+     * AND_t (F G pre(t) -> G F OR_t'\in post(p),p\in pre(t) t'))
+     *
+     * @param net
+     * @return
+     */
     public static ILTLFormula getMaximalityConcurrentDirectAsObject(PetriNet net) {
         // all transitions have to globally be eventually not enabled or another transition with a place in the transitions preset fires
         Collection<ILTLFormula> elements = new ArrayList<>();
@@ -125,11 +159,10 @@ public class FormulaCreatorOutgoingSemantics {
                     elems.add(new LTLAtomicProposition(t2));
                 }
             }
-            ILTLFormula bigvee = FormulaCreator.bigWedgeOrVeeObject(elems, false);
-            ILTLFormula f = new LTLFormula(new LTLFormula(LTLOperators.Unary.NEG, FormulaCreator.enabledObject(t)), LTLOperators.Binary.OR, bigvee);
-            f = new LTLFormula(LTLOperators.Unary.F, f);
-            f = new LTLFormula(LTLOperators.Unary.G, f);
-            elements.add(f);
+            ILTLFormula bigvee = FormulaCreator.bigWedgeOrVeeObject(elems, false); //OR_t'\in post(p),p\in pre(t) t')
+            ILTLFormula aEnabled = new LTLFormula(new LTLFormula(LTLOperators.Unary.F, new LTLFormula(LTLOperators.Unary.G, FormulaCreator.enabledObject(t)))); //F G pre(t) 
+            ILTLFormula f = new LTLFormula(new LTLFormula(LTLOperators.Unary.G, new LTLFormula(LTLOperators.Unary.F, bigvee)));
+            elements.add(new LTLFormula(aEnabled, LTLOperators.Binary.IMP, f));
         }
         return FormulaCreator.bigWedgeOrVeeObject(elements, true);
     }
