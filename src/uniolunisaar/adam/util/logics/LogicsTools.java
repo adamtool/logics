@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.logics.AtomicProposition;
+import uniolunisaar.adam.ds.logics.Closure;
 import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import uniolunisaar.adam.ds.logics.IFormula;
@@ -140,6 +142,20 @@ public class LogicsTools {
         } else {
             return (ICTLFormula) f;
         }
+    }
+
+    public static List<AtomicProposition> getTransitionAtomicPropositions(IFormula f) {
+        List<AtomicProposition> atoms = new ArrayList<>();
+        Closure closure = f.getClosure();
+        for (IFormula iFormula : closure) {
+            if (iFormula instanceof AtomicProposition) {
+                AtomicProposition a = (AtomicProposition) iFormula;
+                if (a.isTransition()) {
+                    atoms.add(a);
+                }
+            }
+        }
+        return atoms;
     }
 
 }
