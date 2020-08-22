@@ -1,38 +1,38 @@
-package uniolunisaar.adam.logic.parser.logics.flowltl;
+package uniolunisaar.adam.logic.parser.logics.flowctl.forall;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.io.parser.ParseException;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.flowctl.forall.RunCTLForAllFormula;
 import uniolunisaar.adam.exceptions.pnwt.LineParseException;
 import uniolunisaar.adam.logic.parser.ParsingUtils;
-import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatLexer;
-import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser;
+import uniolunisaar.adam.logic.parser.logics.flowctl.forall.antlr.FlowCTLForAllFormatLexer;
+import uniolunisaar.adam.logic.parser.logics.flowctl.forall.antlr.FlowCTLForAllFormatParser;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class FlowLTLParser {
+public class FlowCTLForAllParser {
 
-    public static RunLTLFormula parse(PetriNet net, String formula) throws ParseException {
+    public static RunCTLForAllFormula parse(PetriNet net, String formula) throws ParseException {
         try {
-            FlowLTLFormatLexer lexer = new FlowLTLFormatLexer(new ANTLRInputStream(formula));
+            FlowCTLForAllFormatLexer lexer = new FlowCTLForAllFormatLexer(new ANTLRInputStream(formula));
 
             // Get a list of matched tokens
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
             // Pass the tokens to the parser
-            FlowLTLFormatParser parser = new FlowLTLFormatParser(tokens);
+            FlowCTLForAllFormatParser parser = new FlowCTLForAllFormatParser(tokens);
 
             ParsingUtils.handleErrors(lexer, parser, true);
 
             // Specify our entry point
-            FlowLTLFormatParser.FlowLTLContext context = parser.flowLTL();
+            FlowCTLForAllFormatParser.FlowCTLContext context = parser.flowCTL();
 
             // Walk it and attach our listener
-            FlowLTLListener listener = new FlowLTLListener(net);
+            FlowCTLForAllListener listener = new FlowCTLForAllListener(net);
             ParsingUtils.walk(listener, context);
             return listener.getFormula();
         } catch (LineParseException e) {

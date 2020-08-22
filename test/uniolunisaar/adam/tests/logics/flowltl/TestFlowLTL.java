@@ -1,12 +1,12 @@
 package uniolunisaar.adam.tests.logics.flowltl;
 
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IFlowFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.IFlowFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowLTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -45,7 +45,7 @@ public class TestFlowLTL {
         // Propositions 
         LTLAtomicProposition a = new LTLAtomicProposition(net.createPlace("a1"));
         LTLAtomicProposition b = new LTLAtomicProposition(net.createTransition("b1"));
-        IRunFormula r = new RunFormula(a, LTLOperators.Binary.OR, b);
+        IRunFormula r = new RunLTLFormula(a, LTLOperators.Binary.OR, b);
 //        System.out.println(r.getClosure().toString());
 //        System.out.println(r.toString());
         Assert.assertEquals(r.toSymbolString(), "(a1 ⋎ b1)");
@@ -57,17 +57,17 @@ public class TestFlowLTL {
 //        System.out.println(ltl1.getClosure().toString());
         Assert.assertEquals(ltl1.toSymbolString(), "◇ b1");
 
-        IFlowFormula flow1 = new FlowFormula(ltl1);
+        IFlowFormula flow1 = new FlowLTLFormula(ltl1);
 //        System.out.println(flow1.toString());
 //        System.out.println(flow1.getClosure().toString());
         Assert.assertEquals(flow1.toSymbolString(), "𝔸 ◇ b1");
 
-        IRunFormula r1 = new RunFormula(r, RunOperators.Binary.AND, flow1);
+        IRunFormula r1 = new RunLTLFormula(r, RunOperators.Binary.AND, flow1);
 //        System.out.println(r1.toString());
 //        System.out.println(r1.getClosure().toString());
         Assert.assertEquals(r1.toSymbolString(), "((a1 ⋎ b1) ⋀ 𝔸 ◇ b1)");
 
-        IRunFormula r2 = new RunFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
+        IRunFormula r2 = new RunLTLFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
 //        System.out.println(r2.toString());
 //        System.out.println(r2.getClosure().toString());
         Assert.assertEquals(r2.toSymbolString(), "(◇ b1 𝓤 ⬜ b1)");
@@ -83,17 +83,17 @@ public class TestFlowLTL {
         IFormula subsa = a.substitute(a, b);
         Assert.assertEquals(subsa.toString(), "b1");
 
-        RunFormula r = new RunFormula(a, LTLOperators.Binary.OR, b);
+        RunLTLFormula r = new RunLTLFormula(a, LTLOperators.Binary.OR, b);
 //        ILTLFormula rltl = ((RunFormula) r.getPhi()).toLTLFormula();
 
         IFormula subsr = r.substitute(b, a);
-        if (!(subsr instanceof RunFormula)) {
+        if (!(subsr instanceof RunLTLFormula)) {
             Assert.fail("Should be a run formula");
         }
         Assert.assertEquals(subsr.toString(), "(a1 OR a1)");
 
         IFormula subs = subsr.substitute(subsr, b);
-        if (!(subsr instanceof RunFormula)) {
+        if (!(subsr instanceof RunLTLFormula)) {
             Assert.fail("Should be a run formula");
         }
         Assert.assertEquals(subs.toString(), "b1");
@@ -103,7 +103,7 @@ public class TestFlowLTL {
         subs = subs.substitute(a, r.getPhi());
         Assert.assertEquals(subs.toString(), "(b1 OR b1)");
 
-        subs = subsr.substitute(a, ((RunFormula) r.getPhi()).toLTLFormula());
+        subs = subsr.substitute(a, ((RunLTLFormula) r.getPhi()).toLTLFormula());
         Assert.assertEquals(subs.toString(), "((a1 OR b1) OR (a1 OR b1))");
 //
 //        IRunFormula rNested = new RunFormula(a, LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(a, LTLOperators.Binary.W, b)));

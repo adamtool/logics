@@ -28,6 +28,8 @@
 		<pathelement location="${libfolder}/antlr-4.5.1/antlr-4.5.1-complete.jar" />
 	</path>
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%% LTL %%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- Only run the antlr target if some .g file is newer than generated-src/antlr.stamp (which the antlr target touches) -->
 	<target name="antlr.flowLTL.checkforchanges">
 		<uptodate property="antlr.flowLTL.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowltl/antlr/antlr.stamp">
@@ -54,24 +56,107 @@
 		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowltl/antlr/antlr.stamp" mkdirs="true"/>
 	</target>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%% CTL %%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%% CTL separate %%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<!-- Only run the antlr target if some .g file is newer than generated-src/antlr.stamp (which the antlr target touches) -->
+	<target name="antlr.flowCTLSeparate.checkforchanges">
+		<uptodate property="antlr.flowCTLSeparate.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/separate/antlr/antlr.stamp">
+			<srcfiles dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/separate" includes="**/*.g4"/>
+		</uptodate>
+	</target>
+
+	<!-- Antlr4 is called here -->
+	<target name="antlr.flowCTLSeparate" depends="antlr.flowCTLSeparate.checkforchanges" unless="antlr.flowCTLSeparate.nochanges">
+		<macrodef name="call-antlr">
+			<attribute name="name" />
+			<sequential>
+				<java classpathref="antlr.class.path" classname="org.antlr.v4.Tool" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg path="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/separate/antlr"/>
+					<arg value="-package"/>
+					<arg value="uniolunisaar.adam.logic.parser.logics.flowctl.separate.antlr"/>
+					<arg line="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/separate/@{name}"/>
+				</java>
+			</sequential>
+		</macrodef>
+		<call-antlr name="FlowCTLSeparateFormat.g4" />
+		<!-- Touch the time stamp file which antlr.checkforchanges checks for -->
+		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/separate/antlr/antlr.stamp" mkdirs="true"/>
+	</target>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%% CTL nested %%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<!-- Only run the antlr target if some .g file is newer than generated-src/antlr.stamp (which the antlr target touches) -->
+	<target name="antlr.flowCTLNested.checkforchanges">
+		<uptodate property="antlr.flowCTLNested.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/nested/antlr/antlr.stamp">
+			<srcfiles dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/nested" includes="**/*.g4"/>
+		</uptodate>
+	</target>
+
+	<!-- Antlr4 is called here -->
+	<target name="antlr.flowCTLNested" depends="antlr.flowCTLNested.checkforchanges" unless="antlr.flowCTLNested.nochanges">
+		<macrodef name="call-antlr">
+			<attribute name="name" />
+			<sequential>
+				<java classpathref="antlr.class.path" classname="org.antlr.v4.Tool" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg path="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/nested/antlr"/>
+					<arg value="-package"/>
+					<arg value="uniolunisaar.adam.logic.parser.logics.flowctl.nested.antlr"/>
+					<arg line="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/nested/@{name}"/>
+				</java>
+			</sequential>
+		</macrodef>
+		<call-antlr name="FlowCTLNestedFormat.g4" />
+		<!-- Touch the time stamp file which antlr.checkforchanges checks for -->
+		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/nested/antlr/antlr.stamp" mkdirs="true"/>
+	</target>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%% FlowCTL the for all fragment %%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<!-- Only run the antlr target if some .g file is newer than generated-src/antlr.stamp (which the antlr target touches) -->
+	<target name="antlr.flowCTLForAll.checkforchanges">
+		<uptodate property="antlr.flowCTLForAll.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/forall/antlr/antlr.stamp">
+			<srcfiles dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/forall" includes="**/*.g4"/>
+		</uptodate>
+	</target>
+
+	<!-- Antlr4 is called here -->
+	<target name="antlr.flowCTLForAll" depends="antlr.flowCTLForAll.checkforchanges" unless="antlr.flowCTLForAll.nochanges">
+		<macrodef name="call-antlr">
+			<attribute name="name" />
+			<sequential>
+				<java classpathref="antlr.class.path" classname="org.antlr.v4.Tool" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg path="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/forall/antlr"/>
+					<arg value="-package"/>
+					<arg value="uniolunisaar.adam.logic.parser.logics.flowctl.forall.antlr"/>
+					<arg line="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/forall/@{name}"/>
+				</java>
+			</sequential>
+		</macrodef>
+		<call-antlr name="FlowCTLForAllFormat.g4" />
+		<!-- Touch the time stamp file which antlr.checkforchanges checks for -->
+		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/forall/antlr/antlr.stamp" mkdirs="true"/>
+	</target>
+
+
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELEGATES %%%%%%%%%%%%%%%%%%%%%%%%%%% -->	
-	<target name="test" depends="loadProperties,antlr.flowLTL" description="Runs all tests">
+	<target name="test" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Runs all tests">
 		<antcall target="logics.fu.test"/>
 			<!--<ant antfile="${logics.basedir}/build_logics.xml" target="test"></ant>	-->	
 	</target>
-	<target name="test-method" depends="loadProperties,antlr.flowLTL" description="Runs the tests of a specific method">
+	<target name="test-method" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Runs the tests of a specific method">
 		<antcall target="logics.fu.test-method"/>
 	</target>
-	<target name="test-class" depends="loadProperties,antlr.flowLTL" description="Runs the tests of a specific class">
+	<target name="test-class" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Runs the tests of a specific class">
 		<antcall target="logics.fu.test-class"/>
 	</target>
-	<target name="jar" depends="loadProperties,antlr.flowLTL" description="Builds a jar with all its dependencies">
+	<target name="jar" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Builds a jar with all its dependencies">
 		<antcall target="logics.fu.jar"/>
 	</target>
-	<target name="jar-standalone" depends="loadProperties,antlr.flowLTL" description="Builds a jar with all its dependencies">
+	<target name="jar-standalone" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Builds a jar with all its dependencies">
 		<antcall target="logics.fu.jar-standalone"/>
 	</target>
-	<target name="javadoc" depends="loadProperties,antlr.flowLTL" description="Creates the JavaDoc of this package.">
+	<target name="javadoc" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Creates the JavaDoc of this package.">
 		<antcall target="logics.fu.javadoc"/>
 	</target>
 
@@ -80,6 +165,9 @@
 	</target>
 	<target name="clean-all" depends="loadProperties" description="Cleans all temporary files including the reports">
 		<delete dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowltl/antlr" failonerror="false"/>
+		<delete dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/separate/antlr" failonerror="false"/>
+		<delete dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/nested/antlr" failonerror="false"/>
+		<delete dir="${srcfolder}/uniolunisaar/adam/logic/parser/logics/flowctl/forall/antlr" failonerror="false"/>
 		<antcall target="logics.fu.clean-all"/>
 	</target>
 </project>

@@ -1,11 +1,11 @@
 package uniolunisaar.adam.tests.logics.flowltl;
 
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IFlowFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.IFlowFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowLTLFormula;
 import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
 import org.testng.Assert;
@@ -97,11 +97,11 @@ public class TestFlowLTLParser {
         // Propositions 
         LTLAtomicProposition a = new LTLAtomicProposition(net.createPlace("a1"));
         LTLAtomicProposition b = new LTLAtomicProposition(net.createTransition("b1"));
-        IRunFormula r = new RunFormula(a, LTLOperators.Binary.OR, b);
+        IRunFormula r = new RunLTLFormula(a, LTLOperators.Binary.OR, b);
         IRunFormula rout = FlowLTLParser.parse(net, r.toString());
         Assert.assertEquals(rout.toString(), r.toString());
 
-        IRunFormula rNested = new RunFormula(a, LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(a, LTLOperators.Binary.W, b)));
+        IRunFormula rNested = new RunLTLFormula(a, LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(a, LTLOperators.Binary.W, b)));
         IRunFormula rNestedOut = FlowLTLParser.parse(net, rNested.toString());
         Assert.assertEquals(rNestedOut.toString(), rNested.toString());
 
@@ -109,15 +109,15 @@ public class TestFlowLTLParser {
         IRunFormula out = FlowLTLParser.parse(net, ltl1.toString());
         Assert.assertEquals(ltl1.toString(), out.toString());
 
-        IFlowFormula flow1 = new FlowFormula(ltl1);
+        IFlowFormula flow1 = new FlowLTLFormula(ltl1);
         out = FlowLTLParser.parse(net, flow1.toString());
         Assert.assertEquals(flow1.toString(), out.toString());
 
-        IRunFormula r1 = new RunFormula(r, RunOperators.Binary.AND, flow1);
+        IRunFormula r1 = new RunLTLFormula(r, RunOperators.Binary.AND, flow1);
         out = FlowLTLParser.parse(net, r1.toString());
         Assert.assertEquals(r1.toString(), out.toString());
 
-        IRunFormula r2 = new RunFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
+        IRunFormula r2 = new RunLTLFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
         out = FlowLTLParser.parse(net, r2.toString());
         Assert.assertEquals(r2.toString(), out.toString());
         
@@ -133,11 +133,11 @@ public class TestFlowLTLParser {
         // Propositions 
         LTLAtomicProposition a = new LTLAtomicProposition(net.createPlace("a1"));
         LTLAtomicProposition b = new LTLAtomicProposition(net.createTransition("b1"));
-        IRunFormula r = new RunFormula(a, LTLOperators.Binary.OR, b);
+        IRunFormula r = new RunLTLFormula(a, LTLOperators.Binary.OR, b);
         IRunFormula rout = FlowLTLParser.parse(net, "(a1 OR b1)");
         Assert.assertEquals(rout.toString(), r.toString());
 
-        IRunFormula rNested = new RunFormula(a, LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(a, LTLOperators.Binary.W, b)));
+        IRunFormula rNested = new RunLTLFormula(a, LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(a, LTLOperators.Binary.W, b)));
 //        System.out.println(rNested);
         IRunFormula rNestedOut = FlowLTLParser.parse(net, "(a1 OR F((a1 W b1)))");
         Assert.assertEquals(rNestedOut.toString(), rNested.toString());
@@ -146,15 +146,15 @@ public class TestFlowLTLParser {
         IRunFormula out = FlowLTLParser.parse(net, "F(b1)");
         Assert.assertEquals(ltl1.toString(), out.toString());
 
-        IFlowFormula flow1 = new FlowFormula(ltl1);
+        IFlowFormula flow1 = new FlowLTLFormula(ltl1);
         out = FlowLTLParser.parse(net, "A(F(b1))");
         Assert.assertEquals(flow1.toString(), out.toString());
 
-        IRunFormula r1 = new RunFormula(r, RunOperators.Binary.AND, flow1);
+        IRunFormula r1 = new RunLTLFormula(r, RunOperators.Binary.AND, flow1);
         out = FlowLTLParser.parse(net, "((a1 OR b1) AND A(F(b1)))");
         Assert.assertEquals(r1.toString(), out.toString());
 
-        IRunFormula r2 = new RunFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
+        IRunFormula r2 = new RunLTLFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
         out = FlowLTLParser.parse(net, "(F(b1) U G(b1))");
         Assert.assertEquals(r2.toString(), out.toString());
     }

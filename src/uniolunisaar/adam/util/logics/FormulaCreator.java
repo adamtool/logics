@@ -4,18 +4,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.circuits.CircuitRendererSettings.TransitionSemantics;
+import uniolunisaar.adam.ds.logics.ctl.CTLConstants;
+import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
+import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowLTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
+import uniolunisaar.adam.ds.objectives.Condition;
+import static uniolunisaar.adam.ds.objectives.Condition.Objective.A_BUCHI;
+import static uniolunisaar.adam.ds.objectives.Condition.Objective.A_REACHABILITY;
+import static uniolunisaar.adam.ds.objectives.Condition.Objective.A_SAFETY;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
-import uniolunisaar.adam.util.logics.LogicsTools.TransitionSemantics;
 
 /**
  *
@@ -74,19 +83,52 @@ public class FormulaCreator {
         }
     }
 
+    public static ICTLFormula bigWedgeOrVeeObjectCTL(Collection<? extends ICTLFormula> elements, boolean wedge) {
+        if (elements.isEmpty()) {
+//            throw new RuntimeException("Iteration over an empty set."); 
+            // and means all must be fullfilled -> true, or at least one must be fullfilled -> false
+            if (wedge) {
+                return new CTLConstants.True();
+            } else {
+                return new CTLConstants.False();
+            }
+        }
+        CTLOperators.Binary op = (wedge) ? CTLOperators.Binary.AND : CTLOperators.Binary.OR;
+        if (elements.size() == 1) {
+            return elements.iterator().next();
+        } else {
+            Iterator<? extends ICTLFormula> it = elements.iterator();
+            ICTLFormula last = new CTLFormula(it.next(), op, it.next());
+            while (it.hasNext()) {
+                ICTLFormula next = it.next();
+                last = new CTLFormula(next, op, last);
+            }
+            return last;
+        }
+    }
+
     @Deprecated
     public static String enabled(Transition t) {
         Collection<String> elements = new ArrayList<>();
-        for (Place p : t.getPreset()) {
-            elements.add(p.getId());
+        for (Flow edge : t.getPresetEdges()) {
+            if (PetriNetExtensionHandler.isInhibitor(edge)) {
+                elements.add("NEG" + edge.getPlace().getId());
+            } else {
+                elements.add(edge.getPlace().getId());
+            }
         }
         return bigWedgeOrVee(elements, true);
     }
 
     public static ILTLFormula enabledObject(Transition t) {
         Collection<ILTLFormula> elements = new ArrayList<>();
-        for (Place p : t.getPreset()) {
-            elements.add(new LTLAtomicProposition(p));
+        for (Flow edge : t.getPresetEdges()) {
+            LTLAtomicProposition p = new LTLAtomicProposition(edge.getPlace());
+            if (PetriNetExtensionHandler.isInhibitor(edge)) {
+                elements.add(new LTLFormula(LTLOperators.Unary.NEG, p));
+            } else {
+                elements.add(p);
+            }
         }
         return bigWedgeOrVeeObject(elements, true);
     }
@@ -103,7 +145,7 @@ public class FormulaCreator {
         return new LTLFormula(infEvnEnabled, LTLOperators.Binary.IMP, infFired);
     }
 
-    public static FlowFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
+    public static FlowLTLFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
         List<Place> specialPlaces = new ArrayList<>();
         for (Place p : net.getPlaces()) {
             if (net.isSpecial(p)) {
@@ -139,7 +181,7 @@ public class FormulaCreator {
             default:
                 throw new RuntimeException("Existential acceptance conditions are not yet implemented");
         }
-        return new FlowFormula(f);
+        return new FlowLTLFormula(f);
     }
 
     public static LTLFormula deadlock(PetriNet net) {

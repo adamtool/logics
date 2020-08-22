@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.logics.ltl;
+package uniolunisaar.adam.ds.logics.ctl;
 
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -9,21 +9,13 @@ import uniolunisaar.adam.exceptions.logics.NotConvertableException;
  *
  * @author Manuel Gieseking
  */
-public class LTLAtomicProposition extends AtomicProposition implements ILTLFormula {
+public class CTLAtomicProposition extends AtomicProposition implements ICTLFormula {
 
-    public LTLAtomicProposition(AtomicProposition prop) {
-        super(prop);
-    }
-
-    public LTLAtomicProposition(Transition t, boolean isFirableProposition) {
-        super(t, isFirableProposition);
-    }
-
-    public LTLAtomicProposition(Transition t) {
+    public CTLAtomicProposition(Transition t) {
         super(t);
     }
 
-    public LTLAtomicProposition(Place p) {
+    public CTLAtomicProposition(Place p) {
         super(p);
     }
 

@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import uniol.apt.adt.pn.PetriNet;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IFlowFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.FlowLTLFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.IFlowFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLConstants;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunOperators;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
+import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
 import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatBaseListener;
 import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser;
 import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.FlowFormulaContext;
@@ -25,9 +25,9 @@ import uniolunisaar.adam.logic.parser.logics.flowltl.antlr.FlowLTLFormatParser.R
 public class FlowLTLListener extends FlowLTLFormatBaseListener {
 
     private final PetriNet net;
-    private RunFormula formula;
+    private RunLTLFormula formula;
     private final Map<LtlContext, ILTLFormula> ltlFormulas = new HashMap<>();
-    private final Map<RunFormulaContext, RunFormula> runFormulas = new HashMap<>();
+    private final Map<RunFormulaContext, RunLTLFormula> runFormulas = new HashMap<>();
     private final Map<FlowFormulaContext, IFlowFormula> flowFormulas = new HashMap<>();
 
     public FlowLTLListener(PetriNet net) {
@@ -41,18 +41,18 @@ public class FlowLTLListener extends FlowLTLFormatBaseListener {
 
     @Override
     public void exitRunFormula(FlowLTLFormatParser.RunFormulaContext ctx) {
-        RunFormula f = null;
+        RunLTLFormula f = null;
         if (ctx.rimp() != null) {
-            f = new RunFormula(ltlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2));
+            f = new RunLTLFormula(ltlFormulas.get(ctx.phi1), RunOperators.Implication.IMP, runFormulas.get(ctx.phi2));
         } else if (ctx.ltl() != null) {
-            f = new RunFormula(ltlFormulas.get(ctx.ltl()));
+            f = new RunLTLFormula(ltlFormulas.get(ctx.ltl()));
         } else if (ctx.flowFormula() != null) {
-            f = new RunFormula(flowFormulas.get(ctx.flowFormula()));
+            f = new RunLTLFormula(flowFormulas.get(ctx.flowFormula()));
         } else if (ctx.runBinary() != null) {
             if (ctx.runBinary().op.rand() != null) {
-                f = new RunFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunLTLFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.AND, runFormulas.get(ctx.runBinary().phi2));
             } else if (ctx.runBinary().op.ror() != null) {
-                f = new RunFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
+                f = new RunLTLFormula(runFormulas.get(ctx.runBinary().phi1), RunOperators.Binary.OR, runFormulas.get(ctx.runBinary().phi2));
             } else {
                 // todo: throw proper exception
                 throw new RuntimeException("Could not parse the Run formula. There should be a binary run formula, but the operators are different to 'AND' and 'OR'.");
@@ -68,7 +68,7 @@ public class FlowLTLListener extends FlowLTLFormatBaseListener {
 
     @Override
     public void exitFlowFormula(FlowLTLFormatParser.FlowFormulaContext ctx) {
-        flowFormulas.put(ctx, new FlowFormula(ltlFormulas.get(ctx.phi)));
+        flowFormulas.put(ctx, new FlowLTLFormula(ltlFormulas.get(ctx.phi)));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class FlowLTLListener extends FlowLTLFormatBaseListener {
         }
     }
 
-    public RunFormula getFormula() {
+    public RunLTLFormula getFormula() {
         return formula;
     }
 

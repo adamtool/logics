@@ -6,12 +6,12 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.IRunFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ltl.LTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLOperators;
-import uniolunisaar.adam.ds.logics.ltl.flowltl.RunFormula;
+import uniolunisaar.adam.ds.logics.ltl.flowltl.RunLTLFormula;
 import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
 
 /**
@@ -20,31 +20,57 @@ import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
  */
 public class FormulaCreatorIngoingSemantics {
 
+    /**
+     * G ( (X AND_t !t) -> AND_t ! [t>) equivalent to G ( OR_t [t> -> X OR_t t)
+     *
+     * @param net
+     * @return
+     */
     public static ILTLFormula getMaximalityInterleavingDirectAsObject(PetriNet net) {
-        // big wedge no transition fires
+        // this version is equivalent but uses more operators
+//        // big wedge no transition fires
+//        Collection<ILTLFormula> elements = new ArrayList<>();
+//        for (Transition t : net.getTransitions()) {
+//            elements.add(new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(t)));
+//        }
+//
+//        // big wedge no transition is enabled
+//        Collection<ILTLFormula> elements2 = new ArrayList<>();
+//        for (Transition t : net.getTransitions()) {
+//            elements2.add(new LTLFormula(LTLOperators.Unary.NEG, FormulaCreator.enabledObject(t)));
+//        }
+//
+//        // implies        
+//        ILTLFormula imp = new LTLFormula(
+//                new LTLFormula(LTLOperators.Unary.X, FormulaCreator.bigWedgeOrVeeObject(elements, true)),
+//                LTLOperators.Binary.IMP,
+//                FormulaCreator.bigWedgeOrVeeObject(elements2, true)
+//        );
+
+        // some transition is enable (big vee)
         Collection<ILTLFormula> elements = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            elements.add(new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(t)));
+            elements.add(FormulaCreator.enabledObject(t));
         }
 
-        // big wedge no transition is enabled
+        // some transitions fires
         Collection<ILTLFormula> elements2 = new ArrayList<>();
         for (Transition t : net.getTransitions()) {
-            elements2.add(new LTLFormula(LTLOperators.Unary.NEG, FormulaCreator.enabledObject(t)));
+            elements2.add(new LTLAtomicProposition(t));
         }
 
         // implies        
         ILTLFormula imp = new LTLFormula(
-                new LTLFormula(LTLOperators.Unary.X, FormulaCreator.bigWedgeOrVeeObject(elements, true)),
+                FormulaCreator.bigWedgeOrVeeObject(elements, false),
                 LTLOperators.Binary.IMP,
-                FormulaCreator.bigWedgeOrVeeObject(elements2, true)
+                new LTLFormula(LTLOperators.Unary.X, FormulaCreator.bigWedgeOrVeeObject(elements2, false))
         );
 
         return new LTLFormula(LTLOperators.Unary.G, imp);
     }
 
     @Deprecated
-    public static RunFormula getMaximalityInterleavingObject(PetriNet net) {
+    public static RunLTLFormula getMaximalityInterleavingObject(PetriNet net) {
         String formula = getMaximalityInterleaving(net);
         try {
             return FlowLTLParser.parse(net, formula);
@@ -115,23 +141,21 @@ public class FormulaCreatorIngoingSemantics {
         return FormulaCreator.bigWedgeOrVee(elements, true);
     }
 
+    /**
+     * /**
+     * when a transition t is from a moment on always enabled, infinitely often
+     * a transition t' (including t) sharing a place in the preset has to fire.
+     *
+     * AND_t (F G pre(t) -> G F OR_t'\in post(p),p\in pre(t) t'))
+     *
+     * (because of the GF we dont need something different to the OUTGOING
+     * setting)
+     *
+     * @param net
+     * @return
+     */
     public static ILTLFormula getMaximalityConcurrentDirectAsObject(PetriNet net) {
-        // all transitions have to globally be eventually not enabled or another transition with a place in the transitions preset fires
-        Collection<ILTLFormula> elements = new ArrayList<>();
-        for (Transition t : net.getTransitions()) {
-            Collection<ILTLFormula> elems = new ArrayList<>();
-            for (Place p : t.getPreset()) {
-                for (Transition t2 : p.getPostset()) {
-                    elems.add(new LTLAtomicProposition(t2));
-                }
-            }
-            ILTLFormula bigvee = FormulaCreator.bigWedgeOrVeeObject(elems, false);
-            ILTLFormula f = new LTLFormula(new LTLFormula(LTLOperators.Unary.NEG, FormulaCreator.enabledObject(t)), LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.X, bigvee));
-            f = new LTLFormula(LTLOperators.Unary.F, f);
-            f = new LTLFormula(LTLOperators.Unary.G, f);
-            elements.add(f);
-        }
-        return FormulaCreator.bigWedgeOrVeeObject(elements, true);
+        return FormulaCreatorOutgoingSemantics.getMaximalityConcurrentDirectAsObject(net);
     }
 
 }

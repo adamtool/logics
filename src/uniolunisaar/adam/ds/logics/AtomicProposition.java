@@ -37,7 +37,13 @@ public class AtomicProposition implements IAtomicProposition {
         firableProposition = false;
     }
 
-    public String get() {
+    public AtomicProposition(AtomicProposition prop) {
+        this.id = prop.id;
+        this.isTransition = prop.isTransition;
+        this.firableProposition = prop.firableProposition;
+    }
+
+    public String getId() {
         return id;
     }
 

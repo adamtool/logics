@@ -2,43 +2,35 @@ package uniolunisaar.adam.ds.logics.ltl.flowltl;
 
 import uniolunisaar.adam.ds.logics.IOperatorUnary;
 import uniolunisaar.adam.ds.logics.IFormula;
-import uniolunisaar.adam.ds.logics.FormulaUnary;
-import java.util.ArrayList;
+import uniolunisaar.adam.ds.logics.flowlogics.FlowOperator;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.exceptions.logics.NotSubstitutableException;
+import uniolunisaar.adam.ds.logics.flowlogics.FlowFormula;
 
 /**
  *
  * @author Manuel Gieseking
  */
-//public class FlowFormula extends FormulaUnary<IFlowFormula, ILTLFormula, FlowFormula.FlowOperator> implements IFlowFormula {
-public class FlowFormula extends FormulaUnary<ILTLFormula, FlowFormula.FlowOperator> implements IFlowFormula {
+public class FlowLTLFormula extends FlowFormula<ILTLFormula, FlowLTLFormula.FlowLTLOperator> {
 
-    public enum FlowOperator implements IOperatorUnary<ILTLFormula> {
+    public enum FlowLTLOperator implements IOperatorUnary<ILTLFormula> {
         A {
             @Override
             public String toSymbol() {
-                return "𝔸";//u+1D538 "\u2200";
+                return FlowOperator.A.toSymbol();
             }
         }
     };
 
-    public FlowFormula(ILTLFormula phi) {
-        super(FlowOperator.A, phi);
-    }
-
-    @Override
-    public ArrayList<ILTLFormula> getDirectSubFormulas() {
-        ArrayList<ILTLFormula> subformulas = new ArrayList<>();
-        subformulas.add(getPhi());
-        return subformulas;
+    public FlowLTLFormula(ILTLFormula phi) {
+        super(FlowLTLOperator.A, phi);
     }
 
     @Override
     public IFormula createSubstitutedFormula(IFormula subformula, IFormula with) throws NotSubstitutableException {
         IFormula f = getPhi().substitute(subformula, with);
         if (f instanceof ILTLFormula) {
-            return new FlowFormula((ILTLFormula) f);
+            return new FlowLTLFormula((ILTLFormula) f);
         } else {
             throw new NotSubstitutableException(
                     "The substituted subformula '" + f.toString() + "', created by substituting '"
