@@ -16,10 +16,7 @@
     <property if:set="isDependency" name="dependenciesfolder" value="${adam.dependenciesfolder.asDependency}"/>
     <!-- now load the property file again to correctly expand the ${dependencyfolder}. Standard ant doesn't allow overwriting properties,
         thus, we loaded it above with a prefix -->
-
-<fail unless="dependenciesfolder" message="The ${adam.subproject.basedir} libraries for testing in '${dependenciesfolder}/testing/'  are missing. ${adam.libfolder} Please execute make pull_dependencies first.${adam.srcfolder}" />
 	<property file="${subproject.basedir}/build.properties"/>
-
 
 	<import file="${frameworkfolder}/build_macros.xml" optional="false"/>
 	<include file="${frameworkfolder}/build_targets.xml" as="logics.fu" optional="false"/>
