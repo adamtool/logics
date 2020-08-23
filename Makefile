@@ -6,6 +6,7 @@ FRAMEWORK_TARGETS = tools petrinetwithtransits
 t=jar
 
 # should be executed no matter if a file with the same name exists or not
+.PHONY: check_dependencies
 .PHONY: pull_dependencies
 .PHONY: rm_dependencies
 .PHONY: tools
@@ -34,7 +35,12 @@ define generate_src
 endef
 
 # targets
-all: tools petrinetwithtransits logics
+all: $(FRAMEWORK_TARGETS) logics
+
+check_dependencies:
+	if [ ! -d "./dependencies/" ]; then
+		$(error The dependencies folder is missing. Please execute make pull_dependencies first.)
+	fi
 
 pull_dependencies:
 	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS}
@@ -42,13 +48,13 @@ pull_dependencies:
 rm_dependencies:
 	rm -rf dependencies
 
-tools:
+tools: check_dependencies
 	ant -buildfile ./dependencies/framework/tools/build.xml $(t)
 
-petrinetwithtransits:
+petrinetwithtransits: check_dependencies
 	ant -buildfile ./dependencies/framework/petrinetWithTransits/build.xml $(t)
 
-logics:
+logics: check_dependencies
 	ant -buildfile ./build.xml $(t)
 
 setClean:
