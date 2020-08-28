@@ -1,6 +1,7 @@
 # dependencies (folders and repos should be equally ordered)
 DEPENDENCIES_FOLDERS="libs,framework"
 DEPENDENCIES_REPOS="git@github.com:adamtool/libs.git,git@github.com:adamtool/framework.git"
+DEPENDENCIES_REV="HEAD"
 # the build target
 FRAMEWORK_TARGETS = tools petrinetwithtransits
 t=jar
@@ -43,7 +44,7 @@ check_dependencies:
 	fi
 
 pull_dependencies:
-	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS}
+	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS} ${DEPENDENCIES_REV}
 
 rm_dependencies:
 	rm -rf dependencies
