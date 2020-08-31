@@ -10,3 +10,5 @@ public interface IOperatorUnary<F1> {
     public String toSymbol();
 
 }
+
+
