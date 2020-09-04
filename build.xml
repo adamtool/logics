@@ -162,6 +162,9 @@
 	<target name="test-class" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Runs the tests of a specific class">
 		<antcall target="logics.fu.test-class"/>
 	</target>
+	<target name="javac" depends="loadProperties" description="Compiles the module">
+		<antcall target="logics.fu.javac"/>
+	</target>
 	<target name="jar" depends="loadProperties,antlr.flowLTL,antlr.flowCTLSeparate, antlr.flowCTLNested, antlr.flowCTLForAll" description="Builds a jar with all its dependencies">
 		<antcall target="logics.fu.jar"/>
 	</target>
