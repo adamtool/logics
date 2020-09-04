@@ -4,7 +4,7 @@ DEPENDENCIES_REPOS="git@github.com:adamtool/libs.git,git@github.com:adamtool/fra
 DEPENDENCIES_REV="HEAD,HEAD"
 # the build target
 FRAMEWORK_TARGETS = tools petrinetwithtransits
-t=jar
+t=javac
 
 # should be executed no matter if a file with the same name exists or not
 .PHONY: check_dependencies
@@ -14,6 +14,8 @@ t=jar
 .PHONY: petrinetwithtransits
 .PHONY: logics
 #.PHONY: javadoc
+.PHONY: setJavac
+.PHONY: setJar
 .PHONY: setClean
 .PHONY: setCleanAll
 .PHONY: clean
@@ -57,6 +59,9 @@ petrinetwithtransits: check_dependencies
 
 logics: check_dependencies
 	ant -buildfile ./build.xml $(t)
+
+setJavac:
+	$(eval t=javac)
 
 setClean:
 	$(eval t=clean)
