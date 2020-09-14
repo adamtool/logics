@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tests.logics.transformers;
+package uniolunisaar.adam.tests.transformers;
 
 import java.util.Set;
 import org.testng.annotations.Test;
