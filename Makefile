@@ -43,8 +43,8 @@ endef
 all: $(FRAMEWORK_TARGETS) logics
 
 check_dependencies:
-	@if [ ! -d "./dependencies/" ]; then
-		$(error The dependencies folder is missing. Please execute make pull_dependencies first.)
+	@if [ ! -d "dependencies" ]; then \
+		echo "The dependencies folder is missing. Please execute make pull_dependencies first.";\
 	fi
 
 pull_dependencies:
