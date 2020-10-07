@@ -27,10 +27,12 @@ For Flow-LTL
   [Model Checking Data Flows in Concurrent Network Updates](https://doi.org/10.1007/978-3-030-31784-3_30). ATVA 2019: 515-533
 - _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
   [Model Checking Data Flows in Concurrent Network Updates (Full Version)](http://arxiv.org/abs/1907.11061). CoRR abs/1907.11061 (2019)
+  
 For Flow-CTL
 - _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
   [Model Checking Branching Properties on Petri Nets with Transits (Full Version)](https://arxiv.org/abs/2007.07235). CoRR abs/2007.07235 (2020)
-AdamMC using the logics:
+
+A tool using the logics (AdamMC):
 - _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
   [AdamMC: A Model Checker for Petri Nets with Transits against Flow-LTL](https://doi.org/10.1007/978-3-030-53291-8_5). CAV (2) 2020: 64-76
 - _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
