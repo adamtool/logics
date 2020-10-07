@@ -31,7 +31,7 @@ public class TestFlowLTLParser {
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.assertEquals(ex.getMessage(), "Error while parsing formula '#asdf '");
-            Assert.assertEquals(ex.getCause().getMessage(), " col 0: token recognition error at: '#'");
+            Assert.assertEquals(ex.getCause().getMessage(), "col 0: token recognition error at: '#'");
         }
 
         try {
@@ -39,7 +39,7 @@ public class TestFlowLTLParser {
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.assertEquals(ex.getMessage(), "Error while parsing formula 'a1 ^asdf '");
-            Assert.assertEquals(ex.getCause().getMessage(), " col 3: token recognition error at: '^'");
+            Assert.assertEquals(ex.getCause().getMessage(), "col 3: token recognition error at: '^'");
         }
     }
 
@@ -66,7 +66,7 @@ public class TestFlowLTLParser {
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.assertEquals(ex.getMessage(), "Error while parsing formula 'asdf p1'");
-            Assert.assertEquals(ex.getCause().getMessage(), " col 5: extraneous input 'p1' expecting <EOF>");
+            Assert.assertEquals(ex.getCause().getMessage(), "col 5: extraneous input 'p1' expecting <EOF>");
         }
 
         net.createTransition();
@@ -75,7 +75,7 @@ public class TestFlowLTLParser {
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.assertEquals(ex.getMessage(), "Error while parsing formula 'p1 asdf'");
-            Assert.assertEquals(ex.getCause().getMessage(), " col 3: extraneous input 'asdf' expecting <EOF>");
+            Assert.assertEquals(ex.getCause().getMessage(), "col 3: extraneous input 'asdf' expecting <EOF>");
         }
 
         try {
@@ -139,23 +139,23 @@ public class TestFlowLTLParser {
 
         IRunFormula rNested = new RunLTLFormula(a, LTLOperators.Binary.OR, new LTLFormula(LTLOperators.Unary.F, new LTLFormula(a, LTLOperators.Binary.W, b)));
 //        System.out.println(rNested);
-        IRunFormula rNestedOut = FlowLTLParser.parse(net, "(a1 OR F((a1 W b1)))");
+        IRunFormula rNestedOut = FlowLTLParser.parse(net, "(a1 OR F (a1 W b1))");
         Assert.assertEquals(rNestedOut.toString(), rNested.toString());
 
         ILTLFormula ltl1 = new LTLFormula(LTLOperators.Unary.F, b);
-        IRunFormula out = FlowLTLParser.parse(net, "F(b1)");
+        IRunFormula out = FlowLTLParser.parse(net, "F b1");
         Assert.assertEquals(ltl1.toString(), out.toString());
 
         IFlowFormula flow1 = new FlowLTLFormula(ltl1);
-        out = FlowLTLParser.parse(net, "A(F(b1))");
+        out = FlowLTLParser.parse(net, "A F b1 ");
         Assert.assertEquals(flow1.toString(), out.toString());
 
         IRunFormula r1 = new RunLTLFormula(r, RunOperators.Binary.AND, flow1);
-        out = FlowLTLParser.parse(net, "((a1 OR b1) AND A(F(b1)))");
+        out = FlowLTLParser.parse(net, "((a1 OR b1) AND A F b1)");
         Assert.assertEquals(r1.toString(), out.toString());
 
         IRunFormula r2 = new RunLTLFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
-        out = FlowLTLParser.parse(net, "(F(b1) U G(b1))");
+        out = FlowLTLParser.parse(net, "(F b1 U G b1 )");
         Assert.assertEquals(r2.toString(), out.toString());
     }
 
@@ -170,7 +170,7 @@ public class TestFlowLTLParser {
         net.createTransition();
         net.createTransition();
         try {
-            IRunFormula f = FlowLTLParser.parse(net, "F(a)");
+            IRunFormula f = FlowLTLParser.parse(net, "F a");
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.fail("Should not be reachable");
@@ -187,7 +187,7 @@ public class TestFlowLTLParser {
         LTLAtomicProposition p = new LTLAtomicProposition(net.createPlace("p0"));
         LTLAtomicProposition t = new LTLAtomicProposition(net.createTransition("t0"));
 
-        IRunFormula f = FlowLTLParser.parse(net, "F((p0->t0))");
+        IRunFormula f = FlowLTLParser.parse(net, "F(p0->t0)");
         Assert.assertEquals(f.toSymbolString(), LTLOperators.Unary.F.toSymbol() + " (p0 " + LTLOperators.Binary.IMP.toSymbol() + " t0)");
 
         try {
@@ -195,7 +195,7 @@ public class TestFlowLTLParser {
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.assertEquals(ex.getMessage(), "Error while parsing formula 'F(p0⋀t0)'");
-            Assert.assertEquals(ex.getCause().getMessage(), " col 4: mismatched input '⋀' expecting <EOF>");
+            Assert.assertEquals(ex.getCause().getMessage(), "col 4: no viable alternative at input '⋀'");
         }
 
         try {
@@ -203,10 +203,10 @@ public class TestFlowLTLParser {
             Assert.fail("Should not be reachable");
         } catch (ParseException ex) {
             Assert.assertEquals(ex.getMessage(), "Error while parsing formula 'F((p0⋀t0))'");
-            Assert.assertEquals(ex.getCause().getMessage(), " col 5: no viable alternative at input '((p0⋀'");
+            Assert.assertEquals(ex.getCause().getMessage(), "col 5: no viable alternative at input '⋀'");
         }
 
-        f = FlowLTLParser.parse(net, "F((p0⋏t0))");
+        f = FlowLTLParser.parse(net, "F(p0⋏t0)");
         Assert.assertEquals(f.toSymbolString(), LTLOperators.Unary.F.toSymbol() + " (p0 " + LTLOperators.Binary.AND.toSymbol() + " t0)");
     }
 }
