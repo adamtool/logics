@@ -40,7 +40,9 @@ public class LTLOperators {
         G {
             @Override
             public String toSymbol() {
-                return "⬜"; // \u2B1C "\u25A1" &#9633; ";//&#x25A1;
+//                return "⬜"; // \u2B1C "\u25A1" &#9633; ";//&#x25A1;  	
+//                return "▫"; //&#9643;	&#x25AB;
+                return "◻";//&#9723;	&#x25FB;
             }
 
             @Override
@@ -52,6 +54,8 @@ public class LTLOperators {
             @Override
             public String toSymbol() {
                 return "◯";//"\u25EF"; //"X";
+//                return "⚪";//	&#9898;	&#x26AA;
+                	
             }
 
             @Override
