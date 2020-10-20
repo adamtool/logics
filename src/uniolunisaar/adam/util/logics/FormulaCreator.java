@@ -147,14 +147,14 @@ public class FormulaCreator {
 
     public static FlowLTLFormula createLTLFormulaOfWinCon(PetriNetWithTransits net, Condition.Objective condition) {
         List<Place> specialPlaces = new ArrayList<>();
-        for (Place p : net.getPlaces()) {
-            if (net.isSpecial(p)) {
-                specialPlaces.add(p);
-            }
-        }
         ILTLFormula f;
         switch (condition) {
             case A_SAFETY: {
+                for (Place p : net.getPlaces()) {
+                    if (net.isBad(p)) {
+                        specialPlaces.add(p);
+                    }
+                }
                 Collection<ILTLFormula> elems = new ArrayList<>();
                 for (Place specialPlace : specialPlaces) {
                     elems.add(new LTLFormula(LTLOperators.Unary.NEG, new LTLAtomicProposition(specialPlace)));
@@ -163,6 +163,11 @@ public class FormulaCreator {
                 break;
             }
             case A_REACHABILITY: {
+                for (Place p : net.getPlaces()) {
+                    if (net.isReach(p)) {
+                        specialPlaces.add(p);
+                    }
+                }
                 Collection<ILTLFormula> elems = new ArrayList<>();
                 for (Place specialPlace : specialPlaces) {
                     elems.add(new LTLAtomicProposition(specialPlace));
@@ -171,6 +176,11 @@ public class FormulaCreator {
                 break;
             }
             case A_BUCHI: {
+                for (Place p : net.getPlaces()) {
+                    if (net.isBuchi(p)) {
+                        specialPlaces.add(p);
+                    }
+                }
                 Collection<ILTLFormula> elems = new ArrayList<>();
                 for (Place specialPlace : specialPlaces) {
                     elems.add(new LTLAtomicProposition(specialPlace));
