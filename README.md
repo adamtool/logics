@@ -16,7 +16,7 @@ Contains:
 Integration:
 ------------
 This module can be used as separate library and
-- is integrated in: [adam](https://github.com/adamtool/adam), [adammc](https://github.com/adamtool/adammc),
+- is integrated in: [adam](https://github.com/adamtool/adam), [adammc](https://github.com/adamtool/adammc), [webinterface](https://github.com/adamtool/webinterface),
 - contains the packages: logics,
 - depends on the repos: [libs](https://github.com/adamtool/libs), [framework](https://github.com/adamtool/framework).
 
