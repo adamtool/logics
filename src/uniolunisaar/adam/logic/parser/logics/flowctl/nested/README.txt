@@ -1,1 +1,1 @@
-This logic has currently has no MC solution (for Petri nets with transits).
+This logic has currently no MC solution (for Petri nets with transits).
