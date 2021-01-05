@@ -231,22 +231,30 @@ public class TestFlowLTLParser {
                         RunOperators.Implication.IMP,
                         new FlowLTLFormula(new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace("u0"))))
                 ));
-        try {
-            // Just text
-            IRunFormula f = FlowLTLParser.parse(net, formula.toString());
+        // Just text
+        IRunFormula f = FlowLTLParser.parse(net, formula.toString());
 //        System.out.println(formula.toString()); // ((G u0 IMP A F u0) AND (G u0 IMP A F u0))    
-            f = FlowLTLParser.parse(net, "((G u0 IMP A F u0) AND (G u0 IMP A F u0))");
+        f = FlowLTLParser.parse(net, "((G u0 IMP A F u0) AND (G u0 IMP A F u0))");
 
-            // check just symbols
-            f = FlowLTLParser.parse(net, "(◻ u0 ⇒ 𝔸 ◇ u0)");
-            f = FlowLTLParser.parse(net, "◻ u0 ");
-            f = FlowLTLParser.parse(net, " 𝔸 ◇ u0");
-            f = FlowLTLParser.parse(net, formula.toSymbolString());
+        // check just symbols
+        f = FlowLTLParser.parse(net, "(◻ u0 ⇒ 𝔸 ◇ u0)");
+        f = FlowLTLParser.parse(net, "◻ u0 ");
+        f = FlowLTLParser.parse(net, " 𝔸 ◇ u0");
+        f = FlowLTLParser.parse(net, formula.toSymbolString());
 //        System.out.println(formula.toSymbolString()); // ((◻ u0 ⇒ 𝔸 ◇ u0) ⋀ (◻ u0 ⇒ 𝔸 ◇ u0))
-            f = FlowLTLParser.parse(net, "((◻ u0 ⇒ 𝔸 ◇ u0) ⋀ (◻ u0 ⇒ 𝔸 ◇ u0))");
+        f = FlowLTLParser.parse(net, "((◻ u0 ⇒ 𝔸 ◇ u0) ⋀ (◻ u0 ⇒ 𝔸 ◇ u0))");
 
-            // check a mixture of symbols and text
+        // check a mixture of symbols and text
+        try {
+            f = FlowLTLParser.parse(net, "(G u0 → 𝔸 F s2)");
+            Assert.fail();
+        } catch (ParseException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getCause().getMessage());
+        }
+        try {
             f = FlowLTLParser.parse(net, "((G u0 → 𝔸 F s2) AND (G u0 → A F s2))");
+            Assert.fail();
         } catch (ParseException ex) {
             System.out.println(ex.getMessage());
             System.out.println(ex.getCause().getMessage());

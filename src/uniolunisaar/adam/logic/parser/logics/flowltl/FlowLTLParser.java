@@ -1,5 +1,7 @@
 package uniolunisaar.adam.logic.parser.logics.flowltl;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.adt.pn.PetriNet;
@@ -18,6 +20,8 @@ public class FlowLTLParser {
 
     public static RunLTLFormula parse(PetriNet net, String formula) throws ParseException {
         try {
+//            ByteBuffer encodedFormula = StandardCharsets.UTF_8.encode(formula);
+//            String f = StandardCharsets.UTF_8.decode(encodedFormula).toString();
             FlowLTLFormatLexer lexer = new FlowLTLFormatLexer(new ANTLRInputStream(formula));
 
             // Get a list of matched tokens

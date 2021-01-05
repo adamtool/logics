@@ -32,14 +32,14 @@ next: 'X' | '◯';
 neg: 'NEG' | '!' | '¬';
 and: 'AND' | '⋏' ;
 or: 'OR' | '⋎' ;
-imp: 'IMP' | '->' | '→';
+imp: 'IMP' | '->' | '→'; //'\u2192'
 bimp: 'BIMP' | '<->' | '↔';
 until: 'U' | '𝓤';
 weak: 'W' | '𝓦';
 release: 'R' | '𝓡';
 
 // FlowFormula
-forallFlows: 'A' | '𝔸';
+forallFlows: 'A' | '𝔸'; //'\u1d538'
 
 // RunFormula
 rbin: rand | ror;
