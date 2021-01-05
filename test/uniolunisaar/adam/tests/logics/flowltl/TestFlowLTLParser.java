@@ -1,5 +1,6 @@
 package uniolunisaar.adam.tests.logics.flowltl;
 
+import java.io.File;
 import uniolunisaar.adam.ds.logics.flowlogics.IFlowFormula;
 import uniolunisaar.adam.ds.logics.flowlogics.IRunFormula;
 import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
@@ -14,6 +15,8 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.logics.ltl.ILTLFormula;
 import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
@@ -21,6 +24,8 @@ import uniolunisaar.adam.ds.logics.ltl.LTLAtomicProposition;
  */
 @Test
 public class TestFlowLTLParser {
+
+    private static final String inputDir = System.getProperty("examplesfolder") + "/../modelchecking/ltl/";
 
     @Test
     public void testLexerErrors() {
@@ -120,7 +125,7 @@ public class TestFlowLTLParser {
         IRunFormula r2 = new RunLTLFormula(ltl1, LTLOperators.Binary.U, new LTLFormula(LTLOperators.Unary.G, b));
         out = FlowLTLParser.parse(net, r2.toString());
         Assert.assertEquals(r2.toString(), out.toString());
-        
+
         net.createTransition("ta");
         net.createTransition("tb");
         String formula = "(G( F(!(b1 OR ta) AND G( F(!(a1 OR tb))";
@@ -208,5 +213,43 @@ public class TestFlowLTLParser {
 
         f = FlowLTLParser.parse(net, "F(p0⋏t0)");
         Assert.assertEquals(f.toSymbolString(), LTLOperators.Unary.F.toSymbol() + " (p0 " + LTLOperators.Binary.AND.toSymbol() + " t0)");
+    }
+
+    @Test
+    public void testASCII() throws Exception {
+        final String path = inputDir + File.separator + "handbuiltSDN-TACAS21.apt";
+        PetriNetWithTransits net = PNWTTools.getPetriNetWithTransitsFromFile(path, false);
+        RunLTLFormula formula = new RunLTLFormula(
+                new RunLTLFormula(
+                        new LTLFormula(LTLOperators.Unary.G, new LTLAtomicProposition(net.getPlace("u0"))),
+                        RunOperators.Implication.IMP,
+                        new FlowLTLFormula(new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace("u0"))))
+                ),
+                RunOperators.Binary.AND,
+                new RunLTLFormula(
+                        new LTLFormula(LTLOperators.Unary.G, new LTLAtomicProposition(net.getPlace("u0"))),
+                        RunOperators.Implication.IMP,
+                        new FlowLTLFormula(new LTLFormula(LTLOperators.Unary.F, new LTLAtomicProposition(net.getPlace("u0"))))
+                ));
+        try {
+            // Just text
+            IRunFormula f = FlowLTLParser.parse(net, formula.toString());
+//        System.out.println(formula.toString()); // ((G u0 IMP A F u0) AND (G u0 IMP A F u0))    
+            f = FlowLTLParser.parse(net, "((G u0 IMP A F u0) AND (G u0 IMP A F u0))");
+
+            // check just symbols
+            f = FlowLTLParser.parse(net, "(◻ u0 ⇒ 𝔸 ◇ u0)");
+            f = FlowLTLParser.parse(net, "◻ u0 ");
+            f = FlowLTLParser.parse(net, " 𝔸 ◇ u0");
+            f = FlowLTLParser.parse(net, formula.toSymbolString());
+//        System.out.println(formula.toSymbolString()); // ((◻ u0 ⇒ 𝔸 ◇ u0) ⋀ (◻ u0 ⇒ 𝔸 ◇ u0))
+            f = FlowLTLParser.parse(net, "((◻ u0 ⇒ 𝔸 ◇ u0) ⋀ (◻ u0 ⇒ 𝔸 ◇ u0))");
+
+            // check a mixture of symbols and text
+            f = FlowLTLParser.parse(net, "((G u0 → 𝔸 F s2) AND (G u0 → A F s2))");
+        } catch (ParseException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getCause().getMessage());
+        }
     }
 }
