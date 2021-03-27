@@ -27,7 +27,7 @@ import static uniolunisaar.adam.ds.logics.ltl.LTLOperators.Unary.NEG;
 import static uniolunisaar.adam.ds.logics.ltl.LTLOperators.Unary.X;
 import uniolunisaar.adam.ds.logics.flowlogics.RunOperators;
 import uniolunisaar.adam.logic.parser.logics.flowltl.FlowLTLParser;
-import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer;
 
 /**
  *

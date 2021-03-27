@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import uniolunisaar.adam.ds.circuits.AigerFile;
-import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
-import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OptimizationsSystem;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer.OptimizationsSystem;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.Tools;
 
