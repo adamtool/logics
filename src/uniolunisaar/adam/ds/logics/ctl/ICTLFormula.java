@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.logics.ctl;
 
+import java.util.List;
+import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.ds.logics.ltl.LoLAConvertable;
 
@@ -9,5 +11,7 @@ import uniolunisaar.adam.ds.logics.ltl.LoLAConvertable;
  */
 //public interface ICTLFormula extends IFormula<ILTLFormula> {
 public interface ICTLFormula extends IFormula, LoLAConvertable {
+
+    public List<AtomicProposition> getTransitions();
 
 }

@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.logics.ctl;
 
+import java.util.List;
+import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.FormulaUnary;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.exceptions.logics.NotConvertableException;
@@ -32,5 +34,10 @@ public class CTLFormulaUnary extends FormulaUnary<ICTLFormula, CTLOperators.Unar
     @Override
     public String toLoLA() throws NotConvertableException {
         return getOp().toLoLA() + " " + getPhi().toLoLA();
+    }
+
+    @Override
+    public List<AtomicProposition> getTransitions() {
+        return getPhi().getTransitions();
     }
 }

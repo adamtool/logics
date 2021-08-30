@@ -1,6 +1,8 @@
 package uniolunisaar.adam.ds.logics.ctl;
 
 import java.util.ArrayList;
+import java.util.List;
+import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.FormulaBinary;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.exceptions.logics.NotConvertableException;
@@ -44,6 +46,13 @@ public class CTLFormulaBinary extends FormulaBinary<ICTLFormula, CTLOperators.Bi
                     + subformula.toString() + "' with '" + with.toString() + "'"
                     + " is not a CTL formula and thus cannot be used for '" + toString() + "'.");
         }
+    }
+
+    @Override
+    public List<AtomicProposition> getTransitions() {
+        List<AtomicProposition> ret = getPhi1().getTransitions();
+        ret.addAll(getPhi2().getTransitions());
+        return ret;
     }
 
     private String getPrefix() {

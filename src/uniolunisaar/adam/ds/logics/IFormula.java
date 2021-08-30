@@ -35,5 +35,5 @@ public interface IFormula {
     public String toSymbolString();
 
     public String toReplacableString();
-
+    
 }

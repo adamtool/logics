@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.logics.ctl;
 
+import java.util.List;
+import uniolunisaar.adam.ds.logics.AtomicProposition;
 import uniolunisaar.adam.ds.logics.Formula;
 import uniolunisaar.adam.ds.logics.IFormula;
 import uniolunisaar.adam.exceptions.logics.NotConvertableException;
@@ -33,6 +35,11 @@ public class CTLFormula extends Formula<ICTLFormula> implements ICTLFormula {
             throw new NotSubstitutableException("Error creating LTL formula. Substituting '" + subformula.toString() + "' with '" + with.toString() + "' "
                     + "does not result in an LTL formula.");
         }
+    }
+
+    @Override
+    public List<AtomicProposition> getTransitions() {
+        return getPhi().getTransitions();
     }
 
 //    @Override

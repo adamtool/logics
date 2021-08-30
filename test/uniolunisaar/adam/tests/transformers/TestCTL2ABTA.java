@@ -4,11 +4,13 @@ import java.util.Set;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
+import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.abta.AlternatingBuchiTreeAutomaton;
 import uniolunisaar.adam.ds.automata.NodeLabel;
 import uniolunisaar.adam.ds.logics.ctl.CTLAtomicProposition;
 import uniolunisaar.adam.ds.logics.ctl.CTLConstants;
 import uniolunisaar.adam.ds.logics.ctl.CTLFormula;
+import uniolunisaar.adam.ds.logics.ctl.CTLFormulaBinary;
 import uniolunisaar.adam.ds.logics.ctl.CTLOperators;
 import uniolunisaar.adam.ds.logics.ctl.ICTLFormula;
 import uniolunisaar.adam.logic.transformers.ctl.CTL2AlternatingBuchiTreeAutomaton;
@@ -37,13 +39,31 @@ public class TestCTL2ABTA {
         f = new CTLFormula(CTLOperators.Unary.EX, f);
         abta = CTL2AlternatingBuchiTreeAutomaton.transform(f, net);
 //        System.out.println(abta.toString());
-        
+
         f = new CTLFormula(CTLOperators.Unary.AX, new CTLFormula(new CTLConstants.True(), CTLOperators.Binary.EU, ap));
         abta = CTL2AlternatingBuchiTreeAutomaton.transform(f, net);
 //        System.out.println(abta.toString());
-        
+
         f = new CTLFormula(new CTLConstants.False(), CTLOperators.Binary.AUD, new CTLFormula(new CTLConstants.True(), CTLOperators.Binary.AU, ap));
         abta = CTL2AlternatingBuchiTreeAutomaton.transform(f, net);
         System.out.println(abta.toString());
+    }
+
+    @Test
+    public void testThesisExample() throws Exception {
+        PetriNet net = new PetriNet();
+        Place yard = net.createPlace("y");
+        Transition emergency = net.createTransition("em");
+        CTLAtomicProposition y = new CTLAtomicProposition(yard);
+        CTLAtomicProposition em = new CTLAtomicProposition(emergency);
+
+        ICTLFormula f = new CTLFormula(CTLOperators.Unary.AG, new CTLFormula(em, CTLOperators.Binary.IMP, new CTLFormula(CTLOperators.Unary.EF, y)));
+        // transforme
+        ICTLFormula ftrans = new CTLFormula(new CTLConstants.False(), CTLOperators.Binary.EUD, new CTLFormula(new CTLFormula(CTLOperators.Unary.NEG, em), CTLOperators.Binary.OR,
+                new CTLFormula(new CTLConstants.True(),CTLOperators.Binary.EU, y)));
+
+        AlternatingBuchiTreeAutomaton<Set<NodeLabel>> abta = CTL2AlternatingBuchiTreeAutomaton.transform(ftrans, net);
+        System.out.println(abta.toString());
+
     }
 }
