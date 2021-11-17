@@ -50,18 +50,23 @@ public class TestCTL2ABTA {
     }
 
     @Test
-    public void testThesisExample() throws Exception {
+    public void testLectureHall() throws Exception {
         PetriNet net = new PetriNet();
         Place yard = net.createPlace("y");
         Transition emergency = net.createTransition("em");
         CTLAtomicProposition y = new CTLAtomicProposition(yard);
         CTLAtomicProposition em = new CTLAtomicProposition(emergency);
 
+        // want to check "𝔸 AG(emergency -> EF yard)"
         ICTLFormula f = new CTLFormula(CTLOperators.Unary.AG, new CTLFormula(em, CTLOperators.Binary.IMP, new CTLFormula(CTLOperators.Unary.EF, y)));
-        // transforme
-        ICTLFormula ftrans = new CTLFormula(new CTLConstants.False(), CTLOperators.Binary.EUD, new CTLFormula(new CTLFormula(CTLOperators.Unary.NEG, em), CTLOperators.Binary.OR,
-                new CTLFormula(new CTLConstants.True(),CTLOperators.Binary.EU, y)));
-
+        // transformed is this "𝔸 E(false U' \neg emergency v E(true U yard))
+//        ICTLFormula ftrans = new CTLFormula(new CTLConstants.False(), CTLOperators.Binary.EUD, new CTLFormula(new CTLFormula(CTLOperators.Unary.NEG, em), CTLOperators.Binary.OR,
+//                new CTLFormula(new CTLConstants.True(), CTLOperators.Binary.EU, y)));        
+        // todo: don't I have to take the negation?
+        // negation: "𝔸 \neg AG(emergency -> EF yard) = E(true U emergency \wedge E(false U' \neg yard))"
+        ICTLFormula ftrans = new CTLFormula(new CTLConstants.True(), CTLOperators.Binary.EU, new CTLFormula(em, CTLOperators.Binary.AND,
+                new CTLFormula(new CTLConstants.False(), CTLOperators.Binary.EUD, new CTLFormula(CTLOperators.Unary.NEG, y))));
+        
         AlternatingBuchiTreeAutomaton<Set<NodeLabel>> abta = CTL2AlternatingBuchiTreeAutomaton.transform(ftrans, net);
         System.out.println(abta.toString());
 
